@@ -80,15 +80,15 @@ public struct Account: Codable, Identifiable, Hashable {
     
     #if os(iOS)
     
-    public var avatarUIImage: UImage {
+    public var avatarUIImage: UIImage {
         
-        let defaultAvatar = UImage(data: Data(base64Encoded: self.defaultBase64Avatar)!)!
+        let defaultAvatar = UIImage(data: Data(base64Encoded: self.defaultBase64Avatar)!)!
         
         if self.base64Avatar.isEmpty {
             return defaultAvatar
         }
         
-        if let data = Data(base64Encoded: self.base64Avatar), let image = UImage(data: data) {
+        if let data = Data(base64Encoded: self.base64Avatar), let image = UIImage(data: data) {
             return image
         }
         
