@@ -32,7 +32,7 @@ class FetchUserAccountInfoOperation: AbstractOperation {
             let date: Int?
             let data: String?
             let primary: Int?
-            let acc: Name?
+            let acc: String?
         }
         
         let client = Client(address: url)
