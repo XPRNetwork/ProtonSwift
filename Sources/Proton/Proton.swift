@@ -33,7 +33,7 @@ final public class Proton: ObservableObject {
     
     /**
      Use this function as your starting point to initialize the singleton class Proton
-     - Parameter Config: The configuration object that includes urls for chainProviders as well as your keychain indentifier string
+     - Parameter config: The configuration object that includes urls for chainProviders as well as your keychain indentifier string
      - Returns: Initialized Proton singleton
      */
     public static func initalize(_ config: Config) -> Proton {
@@ -46,24 +46,36 @@ final public class Proton: ObservableObject {
     var storage: Persistence!
     var publicKeys = Set<String>()
     
+    /**
+     Live updated set of chainProviders. Subscribe to this for your chainProviders
+     */
     @Published public var chainProviders: Set<ChainProvider> = [] {
         willSet {
             self.objectWillChange.send()
         }
     }
     
+    /**
+     Live updated set of tokenContracts. Subscribe to this for your tokenContracts
+     */
     @Published public var tokenContracts: Set<TokenContract> = [] {
         willSet {
             self.objectWillChange.send()
         }
     }
     
+    /**
+     Live updated set of accounts. Subscribe to this for your accounts
+     */
     @Published public var accounts: Set<Account> = [] {
         willSet {
             self.objectWillChange.send()
         }
     }
     
+    /**
+     Live updated set of tokenBalances. Subscribe to this for your tokenBalances
+     */
     @Published public var tokenBalances: Set<TokenBalance> = [] {
         willSet {
             self.objectWillChange.send()
@@ -81,6 +93,9 @@ final public class Proton: ObservableObject {
         
     }
     
+    /**
+     Loads all data objects from disk into memory
+     */
     public func loadAll() {
         
         self.publicKeys = self.storage.getKeychain(Set<String>.self, forKey: "publicKeys") ?? []
@@ -91,6 +106,9 @@ final public class Proton: ObservableObject {
         
     }
     
+    /**
+     Saves all current data objects that are in memory to disk
+     */
     public func saveAll() {
         
         if self.publicKeys.count > 0 { // saftey
@@ -103,6 +121,9 @@ final public class Proton: ObservableObject {
         self.storage.set(self.tokenBalances, forKey: "tokenBalances")
     }
     
+    /**
+     Fetchs all required data objects from external data sources. This should be done at startup
+     */
     public func fetchRequirements(completion: @escaping () -> ()) {
     
         WebServices.shared.addSeq(FetchChainProvidersOperation()) { result in
@@ -143,6 +164,10 @@ final public class Proton: ObservableObject {
         
     }
     
+    /**
+     Fetchs and updates all accounts. This includes, account names, avatars, balances, etc
+     - Parameter accounts?: Pass in a set of accounts or nil. Passing nil causes the function to update all known accounts from memory
+     */
     public func update(accounts: Set<Account>? = nil, completion: @escaping () -> ()) {
         
         let accounts = accounts ?? self.accounts
@@ -162,6 +187,10 @@ final public class Proton: ObservableObject {
         
     }
     
+    /**
+     Use this to add an account
+     - Parameter privateKey: Wif formated private key
+     */
     public func importAccount(with privateKey: String, completion: @escaping () -> ()) {
         
         do {
@@ -192,7 +221,7 @@ final public class Proton: ObservableObject {
 
     }
     
-    func fetchKeyAccounts(forPublicKeys publicKeys: [String], completion: @escaping (Set<Account>?) -> ()) {
+    private func fetchKeyAccounts(forPublicKeys publicKeys: [String], completion: @escaping (Set<Account>?) -> ()) {
         
         let publicKeyCount = publicKeys.count
         var publicKeysProcessed = 0
@@ -258,7 +287,7 @@ final public class Proton: ObservableObject {
         
     }
     
-    func fetchBalances(forAccounts accounts: Set<Account>, completion: @escaping (Set<TokenBalance>?) -> ()) {
+    private func fetchBalances(forAccounts accounts: Set<Account>, completion: @escaping (Set<TokenBalance>?) -> ()) {
         
         let accountCount = accounts.count
         var accountsProcessed = 0
@@ -317,7 +346,7 @@ final public class Proton: ObservableObject {
     
     }
     
-    func fetchUserInfo(forAccounts accounts: Set<Account>, completion: @escaping () -> ()) {
+    private func fetchUserInfo(forAccounts accounts: Set<Account>, completion: @escaping () -> ()) {
         
         let accountCount = accounts.count
         var accountsProcessed = 0
