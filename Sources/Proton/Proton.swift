@@ -31,6 +31,11 @@ final public class Proton: ObservableObject {
     
     public static var config: Config?
     
+    /**
+     Use this function as your starting point to initialize the singleton class Proton
+     - Parameter Config: The configuration object that includes urls for chainProviders as well as your keychain indentifier string
+     - Returns: Initialized Proton singleton
+     */
     public static func initalize(_ config: Config) -> Proton {
         Proton.config = config
         return shared
