@@ -28,7 +28,7 @@ class FetchUserAccountInfoOperation: AbstractOperation {
         struct UserInfo: ABICodable {
             let avatar: String?
             let name: String?
-            let verified: Int?
+            let verified: Bool?
         }
         
         let client = Client(address: url)
@@ -45,7 +45,7 @@ class FetchUserAccountInfoOperation: AbstractOperation {
             if let userInfo = res.rows.first {
                 account.base64Avatar = userInfo.avatar ?? ""
                 account.fullName = userInfo.name ?? ""
-                account.verified = userInfo.verified == 1 ? true : false
+                account.verified = userInfo.verified ?? false
             }
             
             self.finish(retval: account, error: nil)
