@@ -72,8 +72,8 @@ final public class Proton: ObservableObject {
     
     public func saveAll() {
         
-        self.storage.set(Set<ChainProvider>.self, forKey: "chainProviders")
-        self.storage.set(Set<TokenContract>.self, forKey: "tokenContracts")
+        self.storage.set(self.chainProviders, forKey: "chainProviders")
+        self.storage.set(self.tokenContracts, forKey: "tokenContracts")
         
     }
     

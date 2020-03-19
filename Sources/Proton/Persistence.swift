@@ -11,6 +11,8 @@ import Foundation
 class Persistence {
     
     private var defaults: UserDefaults
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
     
     init() {
         defaults = UserDefaults.standard
@@ -36,12 +38,26 @@ class Persistence {
         return defaults.bool(forKey: key)
     }
     
-    func get<T>(_ object: T.Type, forKey key: String) -> T? {
-        return defaults.object(forKey: key) as? T
+    func get<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
+        
+        guard let data = defaults.object(forKey: key) as? Data else {
+            return nil
+        }
+        
+        guard let decodedObject = try? decoder.decode(object, from: data) else {
+            return nil
+        }
+        
+        return decodedObject
     }
     
-    func set<T>(_ object: T, forKey key: String) {
-        defaults.set(object, forKey: key)
+    func set<T: Codable>(_ object: T, forKey key: String) {
+        
+        guard let encodedData = try? encoder.encode(object) else {
+            return
+        }
+        
+        defaults.set(encodedData, forKey: key)
         defaults.synchronize()
     }
     
