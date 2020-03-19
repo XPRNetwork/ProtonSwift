@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ChainProvider: Codable, Identifiable, Hashable {
+public struct ChainProvider: Codable, Identifiable, Hashable {
     
     let chainId: String
     let chainUrl: String
@@ -18,6 +18,6 @@ struct ChainProvider: Codable, Identifiable, Hashable {
     let usersInfoTableCode: String
     let usersInfoTableScope: String
     
-    var id: String { return chainId }
+    public var id: String { return chainId }
     
 }

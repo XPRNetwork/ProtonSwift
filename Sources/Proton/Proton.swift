@@ -13,30 +13,30 @@ import EOSIO
 
 final public class Proton: ObservableObject {
 
-    struct Config {
+    public struct Config {
         var keyChainIdentifier: String
         var chainProvidersUrl: String
         var tokenContractsUrl: String
     }
     
-    static var config: Config?
+    public static var config: Config?
     
-    static func setup(_ config: Config) {
+    public static func setup(_ config: Config) {
         Proton.config = config
     }
     
-    static let shared = Proton()
+    public static let shared = Proton()
 
     var valet: Valet!
     var storage = Persistence()
     
-    @Published var chainProviders: Set<ChainProvider> = [] {
+    @Published public var chainProviders: Set<ChainProvider> = [] {
         willSet {
             self.objectWillChange.send()
         }
     }
     
-    @Published var tokenContracts: Set<TokenContract> = [] {
+    @Published public var tokenContracts: Set<TokenContract> = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -52,21 +52,21 @@ final public class Proton: ObservableObject {
         
     }
     
-    func loadAll() {
+    public func loadAll() {
         
         self.chainProviders = self.storage.get(Set<ChainProvider>.self, forKey: "chainProviders") ?? []
         self.tokenContracts = self.storage.get(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
         
     }
     
-    func saveAll() {
+    public func saveAll() {
         
         self.storage.set(Set<ChainProvider>.self, forKey: "chainProviders")
         self.storage.set(Set<TokenContract>.self, forKey: "tokenContracts")
         
     }
     
-    func fetchRequirements(completion: @escaping () -> ()) {
+    public func fetchRequirements(completion: @escaping () -> ()) {
     
         WebServices.shared.addSeq(FetchChainProvidersOperation()) { result in
             
@@ -106,7 +106,7 @@ final public class Proton: ObservableObject {
         
     }
     
-    func importAccount(with privateKey: String, completion: @escaping () -> ()) {
+    public func importAccount(with privateKey: String, completion: @escaping () -> ()) {
         
         do {
             

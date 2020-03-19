@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct TokenContract: Codable, Identifiable, Hashable {
+public struct TokenContract: Codable, Identifiable, Hashable {
     
     let chainId: String
     let contract: String
@@ -22,6 +22,6 @@ struct TokenContract: Codable, Identifiable, Hashable {
     let resourceToken: Bool
     let systemToken: Bool
     
-    var id: String { return chainId+contract+symbol }
+    public var id: String { return chainId+contract+symbol }
     
 }
