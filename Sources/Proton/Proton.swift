@@ -38,6 +38,7 @@ final public class Proton: ObservableObject {
     public static let shared = Proton()
 
     var storage: Persistence!
+    var publicKeys = Set<String>()
     
     @Published public var chainProviders: Set<ChainProvider> = [] {
         willSet {
@@ -57,7 +58,11 @@ final public class Proton: ObservableObject {
         }
     }
     
-    var publicKeys = Set<String>()
+    @Published public var tokenBalances: Set<TokenBalance> = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
     
     private init() {
         
@@ -75,6 +80,8 @@ final public class Proton: ObservableObject {
         self.publicKeys = self.storage.getKeychain(Set<String>.self, forKey: "publicKeys") ?? []
         self.chainProviders = self.storage.get(Set<ChainProvider>.self, forKey: "chainProviders") ?? []
         self.tokenContracts = self.storage.get(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
+        self.accounts = self.storage.get(Set<Account>.self, forKey: "accounts") ?? []
+        self.tokenBalances = self.storage.get(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
         
     }
     
@@ -86,7 +93,8 @@ final public class Proton: ObservableObject {
         
         self.storage.set(self.chainProviders, forKey: "chainProviders")
         self.storage.set(self.tokenContracts, forKey: "tokenContracts")
-        
+        self.storage.set(self.accounts, forKey: "accounts")
+        self.storage.set(self.tokenBalances, forKey: "tokenBalances")
     }
     
     public func fetchRequirements(completion: @escaping () -> ()) {
@@ -136,48 +144,16 @@ final public class Proton: ObservableObject {
             let pk = try PrivateKey(stringValue: privateKey)
             let publicKey = try pk.getPublic()
             
-            let chainProviderCount = self.chainProviders.count
-            var chainProvidersProcessed = 0
-            
-            for chainProvider in self.chainProviders {
-                
-                WebServices.shared.addMulti(FetchKeyAccountsOperation(publicKey: publicKey.stringValue,
-                                                                      chainProvider: chainProvider)) { result in
-                    
-                    chainProvidersProcessed += 1
-                    
-                    switch result {
-                    case .success(let accountNames):
-                        
-                        if let accountNames = accountNames as? [String], accounts.count > 0 {
-                            
-                            for accountName in accountNames {
-                                
-                                let account = Account(chainId: chainProvider.chainId, name: accountName)
-                                if !self.accounts.contains(account) {
-                                    self.accounts.update(with: account)
-                                }
-                                
-                            }
-                            
-                            self.publicKeys.update(with: publicKey.stringValue)
-                            
-                        }
-
-                    case .failure(let error):
-                        print("ERROR: \(error.localizedDescription)")
-                    }
-                                                                        
-                    if chainProviderCount == chainProvidersProcessed {
-                        
-                        // fetch balances
+            self.fetchKeyAccounts(forPublicKeys: [publicKey.stringValue]) { accounts in
+                if let accounts = accounts {
+                    self.fetchBalances(forAccounts: accounts) { tokenBalances in
                         self.saveAll()
                         completion()
-                        
                     }
-                    
+                } else {
+                    self.saveAll()
+                    completion()
                 }
-                
             }
             
         } catch {
@@ -185,6 +161,131 @@ final public class Proton: ObservableObject {
             completion()
         }
 
+    }
+    
+    func fetchKeyAccounts(forPublicKeys publicKeys: [String], completion: @escaping (Set<Account>?) -> ()) {
+        
+        let publicKeyCount = publicKeys.count
+        var publicKeysProcessed = 0
+        
+        var accounts = Set<Account>()
+        
+        if publicKeyCount > 0 && self.chainProviders.count > 0 {
+            
+            for publicKey in publicKeys {
+                
+                let chainProviderCount = self.chainProviders.count
+                var chainProvidersProcessed = 0
+                
+                for chainProvider in self.chainProviders {
+                    
+                    WebServices.shared.addMulti(FetchKeyAccountsOperation(publicKey: publicKey,
+                                                                          chainProvider: chainProvider)) { result in
+                        
+                        chainProvidersProcessed += 1
+                        
+                        switch result {
+                        case .success(let accountNames):
+                            
+                            if let accountNames = accountNames as? [String], accountNames.count > 0 {
+                                
+                                for accountName in accountNames {
+                                    
+                                    let account = Account(chainId: chainProvider.chainId, name: accountName)
+                                    if !self.accounts.contains(account) {
+                                        self.accounts.update(with: account)
+                                    }
+                                    accounts.update(with: account)
+                                    
+                                }
+                                
+                                self.publicKeys.update(with: publicKey)
+                                
+                            }
+
+                        case .failure(let error):
+                            print("ERROR: \(error.localizedDescription)")
+                        }
+                                                                            
+                        if chainProvidersProcessed == chainProviderCount {
+                            
+                            publicKeysProcessed += 1
+                            
+                            if publicKeysProcessed == publicKeyCount {
+                                completion(accounts)
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                }
+                
+            }
+            
+        } else {
+            completion(nil)
+        }
+        
+    }
+    
+    func fetchBalances(forAccounts accounts: Set<Account>, completion: @escaping (Set<TokenBalance>?) -> ()) {
+        
+        let accountCount = accounts.count
+        var accountsProcessed = 0
+        
+        if accountCount > 0 {
+            
+            var returnTokenBalances = Set<TokenBalance>()
+            
+            for account in accounts {
+                
+                if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+                    
+                    WebServices.shared.addMulti(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider)) { result in
+                        
+                        accountsProcessed += 1
+                        
+                        switch result {
+                        case .success(let tokenBalances):
+                    
+                            if let tokenBalances = tokenBalances as? Set<TokenBalance> {
+                                
+                                for tokenBalance in tokenBalances {
+                                    
+                                    self.tokenBalances.update(with: tokenBalance)
+                                    returnTokenBalances.update(with: tokenBalance)
+                                    
+                                }
+                                
+                            }
+                            
+                        case .failure(let error):
+                            print("ERROR: \(error.localizedDescription)")
+                        }
+                        
+                        if accountsProcessed == accountCount {
+                            completion(returnTokenBalances)
+                        }
+                        
+                    }
+                    
+                } else {
+                    
+                    accountsProcessed += 1
+                    
+                    if accountsProcessed == accountCount {
+                        completion(returnTokenBalances)
+                    }
+                    
+                }
+                
+            }
+            
+        } else {
+            completion(nil)
+        }
+    
     }
 
 }
