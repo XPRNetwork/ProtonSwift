@@ -1,0 +1,34 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "secp256k1",
+        "repositoryURL": "https://github.com/greymass/secp256k1.git",
+        "state": {
+          "branch": "master",
+          "revision": "143b3cd70de50ae7d9eb039f80ebda4ce06b4571",
+          "version": null
+        }
+      },
+      {
+        "package": "EOSIO",
+        "repositoryURL": "https://github.com/greymass/swift-eosio.git",
+        "state": {
+          "branch": "master",
+          "revision": "a2135dd4f5a93f7499f8d85397f1eb6199b51384",
+          "version": null
+        }
+      },
+      {
+        "package": "Valet",
+        "repositoryURL": "https://github.com/Square/Valet",
+        "state": {
+          "branch": null,
+          "revision": "7447d1661d938643b0004084367e7bdcb94fdcc4",
+          "version": "3.2.8"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
