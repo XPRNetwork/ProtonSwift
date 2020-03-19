@@ -10,17 +10,17 @@ import Foundation
 
 public struct TokenContract: Codable, Identifiable, Hashable {
     
-    let chainId: String
-    let contract: String
-    let description: String
-    let iconUrl: String
-    let issuer: String
-    let maxSupply: String
-    let symbol: String
-    let url: String
-    let precision: Int
-    let resourceToken: Bool
-    let systemToken: Bool
+    public let chainId: String
+    public let contract: String
+    public let description: String
+    public let iconUrl: String
+    public let issuer: String
+    public let maxSupply: String
+    public let symbol: String
+    public let url: String
+    public let precision: Int
+    public let resourceToken: Bool
+    public let systemToken: Bool
     
     public var id: String { return chainId+contract+symbol }
     

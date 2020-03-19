@@ -14,9 +14,9 @@ import EOSIO
 final public class Proton: ObservableObject {
 
     public struct Config {
-        var keyChainIdentifier: String
-        var chainProvidersUrl: String
-        var tokenContractsUrl: String
+        public var keyChainIdentifier: String
+        public var chainProvidersUrl: String
+        public var tokenContractsUrl: String
     }
     
     public static var config: Config?

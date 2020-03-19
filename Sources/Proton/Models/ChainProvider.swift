@@ -10,13 +10,13 @@ import Foundation
 
 public struct ChainProvider: Codable, Identifiable, Hashable {
     
-    let chainId: String
-    let chainUrl: String
-    let stateHistoryUrl: String
-    let iconUrl: String
-    let name: String
-    let usersInfoTableCode: String
-    let usersInfoTableScope: String
+    public let chainId: String
+    public let chainUrl: String
+    public let stateHistoryUrl: String
+    public let iconUrl: String
+    public let name: String
+    public let usersInfoTableCode: String
+    public let usersInfoTableScope: String
     
     public var id: String { return chainId }
     
