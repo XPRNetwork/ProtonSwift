@@ -26,9 +26,9 @@ class FetchUserAccountInfoOperation: AbstractOperation {
         }
         
         struct UserInfo: ABICodable {
-            let avatar: String?
-            let name: String?
-            let verified: Int?
+            let avatar: String
+            let name: String
+            let verified: Int
         }
         
         let client = Client(address: url)
