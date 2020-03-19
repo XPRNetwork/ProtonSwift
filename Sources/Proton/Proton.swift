@@ -11,7 +11,7 @@ import Combine
 import Valet
 import EOSIO
 
-final class Proton: ObservableObject {
+final public class Proton: ObservableObject {
 
     struct Config {
         var keyChainIdentifier: String
