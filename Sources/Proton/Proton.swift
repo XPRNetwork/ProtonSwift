@@ -123,6 +123,7 @@ final public class Proton: ObservableObject {
     
     /**
      Fetchs all required data objects from external data sources. This should be done at startup
+     - Parameter completion: Closure thats called when the function is complete
      */
     public func fetchRequirements(completion: @escaping () -> ()) {
     
@@ -167,6 +168,7 @@ final public class Proton: ObservableObject {
     /**
      Fetchs and updates all accounts. This includes, account names, avatars, balances, etc
      - Parameter accounts?: Pass in a set of accounts or nil. Passing nil causes the function to update all known accounts from memory
+     - Parameter completion: Closure thats called when the function is complete
      */
     public func update(accounts: Set<Account>? = nil, completion: @escaping () -> ()) {
         
@@ -190,6 +192,7 @@ final public class Proton: ObservableObject {
     /**
      Use this to add an account
      - Parameter privateKey: Wif formated private key
+     - Parameter completion: Closure thats called when the function is complete
      */
     public func importAccount(with privateKey: String, completion: @escaping () -> ()) {
         
