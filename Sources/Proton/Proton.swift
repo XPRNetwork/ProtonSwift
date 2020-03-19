@@ -31,8 +31,9 @@ final public class Proton: ObservableObject {
     
     public static var config: Config?
     
-    public static func setup(_ config: Config) {
+    public static func initalize(_ config: Config) -> Proton {
         Proton.config = config
+        return shared
     }
     
     public static let shared = Proton()
