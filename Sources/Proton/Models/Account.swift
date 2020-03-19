@@ -44,7 +44,7 @@ public struct Account: Codable, Identifiable, Hashable {
         hasher.combine(self.id)
     }
     
-    var avatarImage: Image {
+    public var avatarImage: Image {
         
         #if os(macOS)
         
@@ -60,7 +60,7 @@ public struct Account: Codable, Identifiable, Hashable {
     
     #if os(macOS)
     
-    var avatarNSImage: NSImage {
+    public var avatarNSImage: NSImage {
         
         let defaultAvatar = NSImage(data: Data(base64Encoded: self.defaultBase64Avatar)!)!
         
@@ -80,7 +80,7 @@ public struct Account: Codable, Identifiable, Hashable {
     
     #if os(iOS)
     
-    var avatarUIImage: UImage {
+    public var avatarUIImage: UImage {
         
         let defaultAvatar = UImage(data: Data(base64Encoded: self.defaultBase64Avatar)!)!
         
