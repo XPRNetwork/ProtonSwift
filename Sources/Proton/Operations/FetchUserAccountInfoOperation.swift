@@ -29,20 +29,17 @@ class FetchUserAccountInfoOperation: AbstractOperation {
             let avatar: String?
             let name: String?
             let verified: Int?
-            let date: Int?
-            let data: String?
-            let primary: Int?
-            let acc: String?
         }
         
         let client = Client(address: url)
-        var req = API.V1.Chain.GetTableRows<UserInfo>(code: Name(stringValue: chainProvider.usersInfoTableCode), table: Name(stringValue: "usersinfo"), scope: chainProvider.usersInfoTableCode)
+        var req = API.V1.Chain.GetTableRows<UserInfo>(code: Name(stringValue: chainProvider.usersInfoTableCode), table: Name(stringValue: "usersinfo"), scope: chainProvider.usersInfoTableScope)
         req.lowerBound = account.name
         req.upperBound = account.name
         
         do {
             
             let res = try client.sendSync(req).get()
+            
             
             print(res)
             if let userInfo = res.rows.first {
