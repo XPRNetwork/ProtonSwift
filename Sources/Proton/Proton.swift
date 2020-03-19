@@ -147,10 +147,15 @@ final public class Proton: ObservableObject {
             
             self.fetchKeyAccounts(forPublicKeys: [publicKey.stringValue]) { accounts in
                 if let accounts = accounts {
+                    
+                    // save private key
+                    self.storage.setKeychain(privateKey, forKey: publicKey.stringValue)
+                    
                     self.fetchBalances(forAccounts: accounts) { tokenBalances in
                         self.saveAll()
                         completion()
                     }
+                    
                 } else {
                     self.saveAll()
                     completion()
