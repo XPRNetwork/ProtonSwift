@@ -24,4 +24,22 @@ public struct TokenContract: Codable, Identifiable, Hashable {
     
     public var id: String { return chainId+contract+symbol }
     
+    public init(chainId: String, contract: String, description: String, iconUrl: String,
+                  issuer: String, maxSupply: String, symbol: String, url: String, precision: Int,
+                  resourceToken: Bool, systemToken: Bool) {
+        
+        self.chainId = chainId
+        self.contract = contract
+        self.description = description
+        self.iconUrl = iconUrl
+        self.issuer = issuer
+        self.maxSupply = maxSupply
+        self.symbol = symbol
+        self.url = url
+        self.precision = precision
+        self.resourceToken = resourceToken
+        self.systemToken = systemToken
+        
+    }
+    
 }
