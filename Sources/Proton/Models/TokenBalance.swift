@@ -32,4 +32,12 @@ public class TokenBalance: Codable, Identifiable, Hashable {
         
     }
     
+    public static func == (lhs: TokenBalance, rhs: TokenBalance) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+    
 }

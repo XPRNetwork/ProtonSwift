@@ -28,5 +28,13 @@ public struct Account: Codable, Identifiable, Hashable {
         self.base64Avatar = base64Avatar
         
     }
+    
+    public static func == (lhs: Account, rhs: Account) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
 
 }

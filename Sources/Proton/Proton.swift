@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import Valet
 import EOSIO
 
 final public class Proton: ObservableObject {
@@ -38,8 +37,7 @@ final public class Proton: ObservableObject {
     
     public static let shared = Proton()
 
-    var valet: Valet!
-    var storage = Persistence()
+    var storage: Persistence!
     
     @Published public var chainProviders: Set<ChainProvider> = [] {
         willSet {
@@ -53,13 +51,20 @@ final public class Proton: ObservableObject {
         }
     }
     
+    @Published public var accounts: Set<Account> = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
+    
+    var publicKeys = Set<String>()
+    
     private init() {
         
         guard let config = Proton.config else {
             fatalError("ERROR: You must call setup before accessing ProtonWalletManager.shared")
         }
-        self.valet = Valet.valet(with: Identifier(nonEmpty: config.keyChainIdentifier)!,
-                                                accessibility: .whenUnlocked)
+        self.storage = Persistence(keyChainIdentifier: config.keyChainIdentifier)
         
         self.loadAll()
         
@@ -67,12 +72,17 @@ final public class Proton: ObservableObject {
     
     public func loadAll() {
         
+        self.publicKeys = self.storage.getKeychain(Set<String>.self, forKey: "publicKeys") ?? []
         self.chainProviders = self.storage.get(Set<ChainProvider>.self, forKey: "chainProviders") ?? []
         self.tokenContracts = self.storage.get(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
         
     }
     
     public func saveAll() {
+        
+        if self.publicKeys.count > 0 { // saftey
+            self.storage.setKeychain(self.publicKeys, forKey: "publicKeys")
+        }
         
         self.storage.set(self.chainProviders, forKey: "chainProviders")
         self.storage.set(self.tokenContracts, forKey: "tokenContracts")
@@ -126,8 +136,6 @@ final public class Proton: ObservableObject {
             let pk = try PrivateKey(stringValue: privateKey)
             let publicKey = try pk.getPublic()
             
-            var accounts = [API.V1.Chain.GetAccount.Response]()
-            
             let chainProviderCount = self.chainProviders.count
             var chainProvidersProcessed = 0
             
@@ -139,27 +147,42 @@ final public class Proton: ObservableObject {
                     chainProvidersProcessed += 1
                     
                     switch result {
-                    case .success(let account):
+                    case .success(let accountNames):
                         
-                        if let account = account as? API.V1.Chain.GetAccount.Response {
-                            accounts.append(account)
-                        }
-                        
-                        if chainProviderCount == chainProvidersProcessed {
+                        if let accountNames = accountNames as? [String], accounts.count > 0 {
+                            
+                            for accountName in accountNames {
+                                
+                                let account = Account(chainId: chainProvider.chainId, name: accountName)
+                                if !self.accounts.contains(account) {
+                                    self.accounts.update(with: account)
+                                }
+                                
+                            }
+                            
+                            self.publicKeys.update(with: publicKey.stringValue)
                             
                         }
-                        
+
                     case .failure(let error):
                         print("ERROR: \(error.localizedDescription)")
+                    }
+                                                                        
+                    if chainProviderCount == chainProvidersProcessed {
+                        
+                        // fetch balances
+                        self.saveAll()
+                        completion()
+                        
                     }
                     
                 }
                 
             }
             
-            
         } catch {
-            
+            print("ERROR: \(error.localizedDescription)")
+            completion()
         }
 
     }

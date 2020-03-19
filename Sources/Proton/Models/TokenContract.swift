@@ -42,4 +42,12 @@ public struct TokenContract: Codable, Identifiable, Hashable {
         
     }
     
+    public static func == (lhs: TokenContract, rhs: TokenContract) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+    
 }

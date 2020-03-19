@@ -24,22 +24,27 @@ class FetchKeyAccountsOperation: AbstractOperation {
         
         WebServices.shared.getRequest(withPath: path) { (result: Result<[String: [String]], Error>) in
             
+            var accountNames = [String]()
+            
             switch result {
             case .success(let res):
                 
-                if let accountNames = res["account_names"] {
+                if let names = res["account_names"] {
                     
-                    for name in accountNames {
+                    for name in names {
                         if !name.contains(".") {
-                            self.finish(retval: name, error: nil)
-                            break
+                            accountNames.append(name)
                         }
                     }
                     
                 }
                 
-                self.finish(retval: nil, error: WebServiceError.error("No Accounts found"))
-                
+                if accountNames.count > 0 {
+                    self.finish(retval: accountNames, error: nil)
+                } else {
+                    self.finish(retval: nil, error: WebServiceError.error("No Accounts found"))
+                }
+
             case .failure(let error):
                 
                 self.finish(retval: nil, error: WebServiceError.error("Error fetching accounts: \(error.localizedDescription)"))

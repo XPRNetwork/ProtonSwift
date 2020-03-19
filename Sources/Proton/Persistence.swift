@@ -7,44 +7,30 @@
 //
 
 import Foundation
+import Valet
 
 class Persistence {
     
     private var defaults: UserDefaults
+    private var valet: Valet
+    
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
     
-    init() {
-        defaults = UserDefaults.standard
+    init(keyChainIdentifier: String) {
+        self.defaults = UserDefaults.standard
+        self.valet = Valet.valet(with: Identifier(nonEmpty: keyChainIdentifier)!, accessibility: .whenUnlocked)
     }
     
-    func data(forKey key: String) -> Data? {
-        return defaults.data(forKey: key)
-    }
-    
-    func object(forKey key: String) -> Any? {
-        return defaults.object(forKey: key)
-    }
-    
-    func string(forKey key: String) -> String? {
-        return defaults.string(forKey: key)
-    }
-    
-    func integer(forKey key: String) -> Int {
-        return defaults.integer(forKey: key)
-    }
-    
-    func bool(forKey key: String) -> Bool {
-        return defaults.bool(forKey: key)
-    }
+    // MARK: - User Defaults
     
     func get<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
         
-        guard let data = defaults.object(forKey: key) as? Data else {
+        guard let data = self.defaults.object(forKey: key) as? Data else {
             return nil
         }
         
-        guard let decodedObject = try? decoder.decode(object, from: data) else {
+        guard let decodedObject = try? self.decoder.decode(object, from: data) else {
             return nil
         }
         
@@ -53,17 +39,17 @@ class Persistence {
     
     func set<T: Codable>(_ object: T, forKey key: String) {
         
-        guard let encodedData = try? encoder.encode(object) else {
+        guard let encodedData = try? self.encoder.encode(object) else {
             return
         }
         
-        defaults.set(encodedData, forKey: key)
-        defaults.synchronize()
+        self.defaults.set(encodedData, forKey: key)
+        self.defaults.synchronize()
     }
     
     func removeObject(forKey key: String) {
-        defaults.removeObject(forKey: key)
-        defaults.synchronize()
+        self.defaults.removeObject(forKey: key)
+        self.defaults.synchronize()
     }
     
     func clear() {
@@ -72,10 +58,34 @@ class Persistence {
             return
         }
         
-        defaults.removePersistentDomain(forName: appDomain)
-        defaults.synchronize()
+        self.defaults.removePersistentDomain(forName: appDomain)
+        self.defaults.synchronize()
+        
+    }
+    
+    // MARK: - Keychain
+    
+    func getKeychain<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
+        
+        guard let data = self.valet.object(forKey: key) else {
+            return nil
+        }
+        
+        guard let decodedObject = try? self.decoder.decode(object, from: data) else {
+            return nil
+        }
+        
+        return decodedObject
+    }
+    
+    func setKeychain<T: Codable>(_ object: T, forKey key: String) {
+        
+        guard let encodedData = try? self.encoder.encode(object) else {
+            return
+        }
+        
+        self.valet.set(object: encodedData, forKey: key)
         
     }
     
 }
-

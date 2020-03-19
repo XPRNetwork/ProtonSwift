@@ -33,4 +33,12 @@ public struct ChainProvider: Codable, Identifiable, Hashable {
         
     }
     
+    public static func == (lhs: ChainProvider, rhs: ChainProvider) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+    
 }
