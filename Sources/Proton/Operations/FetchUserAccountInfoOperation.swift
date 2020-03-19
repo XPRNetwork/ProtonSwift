@@ -32,7 +32,7 @@ class FetchUserAccountInfoOperation: AbstractOperation {
         }
         
         let client = Client(address: url)
-        var req = API.V1.Chain.GetTableRows<UserInfo>(code: Name(stringValue: chainProvider.usersInfoTableCode), table: "usersinfo", scope: Name(stringValue: chainProvider.usersInfoTableCode))
+        var req = API.V1.Chain.GetTableRows<UserInfo>(code: Name(stringValue: chainProvider.usersInfoTableCode), table: Name(stringValue: "usersinfo"), scope: chainProvider.usersInfoTableCode)
         req.lowerBound = account.name
         req.upperBound = account.name
         
