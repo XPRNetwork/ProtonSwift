@@ -10,6 +10,8 @@ import Foundation
 
 public struct TokenContract: Codable, Identifiable, Hashable {
     
+    public var id: String { return chainId+contract+symbol }
+    
     public let chainId: String
     public let contract: String
     public let description: String
@@ -21,8 +23,6 @@ public struct TokenContract: Codable, Identifiable, Hashable {
     public let precision: Int
     public let resourceToken: Bool
     public let systemToken: Bool
-    
-    public var id: String { return chainId+contract+symbol }
     
     public init(chainId: String, contract: String, description: String, iconUrl: String,
                   issuer: String, maxSupply: String, symbol: String, url: String, precision: Int,

@@ -10,6 +10,8 @@ import Foundation
 
 public struct ChainProvider: Codable, Identifiable, Hashable {
 
+    public var id: String { return chainId }
+    
     public let chainId: String
     public let chainUrl: String
     public let stateHistoryUrl: String
@@ -17,8 +19,6 @@ public struct ChainProvider: Codable, Identifiable, Hashable {
     public let name: String
     public let usersInfoTableCode: String
     public let usersInfoTableScope: String
-    
-    public var id: String { return chainId }
     
     public init(chainId: String, chainUrl: String, stateHistoryUrl: String, iconUrl: String,
                 name: String, usersInfoTableCode: String, usersInfoTableScope: String) {
