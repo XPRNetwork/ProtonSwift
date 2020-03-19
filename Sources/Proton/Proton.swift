@@ -61,6 +61,8 @@ final public class Proton: ObservableObject {
         self.valet = Valet.valet(with: Identifier(nonEmpty: config.keyChainIdentifier)!,
                                                 accessibility: .whenUnlocked)
         
+        self.loadAll()
+        
     }
     
     public func loadAll() {
