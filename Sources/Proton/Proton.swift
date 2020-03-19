@@ -138,6 +138,25 @@ final public class Proton: ObservableObject {
         
     }
     
+    public func update(accounts: Set<Account>? = nil, completion: @escaping () -> ()) {
+        
+        let accounts = accounts ?? self.accounts
+        
+        if accounts.count > 0 {
+            
+            self.fetchBalances(forAccounts: accounts) { _ in
+                self.fetchUserInfo(forAccounts: accounts) {
+                    self.saveAll()
+                    completion()
+                }
+            }
+
+        } else {
+            completion()
+        }
+        
+    }
+    
     public func importAccount(with privateKey: String, completion: @escaping () -> ()) {
         
         do {
@@ -151,8 +170,7 @@ final public class Proton: ObservableObject {
                     // save private key
                     self.storage.setKeychain(privateKey, forKey: publicKey.stringValue)
                     
-                    self.fetchBalances(forAccounts: accounts) { tokenBalances in
-                        self.saveAll()
+                    self.update(accounts: accounts) {
                         completion()
                     }
                     
@@ -290,6 +308,60 @@ final public class Proton: ObservableObject {
             
         } else {
             completion(nil)
+        }
+    
+    }
+    
+    func fetchUserInfo(forAccounts accounts: Set<Account>, completion: @escaping () -> ()) {
+        
+        let accountCount = accounts.count
+        var accountsProcessed = 0
+        
+        if accountCount > 0 {
+            
+            for account in accounts {
+                
+                if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+                    
+                    WebServices.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
+                        
+                        accountsProcessed += 1
+                        
+                        switch result {
+                        case .success(let updatedAccount):
+                    
+                            if let updatedAccount = updatedAccount as? Account {
+                                
+                                self.accounts.update(with: updatedAccount)
+                                
+                            }
+                            
+                        case .failure(let error):
+                            print("ERROR: \(error.localizedDescription)")
+                        }
+                        
+                        if accountsProcessed == accountCount {
+                            self.saveAll()
+                            completion()
+                        }
+                        
+                    }
+                    
+                } else {
+                    
+                    accountsProcessed += 1
+                    
+                    if accountsProcessed == accountCount {
+                        self.saveAll()
+                        completion()
+                    }
+                    
+                }
+                
+            }
+            
+        } else {
+            completion()
         }
     
     }
