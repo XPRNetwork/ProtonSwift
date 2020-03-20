@@ -45,4 +45,5 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 
 ## Author
 
-Jacob Davis, jacob@lynxwallet.io
+Jacob Davis  
+jacob@lynxwallet.io
