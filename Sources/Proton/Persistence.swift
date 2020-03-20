@@ -8,11 +8,13 @@
 
 import Foundation
 import Valet
+import EasyStash
 
 class Persistence {
     
     private var defaults: UserDefaults
     private var valet: Valet
+    private var disk: Storage
     
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
@@ -20,39 +22,84 @@ class Persistence {
     init(keyChainIdentifier: String) {
         self.defaults = UserDefaults.standard
         self.valet = Valet.valet(with: Identifier(nonEmpty: keyChainIdentifier)!, accessibility: .whenUnlocked)
+        self.disk = try! Storage(options: Options())
+    }
+    
+    // MARK: - Disk
+    
+    func getDiskItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
+        
+        do {
+            return try self.disk.load(forKey: key, as: T.self)
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
+        }
+        
+        return nil
+        
+    }
+    
+    func setDiskItem<T: Codable>(_ object: T, forKey key: String) {
+        
+        do {
+            try self.disk.save(object: object, forKey: key)
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
+        }
+
+    }
+    
+    func deleteDiskItem(forKey key: String) {
+        
+        do {
+            try self.disk.remove(forKey: key)
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
+        }
+
+    }
+    
+    func clearDisk() {
+        
+        do {
+            try self.disk.removeAll()
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
+        }
+        
     }
     
     // MARK: - User Defaults
     
-    func get<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
-        
+    func getDefaultsItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
+
         guard let data = self.defaults.object(forKey: key) as? Data else {
             return nil
         }
-        
+
         guard let decodedObject = try? self.decoder.decode(object, from: data) else {
             return nil
         }
-        
+
         return decodedObject
     }
-    
-    func set<T: Codable>(_ object: T, forKey key: String) {
-        
+
+    func setDefaultsItem<T: Codable>(_ object: T, forKey key: String) {
+
         guard let encodedData = try? self.encoder.encode(object) else {
             return
         }
-        
+
         self.defaults.set(encodedData, forKey: key)
         self.defaults.synchronize()
     }
     
-    func removeObject(forKey key: String) {
+    func deleteDefaultsItem(forKey key: String) {
         self.defaults.removeObject(forKey: key)
         self.defaults.synchronize()
     }
     
-    func clear() {
+    func clearDefaults() {
         
         guard let appDomain = Bundle.main.bundleIdentifier else {
             return
@@ -65,7 +112,7 @@ class Persistence {
     
     // MARK: - Keychain
     
-    func getKeychain<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
+    func getKeychainItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
         
         guard let data = self.valet.object(forKey: key) else {
             return nil
@@ -78,7 +125,7 @@ class Persistence {
         return decodedObject
     }
     
-    func setKeychain<T: Codable>(_ object: T, forKey key: String) {
+    func setKeychainItem<T: Codable>(_ object: T, forKey key: String) {
         
         guard let encodedData = try? self.encoder.encode(object) else {
             return
@@ -86,6 +133,14 @@ class Persistence {
         
         self.valet.set(object: encodedData, forKey: key)
         
+    }
+    
+    func deleteKeychainItem(forKey key: String) {
+        _ = self.valet.removeObject(forKey: key)
+    }
+    
+    func clearKeychain() {
+        _ = self.valet.removeAllObjects()
     }
     
 }

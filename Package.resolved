@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "EasyStash",
+        "repositoryURL": "https://github.com/onmyway133/EasyStash",
+        "state": {
+          "branch": null,
+          "revision": "cf4f40c7429bb3cfd25203f90d1c172d12ee9c88",
+          "version": "1.1.6"
+        }
+      },
+      {
         "package": "secp256k1",
         "repositoryURL": "https://github.com/greymass/secp256k1.git",
         "state": {

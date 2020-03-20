@@ -98,11 +98,11 @@ final public class Proton: ObservableObject {
      */
     public func loadAll() {
         
-        self.publicKeys = self.storage.getKeychain(Set<String>.self, forKey: "publicKeys") ?? []
-        self.chainProviders = self.storage.get(Set<ChainProvider>.self, forKey: "chainProviders") ?? []
-        self.tokenContracts = self.storage.get(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
-        self.accounts = self.storage.get(Set<Account>.self, forKey: "accounts") ?? []
-        self.tokenBalances = self.storage.get(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
+        self.publicKeys = self.storage.getKeychainItem(Set<String>.self, forKey: "publicKeys") ?? []
+        self.chainProviders = self.storage.getDiskItem(Set<ChainProvider>.self, forKey: "chainProviders") ?? []
+        self.tokenContracts = self.storage.getDiskItem(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
+        self.accounts = self.storage.getDiskItem(Set<Account>.self, forKey: "accounts") ?? []
+        self.tokenBalances = self.storage.getDiskItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
         
     }
     
@@ -112,13 +112,13 @@ final public class Proton: ObservableObject {
     public func saveAll() {
         
         if self.publicKeys.count > 0 { // saftey
-            self.storage.setKeychain(self.publicKeys, forKey: "publicKeys")
+            self.storage.setKeychainItem(self.publicKeys, forKey: "publicKeys")
         }
         
-        self.storage.set(self.chainProviders, forKey: "chainProviders")
-        self.storage.set(self.tokenContracts, forKey: "tokenContracts")
-        self.storage.set(self.accounts, forKey: "accounts")
-        self.storage.set(self.tokenBalances, forKey: "tokenBalances")
+        self.storage.setDiskItem(self.chainProviders, forKey: "chainProviders")
+        self.storage.setDiskItem(self.tokenContracts, forKey: "tokenContracts")
+        self.storage.setDiskItem(self.accounts, forKey: "accounts")
+        self.storage.setDiskItem(self.tokenBalances, forKey: "tokenBalances")
     }
     
     /**
@@ -205,7 +205,7 @@ final public class Proton: ObservableObject {
                 if let accounts = accounts {
                     
                     // save private key
-                    self.storage.setKeychain(privateKey, forKey: publicKey.stringValue)
+                    self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue)
                     
                     self.update(accounts: accounts) {
                         completion()
