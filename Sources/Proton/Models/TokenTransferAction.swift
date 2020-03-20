@@ -53,7 +53,7 @@ public class TokenTransferAction: Codable, Identifiable, Hashable {
 
         guard let from = data["from"] as? String else { return nil }
         guard let to = data["to"] as? String else { return nil }
-        guard let ammount = data["ammount"] as? Double else { return nil }
+        guard let ammount = data["amount"] as? Double else { return nil }
         guard let quantity = data["quantity"] as? String else { return nil }
         
         self.init(chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
