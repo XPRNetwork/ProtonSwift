@@ -10,7 +10,7 @@ import Foundation
 
 public class TokenBalance: Codable, Identifiable, Hashable {
 
-    public var id: String { return chainId+contract+symbol+accountId }
+    public var id: String { return "\(accountId):\(contract):\(symbol)" }
     
     public let accountId: String
     public let chainId: String
@@ -20,11 +20,11 @@ public class TokenBalance: Codable, Identifiable, Hashable {
     
     public var amount: Double
     
-    public init(accountId: String, chainId: String, contract: String, symbol: String,
+    public init(accountId: String, contract: String, symbol: String,
                 precision: Int, amount: Double) {
         
         self.accountId = accountId
-        self.chainId = chainId
+        self.chainId = accountId.components(separatedBy: ":").first ?? ""
         self.contract = contract
         self.symbol = symbol
         self.precision = precision

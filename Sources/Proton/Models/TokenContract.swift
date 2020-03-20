@@ -10,7 +10,7 @@ import Foundation
 
 public struct TokenContract: Codable, Identifiable, Hashable {
     
-    public var id: String { return chainId+contract+symbol }
+    public var id: String { return "\(chainId):\(contract):\(symbol)" }
     
     public let chainId: String
     public let contract: String

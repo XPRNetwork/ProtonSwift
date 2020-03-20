@@ -16,7 +16,7 @@ import UIKit
 
 public struct Account: Codable, Identifiable, Hashable {
 
-    public var id: String { return chainId+name }
+    public var id: String { return "\(chainId):\(name)" }
     public var chainId: String
     public var name: String
     public var verified: Bool

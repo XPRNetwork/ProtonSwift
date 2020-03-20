@@ -1,5 +1,5 @@
 //
-//  FetchTokenBalancesOperation.swift
+//  FetchTokenTransferActionsOperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 3/18/20.
@@ -8,19 +8,22 @@
 
 import Foundation
 
-class FetchTokenBalancesOperation: AbstractOperation {
+class FetchTokenTransferActionsOperation: AbstractOperation {
     
     var account: Account
     var chainProvider: ChainProvider
+    var tokenContract: TokenContract
+    let limt = 100
     
-    init(account: Account, chainProvider: ChainProvider) {
+    init(account: Account, tokenContract: TokenContract, chainProvider: ChainProvider) {
         self.account = account
+        self.tokenContract = tokenContract
         self.chainProvider = chainProvider
     }
     
     override func main() {
 
-        let path = "\(chainProvider.stateHistoryUrl)/v2/state/get_tokens?account=\(self.account.name)"
+        let path = "\(self.chainProvider.stateHistoryUrl)/v2/history/get_actions?transfer.symbol=\(tokenContract.symbol)&account=\(self.account.name)&filter=\(self.tokenContract.contract)%3Atransfer&limit=\(self.limt)"
         
         WebServices.shared.getRequestJSON(withPath: path) { result in
             
@@ -46,8 +49,8 @@ class FetchTokenBalancesOperation: AbstractOperation {
                             return
                         }
                         
-                        let tokenBalance = TokenBalance(accountId: self.account.id, contract: contract,
-                                                        symbol: symbol, precision: precision, amount: amount)
+                        let tokenBalance = TokenBalance(accountId: self.account.id,
+                                                        contract: contract, symbol: symbol, precision: precision, amount: amount)
                         
                         tokenBalances.update(with: tokenBalance)
                         
