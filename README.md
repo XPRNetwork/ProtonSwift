@@ -11,7 +11,7 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 
 ## Usage
 
-The main and only class that you will need to interface with is `Storage` which encapsulates all of the needed functions.
+The main and only class that you will need to interface with is `Proton` which encapsulates all of the needed functions.
 
 With `Config` we can customize url to provider chainProvider objects as well as set the keychain indetifier string.
 
