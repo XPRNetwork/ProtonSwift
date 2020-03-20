@@ -1,4 +1,4 @@
-![Swift](https://github.com/needly/proton-swift/workflows/Swift/badge.svg)
+![Swift](https://github.com/needly/proton-swift/workflows/Swift/badge.svg?event=push)
 
 ## Description
 
