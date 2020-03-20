@@ -30,7 +30,7 @@ class FetchUserAccountInfoOperation: AbstractOperation {
             "code": self.chainProvider.usersInfoTableCode
             ] as [String : Any]
         
-        WebServices.shared.postRequestJSON(withPath: chainProvider.chainUrl, parameters: parameters) { result in
+        WebServices.shared.postRequestJSON(withPath: "\(chainProvider.chainUrl)/v1/chain/get_table_rows", parameters: parameters) { result in
             
             switch result {
                 
