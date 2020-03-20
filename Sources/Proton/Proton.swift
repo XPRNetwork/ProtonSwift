@@ -82,6 +82,15 @@ final public class Proton: ObservableObject {
         }
     }
     
+    /**
+     Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+     */
+    @Published public var tokenTransferActions: Set<TokenTransferAction> = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
+    
     private init() {
         
         guard let config = Proton.config else {
@@ -103,6 +112,7 @@ final public class Proton: ObservableObject {
         self.tokenContracts = self.storage.getDiskItem(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
         self.accounts = self.storage.getDiskItem(Set<Account>.self, forKey: "accounts") ?? []
         self.tokenBalances = self.storage.getDiskItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
+        self.tokenTransferActions = self.storage.getDiskItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? []
         
     }
     
@@ -119,6 +129,8 @@ final public class Proton: ObservableObject {
         self.storage.setDiskItem(self.tokenContracts, forKey: "tokenContracts")
         self.storage.setDiskItem(self.accounts, forKey: "accounts")
         self.storage.setDiskItem(self.tokenBalances, forKey: "tokenBalances")
+        self.storage.setDiskItem(self.tokenTransferActions, forKey: "tokenTransferActions")
+        
     }
     
     /**
@@ -178,8 +190,17 @@ final public class Proton: ObservableObject {
             
             self.fetchBalances(forAccounts: accounts) { _ in
                 self.fetchUserInfo(forAccounts: accounts) {
-                    self.saveAll()
-                    completion()
+                    self.fetchTransferActions(forAccounts: accounts) {
+                        self.saveAll()
+                        
+                        print("🧑‍💻 UPDATE COMPLETED")
+                        print("ACCOUNTS => \(self.accounts.count)")
+                        print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
+                        print("TOKEN BALANCES => \(self.tokenBalances.count)")
+                        print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
+                        
+                        completion()
+                    }
                 }
             }
 
@@ -229,7 +250,7 @@ final public class Proton: ObservableObject {
         let publicKeyCount = publicKeys.count
         var publicKeysProcessed = 0
         
-        var accounts = Set<Account>()
+        var retval = Set<Account>()
         
         if publicKeyCount > 0 && self.chainProviders.count > 0 {
             
@@ -256,7 +277,7 @@ final public class Proton: ObservableObject {
                                     if !self.accounts.contains(account) {
                                         self.accounts.update(with: account)
                                     }
-                                    accounts.update(with: account)
+                                    retval.update(with: account)
                                     
                                 }
                                 
@@ -273,7 +294,7 @@ final public class Proton: ObservableObject {
                             publicKeysProcessed += 1
                             
                             if publicKeysProcessed == publicKeyCount {
-                                completion(accounts)
+                                completion(retval)
                             }
                             
                         }
@@ -297,7 +318,7 @@ final public class Proton: ObservableObject {
         
         if accountCount > 0 {
             
-            var returnTokenBalances = Set<TokenBalance>()
+            var retval = Set<TokenBalance>()
             
             for account in accounts {
                 
@@ -315,7 +336,7 @@ final public class Proton: ObservableObject {
                                 for tokenBalance in tokenBalances {
                                     
                                     self.tokenBalances.update(with: tokenBalance)
-                                    returnTokenBalances.update(with: tokenBalance)
+                                    retval.update(with: tokenBalance)
                                     
                                 }
                                 
@@ -326,7 +347,7 @@ final public class Proton: ObservableObject {
                         }
                         
                         if accountsProcessed == accountCount {
-                            completion(returnTokenBalances)
+                            completion(retval)
                         }
                         
                     }
@@ -336,7 +357,7 @@ final public class Proton: ObservableObject {
                     accountsProcessed += 1
                     
                     if accountsProcessed == accountCount {
-                        completion(returnTokenBalances)
+                        completion(retval)
                     }
                     
                 }
@@ -345,6 +366,108 @@ final public class Proton: ObservableObject {
             
         } else {
             completion(nil)
+        }
+    
+    }
+    
+    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping (Set<TokenTransferAction>?) -> ()) {
+        
+        guard let account = self.accounts.first(where: { $0.id == tokenBalance.accountId }) else {
+            completion(nil)
+            return
+        }
+        
+        guard let chainProvider = self.chainProviders.first(where: { $0.chainId == tokenBalance.chainId }) else {
+            completion(nil)
+            return
+        }
+        
+        guard let tokenContract = self.tokenContracts.first(where: { $0.id == tokenBalance.tokenContractId }) else {
+            completion(nil)
+            return
+        }
+        
+        var retval = Set<TokenTransferAction>()
+        
+        WebServices.shared.addMulti(FetchTokenTransferActionsOperation(account: account, tokenContract: tokenContract,
+                                                                       chainProvider: chainProvider, tokenBalance: tokenBalance)) { result in
+            
+            switch result {
+            case .success(let transferActions):
+        
+                if let transferActions = transferActions as? Set<TokenTransferAction> {
+                    
+                    for transferAction in transferActions {
+                        
+                        self.tokenTransferActions.update(with: transferAction)
+                        retval.update(with: transferAction)
+                        
+                    }
+                    
+                }
+                
+                completion(retval)
+                
+            case .failure(let error):
+                print("ERROR: \(error.localizedDescription)")
+                completion(nil)
+            }
+            
+        }
+        
+    }
+    
+    private func fetchTransferActions(forAccounts accounts: Set<Account>, completion: @escaping () -> ()) {
+        
+        let accountCount = accounts.count
+        var accountsProcessed = 0
+        
+        if accountCount > 0 {
+            
+            for account in accounts {
+                
+                let tokenBalances = self.tokenBalances.filter({ $0.accountId == account.id })
+                let tokenBalancesCount = tokenBalances.count
+                var tokenBalancesProcessed = 0
+                
+                if tokenBalancesCount > 0 {
+                    
+                    for tokenBalance in tokenBalances {
+                        
+                        self.fetchTransferActions(forTokenBalance: tokenBalance) { _ in
+                            
+                            tokenBalancesProcessed += 1
+                            
+                            if tokenBalancesProcessed == tokenBalancesCount {
+                                
+                                accountsProcessed += 1
+                                
+                                if accountsProcessed == accountCount {
+                                    
+                                    completion()
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                } else {
+                    
+                    accountsProcessed += 1
+                    
+                    if accountsProcessed == accountCount {
+                        completion()
+                    }
+                    
+                }
+
+            }
+            
+        } else {
+            completion()
         }
     
     }
@@ -378,7 +501,6 @@ final public class Proton: ObservableObject {
                         }
                         
                         if accountsProcessed == accountCount {
-                            self.saveAll()
                             completion()
                         }
                         
@@ -389,7 +511,6 @@ final public class Proton: ObservableObject {
                     accountsProcessed += 1
                     
                     if accountsProcessed == accountCount {
-                        self.saveAll()
                         completion()
                     }
                     

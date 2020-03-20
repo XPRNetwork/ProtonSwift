@@ -13,12 +13,16 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     var account: Account
     var chainProvider: ChainProvider
     var tokenContract: TokenContract
+    var tokenBalance: TokenBalance
     let limt = 100
     
-    init(account: Account, tokenContract: TokenContract, chainProvider: ChainProvider) {
+    init(account: Account, tokenContract: TokenContract, chainProvider: ChainProvider,
+         tokenBalance: TokenBalance) {
+        
         self.account = account
         self.tokenContract = tokenContract
         self.chainProvider = chainProvider
+        self.tokenBalance = tokenBalance
     }
     
     override func main() {
@@ -30,35 +34,24 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
             switch result {
             case .success(let res):
                 
-                var tokenBalances = Set<TokenBalance>()
+                var tokenTranfsers = Set<TokenTransferAction>()
                 
-                if let res = res as? [String: Any], let tokens = res["tokens"] as? [[String: Any]] {
+                if let res = res as? [String: Any], let actions = res["actions"] as? [[String: Any]], actions.count > 0 {
                 
-                    for token in tokens {
+                    for action in actions {
                         
-                        guard let symbol = token["symbol"] as? String else {
-                            return
+                        if let action = TokenTransferAction(account: self.account, tokenBalance: self.tokenBalance,
+                                                            tokenContract: self.tokenContract, dictionary: action) {
+                            
+                            tokenTranfsers.update(with: action)
+                            
                         }
-                        guard let precision = token["precision"] as? Int else {
-                            return
-                        }
-                        guard let amount = token["amount"] as? Double else {
-                            return
-                        }
-                        guard let contract = token["contract"] as? String else {
-                            return
-                        }
-                        
-                        let tokenBalance = TokenBalance(accountId: self.account.id,
-                                                        contract: contract, symbol: symbol, precision: precision, amount: amount)
-                        
-                        tokenBalances.update(with: tokenBalance)
                         
                     }
 
                 }
                 
-                self.finish(retval: tokenBalances, error: nil)
+                self.finish(retval: tokenTranfsers, error: nil)
                 
             case .failure(let error):
                 self.finish(retval: nil, error: WebServiceError.error("Error fetching token balances: \(error.localizedDescription)"))

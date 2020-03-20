@@ -13,6 +13,7 @@ public class TokenBalance: Codable, Identifiable, Hashable {
     public var id: String { return "\(accountId):\(contract):\(symbol)" }
     
     public let accountId: String
+    public let tokenContractId: String
     public let chainId: String
     public let contract: String
     public let symbol: String
@@ -29,6 +30,7 @@ public class TokenBalance: Codable, Identifiable, Hashable {
         self.symbol = symbol
         self.precision = precision
         self.amount = amount
+        self.tokenContractId = "\(self.chainId):\(contract):\(symbol)"
         
     }
     
