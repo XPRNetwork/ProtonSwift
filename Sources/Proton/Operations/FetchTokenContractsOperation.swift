@@ -20,7 +20,17 @@ class FetchTokenContractsOperation: AbstractOperation {
             
             switch result {
             case .success(let tokenContracts):
-                self.finish(retval: tokenContracts, error: nil)
+                
+                var retval = Set<TokenContract>()
+                
+                if tokenContracts.count > 0 {
+                    for tokenContract in tokenContracts {
+                        retval.update(with: tokenContract.value)
+                    }
+                }
+                
+                self.finish(retval: retval, error: nil)
+                
             case .failure(let error):
                 self.finish(retval: nil, error: WebServiceError.error("Error fetching token contracts: \(error.localizedDescription)"))
             }

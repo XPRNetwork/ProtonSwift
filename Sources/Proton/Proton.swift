@@ -338,6 +338,16 @@ final public class Proton: ObservableObject {
                                     self.tokenBalances.update(with: tokenBalance)
                                     retval.update(with: tokenBalance)
                                     
+                                    if self.tokenContracts.first(where: { $0.id == tokenBalance.tokenContractId }) == nil {
+                                        
+                                        let unknownTokenContract = TokenContract(chainId: tokenBalance.chainId, contract: tokenBalance.contract,
+                                                                                 description: "", iconUrl: "", issuer: "", maxSupply: "", symbol: tokenBalance.symbol,
+                                                                                 url: "", precision: tokenBalance.precision, resourceToken: false, systemToken: false)
+                                        
+                                        self.tokenContracts.update(with: unknownTokenContract)
+                                        
+                                    }
+                                    
                                 }
                                 
                             }
