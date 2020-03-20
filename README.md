@@ -5,7 +5,8 @@
 Proton is a drop in library to handle all things ProtonChain. This includes but is not limited to account creation and management. Signing and pushing transctions, etc.
 
 - [x] Swift 5
-- [x] Support iOS, macOS
+- [x] iOS v13+
+- [x] macOS v10_15+
 - [x] Persist and manage Proton Accounts
 - [x] Persist and manage private keys via keychain
 - [x] Signing transactions
