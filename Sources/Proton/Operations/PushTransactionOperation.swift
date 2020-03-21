@@ -13,14 +13,12 @@ class PushTransactionOperation: AbstractOperation {
     
     var account: Account
     var chainProvider: ChainProvider
-    var actions: [Action]
-    var privateKey: PrivateKey
+    var signedTransaction: SignedTransaction
     
-    init(account: Account, chainProvider: ChainProvider, actions: [Action], privateKey: PrivateKey) {
+    init(account: Account, chainProvider: ChainProvider, signedTransaction: SignedTransaction) {
         self.account = account
         self.chainProvider = chainProvider
-        self.actions = actions
-        self.privateKey = privateKey
+        self.signedTransaction = signedTransaction
     }
     
     override func main() {
@@ -30,27 +28,12 @@ class PushTransactionOperation: AbstractOperation {
             return
         }
         
-        if actions.count == 0 {
-            self.finish(retval: nil, error: WebServiceError.error("ERROR: Need 1 or more actions"))
-            return
-        }
-        
         do {
             
             let client = Client(address: url)
-            let info = try! client.sendSync(API.V1.Chain.GetInfo()).get()
 
-            let expiration = info.headBlockTime.addingTimeInterval(60)
-            let header = TransactionHeader(expiration: TimePointSec(expiration),
-                                           refBlockId: info.lastIrreversibleBlockId)
-            
-            let transaction = Transaction(header, actions: self.actions)
-            let signature = try self.privateKey.sign(transaction, using: info.chainId)
-            
-            let signedTransaction = SignedTransaction(transaction, signatures: [signature])
-    
-            let req = API.V1.Chain.PushTransaction(signedTransaction)
-            let res = try! client.sendSync(req).get()
+            let req = API.V1.Chain.PushTransaction(self.signedTransaction)
+            let res = try client.sendSync(req).get()
             
             self.finish(retval: res, error: nil)
             
