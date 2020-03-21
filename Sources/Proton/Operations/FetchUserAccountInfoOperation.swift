@@ -25,19 +25,9 @@ class FetchUserAccountInfoOperation: AbstractOperation {
             self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url for get table rows"))
             return
         }
-        
-        struct UserInfo: ABICodable {
-            let acc: Name
-            let name: String
-            let avatar: String
-            let verified: Bool
-            let date: UInt64
-            let data: String
-            let primary: Bool
-        }
 
         let client = Client(address: url)
-        var req = API.V1.Chain.GetTableRows<UserInfo>(code: Name(stringValue: chainProvider.usersInfoTableCode),
+        var req = API.V1.Chain.GetTableRows<UserInfoABI>(code: Name(stringValue: chainProvider.usersInfoTableCode),
                                                       table: Name(stringValue: "usersinfo"),
                                                       scope: chainProvider.usersInfoTableScope)
         req.lowerBound = account.name
@@ -48,9 +38,9 @@ class FetchUserAccountInfoOperation: AbstractOperation {
             let res = try client.sendSync(req).get()
 
             if let userInfo = res.rows.first {
-                account.base64Avatar = userInfo.avatar ?? ""
-                account.fullName = userInfo.name ?? ""
-                account.verified = userInfo.verified ?? false
+                account.base64Avatar = userInfo.avatar
+                account.fullName = userInfo.name
+                account.verified = userInfo.verified
             }
 
             self.finish(retval: account, error: nil)
