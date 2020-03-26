@@ -7,38 +7,44 @@
 //
 
 import Foundation
+import EOSIO
 
 public struct TokenContract: Codable, Identifiable, Hashable {
-    
-    public var id: String { return "\(chainId):\(contract):\(symbol)" }
+
+    public var id: String { return "\(chainId):\(contract.stringValue):\(symbol.name)" }
     
     public let chainId: String
-    public let contract: String
-    public let description: String
-    public let iconUrl: String
-    public let issuer: String
-    public let maxSupply: String
-    public let symbol: String
-    public let url: String
-    public let precision: Int
-    public let resourceToken: Bool
-    public let systemToken: Bool
     
-    public init(chainId: String, contract: String, description: String, iconUrl: String,
-                  issuer: String, maxSupply: String, symbol: String, url: String, precision: Int,
-                  resourceToken: Bool, systemToken: Bool) {
+    public var contract: Name
+    public var issuer: Name
+    public var resourceToken: Bool
+    public var systemToken: Bool
+    public var name: String
+    public var description: String
+    public var iconUrl: String
+    public var supply: Asset
+    public var maxSupply: Asset
+    public var symbol: Asset.Symbol
+    public var url: String
+    public var blacklisted: Bool
+    
+    internal init(chainId: String, contract: Name, issuer: Name, resourceToken: Bool,
+                  systemToken: Bool, name: String, description: String, iconUrl: String,
+                  supply: Asset, maxSupply: Asset, symbol: Asset.Symbol, url: String, blacklisted: Bool) {
         
         self.chainId = chainId
         self.contract = contract
+        self.issuer = issuer
+        self.resourceToken = resourceToken
+        self.systemToken = systemToken
+        self.name = name
         self.description = description
         self.iconUrl = iconUrl
-        self.issuer = issuer
+        self.supply = supply
         self.maxSupply = maxSupply
         self.symbol = symbol
         self.url = url
-        self.precision = precision
-        self.resourceToken = resourceToken
-        self.systemToken = systemToken
+        self.blacklisted = blacklisted
         
     }
     

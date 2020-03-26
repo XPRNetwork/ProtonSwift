@@ -23,4 +23,16 @@ public struct TransferActionABI: ABICodable {
         self.memo = memo
     }
     
+    static let abi = ABI(
+        structs: [
+            ["transfer": [
+                ["from", "name"],
+                ["to", "name"],
+                ["quantity", "asset"],
+                ["memo", "string"],
+            ]],
+        ],
+        actions: ["transfer"]
+    )
+    
 }

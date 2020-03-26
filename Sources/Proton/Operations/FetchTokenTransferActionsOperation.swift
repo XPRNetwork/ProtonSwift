@@ -27,7 +27,7 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     
     override func main() {
 
-        let path = "\(self.chainProvider.stateHistoryUrl)/v2/history/get_actions?transfer.symbol=\(tokenContract.symbol)&account=\(self.account.name)&filter=\(self.tokenContract.contract)%3Atransfer&limit=\(self.limt)"
+        let path = "\(self.chainProvider.stateHistoryUrl)/v2/history/get_actions?transfer.symbol=\(tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
         
         WebServices.shared.getRequestJSON(withPath: path) { result in
             
@@ -37,16 +37,37 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
                 var tokenTranfsers = Set<TokenTransferAction>()
                 
                 if let res = res as? [String: Any], let actions = res["actions"] as? [[String: Any]], actions.count > 0 {
+                    
+                    let jsonDecoder = JSONDecoder()
+                    let jsonEncoder = JSONEncoder()
                 
                     for action in actions {
                         
-                        if let action = TokenTransferAction(account: self.account, tokenBalance: self.tokenBalance,
-                                                            tokenContract: self.tokenContract, dictionary: action) {
+                        if let act = action["act"] as? [String: Any], var data = act["data"] as? [String: Any] {
                             
-                            tokenTranfsers.update(with: action)
+                            data["amount"] = nil
+                            data["symbol"] = nil
+                            
+                            do {
+                                
+                                let jsonData = try jsonEncoder.encode(data, asType: "transfer", using: TransferActionABI.abi)
+                                let transferActionData = try jsonDecoder.decode(TransferActionABI.self, from: jsonData)
+                                
+                                if let transferAction = TokenTransferAction(account: self.account, tokenBalance: self.tokenBalance,
+                                                                            tokenContract: self.tokenContract, transferActionABI: transferActionData,
+                                                                            dictionary: action) {
+                                    
+                                    tokenTranfsers.update(with: transferAction)
+                                    
+                                }
+                                
+                            } catch {
+                                print("ERROR: Unable to decode action")
+                                continue
+                            }
                             
                         }
-                        
+
                     }
 
                 }

@@ -7,31 +7,35 @@
 //
 
 import Foundation
+import EOSIO
 
-public class TokenBalance: Codable, Identifiable, Hashable {
+public struct TokenBalance: Codable, Identifiable, Hashable {
 
-    public var id: String { return "\(accountId):\(contract):\(symbol)" }
+    public var id: String { return "\(accountId):\(contract):\(amount.symbol.name)" }
     
     public let accountId: String
     public let tokenContractId: String
     public let chainId: String
-    public let contract: String
-    public let symbol: String
-    public let precision: Int
+    public let contract: Name
     
-    public var amount: Double
+    public var amount: Asset
     
-    public init(accountId: String, contract: String, symbol: String,
-                precision: Int, amount: Double) {
+    public init?(accountId: String, contract: Name, amount: Double, precision: UInt8, symbol: String) {
         
-        self.accountId = accountId
-        self.chainId = accountId.components(separatedBy: ":").first ?? ""
-        self.contract = contract
-        self.symbol = symbol
-        self.precision = precision
-        self.amount = amount
-        self.tokenContractId = "\(self.chainId):\(contract):\(symbol)"
-        
+        do {
+            
+            let assetSymbol = try Asset.Symbol(precision, symbol)
+            self.accountId = accountId
+            self.chainId = accountId.components(separatedBy: ":").first ?? ""
+            self.contract = contract
+            self.amount = Asset(amount, assetSymbol)
+            self.tokenContractId = "\(self.chainId):\(contract):\(self.amount.symbol.name)"
+            
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
+            return nil
+        }
+    
     }
     
     public static func == (lhs: TokenBalance, rhs: TokenBalance) -> Bool {

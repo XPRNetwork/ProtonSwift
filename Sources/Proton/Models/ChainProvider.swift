@@ -19,9 +19,15 @@ public struct ChainProvider: Codable, Identifiable, Hashable {
     public let name: String
     public let usersInfoTableCode: String
     public let usersInfoTableScope: String
+    public let tokensTableCode: String
+    public let tokensTableScope: String
+    public let systemTokenSymbol: String
+    public let systemTokenContract: String
     
-    public init(chainId: String, chainUrl: String, stateHistoryUrl: String, iconUrl: String,
-                name: String, usersInfoTableCode: String, usersInfoTableScope: String) {
+    public init(chainId: String, chainUrl: String, stateHistoryUrl: String,
+                iconUrl: String, name: String, usersInfoTableCode: String,
+                usersInfoTableScope: String, tokensTableCode: String, tokensTableScope: String,
+                systemTokenSymbol: String, systemTokenContract: String) {
         
         self.chainId = chainId
         self.chainUrl = chainUrl
@@ -30,6 +36,10 @@ public struct ChainProvider: Codable, Identifiable, Hashable {
         self.name = name
         self.usersInfoTableCode = usersInfoTableCode
         self.usersInfoTableScope = usersInfoTableScope
+        self.tokensTableCode = tokensTableCode
+        self.tokensTableScope = tokensTableScope
+        self.systemTokenSymbol = systemTokenSymbol
+        self.systemTokenContract = systemTokenContract
         
     }
     

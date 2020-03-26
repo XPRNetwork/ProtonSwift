@@ -7,29 +7,27 @@
 //
 
 import Foundation
+import EOSIO
 
-public class TokenTransferAction: Codable, Identifiable, Hashable {
+public struct TokenTransferAction: Codable, Identifiable, Hashable {
 
-    public var id: String { return "\(accountId):\(name):\(contract):\(trxId)" }
+    public var id: String { return "\(accountId):\(name):\(contract.stringValue):\(trxId)" }
     
     public let chainId: String
     public let accountId: String
     public let tokenBalanceId: String
     public let tokenContractId: String
 
-    public let precision: Int
     public let name: String
-    public let contract: String
+    public let contract: Name
     public let trxId: String
     public let date: Date
     public let sent: Bool
     
-    public let from: String
-    public let to: String
-    public let ammount: Double
-    public let symbol: String
-    public let quantity: String
-    public let memo: String?
+    public let from: Name
+    public let to: Name
+    public let quantity: Asset
+    public let memo: String
 
     public static func == (lhs: TokenTransferAction, rhs: TokenTransferAction) -> Bool {
         lhs.id == rhs.id
@@ -39,40 +37,32 @@ public class TokenTransferAction: Codable, Identifiable, Hashable {
         hasher.combine(self.id)
     }
     
-    public convenience init?(account: Account, tokenBalance: TokenBalance,
-                             tokenContract: TokenContract, dictionary: [String: Any]) {
+    public init?(account: Account, tokenBalance: TokenBalance,
+                             tokenContract: TokenContract, transferActionABI: TransferActionABI,
+                             dictionary: [String: Any]) {
 
         guard let act = dictionary["act"] as? [String: Any] else { return nil }
-        guard let data = act["data"] as? [String: Any] else { return nil }
-
         guard let name = act["name"] as? String else { return nil }
         guard let contract = act["account"] as? String else { return nil }
         guard let trxId = dictionary["trx_id"] as? String else { return nil }
         guard let timestamp = dictionary["@timestamp"] as? String,
             let date = Date.dateFromAction(timeStamp: timestamp) else { return nil }
-
-        guard let from = data["from"] as? String else { return nil }
-        guard let to = data["to"] as? String else { return nil }
-        guard let ammount = data["amount"] as? Double else { return nil }
-        guard let quantity = data["quantity"] as? String else { return nil }
         
         self.init(chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
-                  tokenContractId: tokenContract.id, precision: tokenContract.precision, name: name,
-                  contract: contract, trxId: trxId, date: date, sent: account.name == from ? true : false,
-                  from: from, to: to, ammount: ammount, symbol: tokenContract.symbol, quantity: quantity,
-                  memo: act["memo"] as? String)
+                  tokenContractId: tokenContract.id, name: name, contract: Name(contract), trxId: trxId,
+                  date: date, sent: account.name.stringValue == transferActionABI.from.stringValue ? true : false,
+                  from: transferActionABI.from, to: transferActionABI.to, quantity: transferActionABI.quantity, memo: transferActionABI.memo)
 
     }
     
-    private init(chainId: String, accountId: String, tokenBalanceId: String, tokenContractId: String,
-                 precision: Int, name: String, contract: String, trxId: String, date: Date, sent: Bool,
-                 from: String, to: String, ammount: Double, symbol: String, quantity: String, memo: String?) {
+    init(chainId: String, accountId: String, tokenBalanceId: String, tokenContractId: String,
+                  name: String, contract: Name, trxId: String, date: Date, sent: Bool,
+                  from: Name, to: Name, quantity: Asset, memo: String) {
         
         self.chainId = chainId
         self.accountId = accountId
         self.tokenBalanceId = tokenBalanceId
         self.tokenContractId = tokenContractId
-        self.precision = precision
         self.name = name
         self.contract = contract
         self.trxId = trxId
@@ -80,11 +70,9 @@ public class TokenTransferAction: Codable, Identifiable, Hashable {
         self.sent = sent
         self.from = from
         self.to = to
-        self.ammount = ammount
-        self.symbol = symbol
         self.quantity = quantity
         self.memo = memo
         
     }
-    
+
 }

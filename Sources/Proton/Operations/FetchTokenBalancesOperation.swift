@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EOSIO
 
 class FetchTokenBalancesOperation: AbstractOperation {
     
@@ -33,23 +34,15 @@ class FetchTokenBalancesOperation: AbstractOperation {
                 
                     for token in tokens {
                         
-                        guard let symbol = token["symbol"] as? String else {
-                            return
-                        }
-                        guard let precision = token["precision"] as? Int else {
-                            return
-                        }
-                        guard let amount = token["amount"] as? Double else {
-                            return
-                        }
-                        guard let contract = token["contract"] as? String else {
-                            return
-                        }
+                        guard let symbol = token["symbol"] as? String else { return }
+                        guard let precision = token["precision"] as? UInt8 else { return }
+                        guard let amount = token["amount"] as? Double else { return }
+                        guard let contract = token["contract"] as? String else { return }
                         
-                        let tokenBalance = TokenBalance(accountId: self.account.id, contract: contract,
-                                                        symbol: symbol, precision: precision, amount: amount)
-                        
-                        tokenBalances.update(with: tokenBalance)
+                        if let tokenBalance = TokenBalance(accountId: self.account.id, contract: Name(contract),
+                                                           amount: amount, precision: precision, symbol: symbol) {
+                            tokenBalances.update(with: tokenBalance)
+                        }
                         
                     }
 

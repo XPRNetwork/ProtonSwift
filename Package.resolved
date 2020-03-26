@@ -15,7 +15,7 @@
         "repositoryURL": "https://github.com/greymass/secp256k1.git",
         "state": {
           "branch": "master",
-          "revision": "143b3cd70de50ae7d9eb039f80ebda4ce06b4571",
+          "revision": "b057a66055f6c9b616f7fab0b7694c81e23da902",
           "version": null
         }
       },
@@ -24,7 +24,7 @@
         "repositoryURL": "https://github.com/greymass/swift-eosio.git",
         "state": {
           "branch": "master",
-          "revision": "a2135dd4f5a93f7499f8d85397f1eb6199b51384",
+          "revision": "f3561ea85d1a5933a80c064cb7d889afd9fb37fa",
           "version": null
         }
       },

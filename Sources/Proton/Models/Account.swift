@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftUI
+import EOSIO
 #if os(macOS)
 import AppKit
 #elseif os(iOS)
@@ -16,9 +17,9 @@ import UIKit
 
 public struct Account: Codable, Identifiable, Hashable {
 
-    public var id: String { return "\(chainId):\(name)" }
+    public var id: String { return "\(chainId):\(name.stringValue)" }
     public var chainId: String
-    public var name: String
+    public var name: Name
     public var verified: Bool
     public var fullName: String
     
@@ -29,7 +30,7 @@ public struct Account: Codable, Identifiable, Hashable {
                 fullName: String = "", base64Avatar: String = "") {
         
         self.chainId = chainId
-        self.name = name
+        self.name = Name(name)
         self.verified = verified
         self.fullName = fullName
         self.base64Avatar = base64Avatar
