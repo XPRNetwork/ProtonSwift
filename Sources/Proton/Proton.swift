@@ -121,39 +121,15 @@ final public class Proton: ObservableObject {
      */
     public func saveAll() {
         
-        if self.publicKeys.count > 0 {
+        if self.publicKeys.count > 0 { // saftey
             self.storage.setKeychainItem(self.publicKeys, forKey: "publicKeys")
         }
         
-        if self.chainProviders.count > 0 {
-            self.storage.setDiskItem(self.chainProviders, forKey: "chainProviders")
-        } else {
-            self.storage.deleteDiskItem(forKey: "chainProviders")
-        }
-        
-        if self.tokenContracts.count > 0 {
-            self.storage.setDiskItem(self.tokenContracts, forKey: "tokenContracts")
-        } else {
-            self.storage.deleteDiskItem(forKey: "tokenContracts")
-        }
-        
-        if self.accounts.count > 0 {
-            self.storage.setDiskItem(self.accounts, forKey: "accounts")
-        } else {
-            self.storage.deleteDiskItem(forKey: "accounts")
-        }
-        
-        if self.tokenBalances.count > 0 {
-            self.storage.setDiskItem(self.tokenBalances, forKey: "tokenBalances")
-        } else {
-            self.storage.deleteDiskItem(forKey: "tokenBalances")
-        }
-        
-        if self.tokenTransferActions.count > 0 {
-            self.storage.setDiskItem(self.tokenTransferActions, forKey: "tokenTransferActions")
-        } else {
-            self.storage.deleteDiskItem(forKey: "tokenTransferActions")
-        }
+        self.storage.setDiskItem(self.chainProviders, forKey: "chainProviders")
+        self.storage.setDiskItem(self.tokenContracts, forKey: "tokenContracts")
+        self.storage.setDiskItem(self.accounts, forKey: "accounts")
+        self.storage.setDiskItem(self.tokenBalances, forKey: "tokenBalances")
+        self.storage.setDiskItem(self.tokenTransferActions, forKey: "tokenTransferActions")
         
     }
     
