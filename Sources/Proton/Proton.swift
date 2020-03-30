@@ -107,12 +107,12 @@ final public class Proton: ObservableObject {
      */
     public func loadAll() {
         
-        self.publicKeys = self.storage.getKeychainItem(Set<String>.self, forKey: "publicKeys") ?? Set<String>()
-        self.chainProviders = self.storage.getDiskItem(Set<ChainProvider>.self, forKey: "chainProviders") ?? Set<ChainProvider>()
-        self.tokenContracts = self.storage.getDiskItem(Set<TokenContract>.self, forKey: "tokenContracts") ?? Set<TokenContract>()
-        self.accounts = self.storage.getDiskItem(Set<Account>.self, forKey: "accounts") ?? Set<Account>()
-        self.tokenBalances = self.storage.getDiskItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? Set<TokenBalance>()
-        self.tokenTransferActions = self.storage.getDiskItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? Set<TokenTransferAction>()
+//        self.publicKeys = self.storage.getKeychainItem(Set<String>.self, forKey: "publicKeys") ?? Set<String>()
+//        self.chainProviders = self.storage.getDiskItem(Set<ChainProvider>.self, forKey: "chainProviders") ?? Set<ChainProvider>()
+//        self.tokenContracts = self.storage.getDiskItem(Set<TokenContract>.self, forKey: "tokenContracts") ?? Set<TokenContract>()
+//        self.accounts = self.storage.getDiskItem(Set<Account>.self, forKey: "accounts") ?? Set<Account>()
+//        self.tokenBalances = self.storage.getDiskItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? Set<TokenBalance>()
+//        self.tokenTransferActions = self.storage.getDiskItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? Set<TokenTransferAction>()
         
     }
     
