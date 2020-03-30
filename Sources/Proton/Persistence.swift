@@ -29,10 +29,12 @@ class Persistence {
     
     func getDiskItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
         
-        do {
-            return try self.disk.load(forKey: key, as: object)
-        } catch {
-            print("ERROR: \(error.localizedDescription)")
+        if self.disk.exists(forKey: key) {
+            do {
+                return try self.disk.load(forKey: key, as: object)
+            } catch {
+                print("ERROR: \(error.localizedDescription)")
+            }
         }
         
         return nil
@@ -51,12 +53,14 @@ class Persistence {
     
     func deleteDiskItem(forKey key: String) {
         
-        do {
-            try self.disk.remove(forKey: key)
-        } catch {
-            print("ERROR: \(error.localizedDescription)")
+        if self.disk.exists(forKey: key) {
+            do {
+                try self.disk.remove(forKey: key)
+            } catch {
+                print("ERROR: \(error.localizedDescription)")
+            }
         }
-
+        
     }
     
     func clearDisk() {
