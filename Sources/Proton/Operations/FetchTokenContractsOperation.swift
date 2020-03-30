@@ -55,7 +55,7 @@ class FetchTokenContractsOperation: AbstractOperation {
 //                                                      supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
 //                                                      symbol: row.symbol, url: row.url, blacklisted: row.blisted)
                     
-                    let tokenContract = try TokenContract(chainId: self.chainProvider.chainId, contract: Name(stringValue: "contract"),
+                    let tokenContract = try TokenContract(chainId: "12123", contract: Name(stringValue: "contract"),
                     issuer: Name(stringValue: "contract"), resourceToken: false, systemToken: false,
                     name: "name", description: "desc", iconUrl: "row.iconurl",
                     supply: Asset(0.0, Asset.Symbol(4, "EOS")), maxSupply: Asset(0.0, Asset.Symbol(4, "EOS")),
