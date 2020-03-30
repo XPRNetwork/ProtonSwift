@@ -14,7 +14,7 @@ class Persistence {
     
     private var defaults: UserDefaults
     private var valet: Valet
-    private var disk: Storage
+    public var disk: Storage
     
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
