@@ -58,11 +58,14 @@ final public class Proton: ObservableObject {
     /**
      Live updated set of tokenContracts. Subscribe to this for your tokenContracts
      */
-    @Published public var tokenContracts: Set<TokenContract> = [] {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+//    @Published public var tokenContracts: Set<TokenContract> = [] {
+//        willSet {
+//            self.objectWillChange.send()
+//        }
+//    }
+    
+    public var tokenContracts: Set<TokenContract> = []
+    
     
     /**
      Live updated set of accounts. Subscribe to this for your accounts
@@ -109,17 +112,11 @@ final public class Proton: ObservableObject {
         
         self.publicKeys = self.storage.getKeychainItem(Set<String>.self, forKey: "publicKeys") ?? []
         self.chainProviders = self.storage.getDiskItem(Set<ChainProvider>.self, forKey: "chainProviders") ?? []
-        //self.tokenContracts = self.storage.getDiskItem(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
+        self.tokenContracts = self.storage.getDiskItem(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
         self.accounts = self.storage.getDiskItem(Set<Account>.self, forKey: "accounts") ?? []
         self.tokenBalances = self.storage.getDiskItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
         self.tokenTransferActions = self.storage.getDiskItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? []
-        
-        
-        do {
-            self.tokenContracts =  try storage.disk.load(forKey: "tokenContracts", as: Set<TokenContract>.self)
-        } catch {
-            print("ERROR: \(error.localizedDescription)")
-        }
+
         
     }
     
