@@ -8,13 +8,11 @@
 
 import Foundation
 import Valet
-import EasyStash
 
 class Persistence {
     
     private var defaults: UserDefaults
     private var valet: Valet
-    public var disk: Storage
     
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
@@ -22,59 +20,58 @@ class Persistence {
     init(keyChainIdentifier: String) {
         self.defaults = UserDefaults.standard
         self.valet = Valet.valet(with: Identifier(nonEmpty: keyChainIdentifier)!, accessibility: .whenUnlocked)
-        self.disk = try! Storage(options: Options())
     }
     
     // MARK: - Disk
     
-    func getDiskItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
-        
-        if self.disk.exists(forKey: key) {
-            do {
-                return try self.disk.load(forKey: key, as: object)
-            } catch {
-                print("ERROR: \(error.localizedDescription)")
-            }
-        }
-        
-        return nil
-        
-    }
-    
-    func setDiskItem<T: Codable>(_ object: T, forKey key: String) {
-        
-        if self.disk.exists(forKey: key) {
-            deleteDiskItem(forKey: key)
-        }
-        do {
-            try self.disk.save(object: object, forKey: key)
-        } catch {
-            print("ERROR: \(error.localizedDescription)")
-        }
-
-    }
-    
-    func deleteDiskItem(forKey key: String) {
-        
-        if self.disk.exists(forKey: key) {
-            do {
-                try self.disk.remove(forKey: key)
-            } catch {
-                print("ERROR: \(error.localizedDescription)")
-            }
-        }
-        
-    }
-    
-    func clearDisk() {
-        
-        do {
-            try self.disk.removeAll()
-        } catch {
-            print("ERROR: \(error.localizedDescription)")
-        }
-        
-    }
+//    func getDiskItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
+//
+//        if self.disk.exists(forKey: key) {
+//            do {
+//                return try self.disk.load(forKey: key, as: object)
+//            } catch {
+//                print("ERROR: \(error.localizedDescription)")
+//            }
+//        }
+//
+//        return nil
+//
+//    }
+//
+//    func setDiskItem<T: Codable>(_ object: T, forKey key: String) {
+//
+//        if self.disk.exists(forKey: key) {
+//            deleteDiskItem(forKey: key)
+//        }
+//        do {
+//            try self.disk.save(object: object, forKey: key)
+//        } catch {
+//            print("ERROR: \(error.localizedDescription)")
+//        }
+//
+//    }
+//
+//    func deleteDiskItem(forKey key: String) {
+//
+//        if self.disk.exists(forKey: key) {
+//            do {
+//                try self.disk.remove(forKey: key)
+//            } catch {
+//                print("ERROR: \(error.localizedDescription)")
+//            }
+//        }
+//
+//    }
+//
+//    func clearDisk() {
+//
+//        do {
+//            try self.disk.removeAll()
+//        } catch {
+//            print("ERROR: \(error.localizedDescription)")
+//        }
+//
+//    }
     
     // MARK: - User Defaults
     

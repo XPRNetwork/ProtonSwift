@@ -17,15 +17,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/greymass/swift-eosio.git", .branch("master")),
-        .package(url: "https://github.com/Square/Valet", from: "3.2.8"),
-        .package(url: "https://github.com/onmyway133/EasyStash", from: "1.1.6")
+        .package(url: "https://github.com/Square/Valet", from: "3.2.8")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Proton",
-            dependencies: ["EOSIO", "Valet", "EasyStash"]),
+            dependencies: ["EOSIO", "Valet"]),
         .testTarget(
             name: "ProtonTests",
             dependencies: ["Proton"]),
