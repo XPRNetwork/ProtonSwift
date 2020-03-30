@@ -126,7 +126,7 @@ final public class Proton: ObservableObject {
         }
         
         self.storage.setDiskItem(self.chainProviders, forKey: "chainProviders")
-        //self.storage.setDiskItem(self.tokenContracts, forKey: "tokenContracts")
+        self.storage.setDiskItem(self.tokenContracts, forKey: "tokenContracts")
         self.storage.setDiskItem(self.accounts, forKey: "accounts")
         self.storage.setDiskItem(self.tokenBalances, forKey: "tokenBalances")
         self.storage.setDiskItem(self.tokenTransferActions, forKey: "tokenTransferActions")

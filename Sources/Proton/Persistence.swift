@@ -43,10 +43,13 @@ class Persistence {
     
     func setDiskItem<T: Codable>(_ object: T, forKey key: String) {
         
-        do {
-            try self.disk.save(object: object, forKey: key)
-        } catch {
-            print("ERROR: \(error.localizedDescription)")
+        if self.disk.exists(forKey: key) {
+            deleteDiskItem(forKey: key)
+            do {
+                try self.disk.save(object: object, forKey: key)
+            } catch {
+                print("ERROR: \(error.localizedDescription)")
+            }
         }
 
     }
