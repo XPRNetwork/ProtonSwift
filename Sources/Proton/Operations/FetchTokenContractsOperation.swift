@@ -49,11 +49,19 @@ class FetchTokenContractsOperation: AbstractOperation {
                     
                 } else {
                     
-                    let tokenContract = TokenContract(chainId: self.chainProvider.chainId, contract: row.tcontract,
-                                                      issuer: row.tcontract, resourceToken: false, systemToken: false,
-                                                      name: row.tname, description: row.desc, iconUrl: row.iconurl,
-                                                      supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
-                                                      symbol: row.symbol, url: row.url, blacklisted: row.blisted)
+//                    let tokenContract = TokenContract(chainId: self.chainProvider.chainId, contract: row.tcontract,
+//                                                      issuer: row.tcontract, resourceToken: false, systemToken: false,
+//                                                      name: row.tname, description: row.desc, iconUrl: row.iconurl,
+//                                                      supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
+//                                                      symbol: row.symbol, url: row.url, blacklisted: row.blisted)
+                    
+                    let tokenContract = TokenContract(chainId: "123", contract: Name(stringValue: "contract"),
+                    issuer: Name(stringValue: "contract"), resourceToken: false, systemToken: false,
+                    name: "name", description: "desc", iconUrl: "row.iconurl",
+                    supply: Asset(0.0, try! Asset.Symbol(4, "EOS")), maxSupply: Asset(0.0, try! Asset.Symbol(4, "EOS")),
+                    symbol: try! Asset.Symbol(4, "EOS"), url: "", blacklisted: false)
+                    
+
                     
                     self.tokenContracts.update(with: tokenContract)
                     
