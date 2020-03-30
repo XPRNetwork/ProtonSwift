@@ -55,8 +55,6 @@ class FetchTokenContractsOperation: AbstractOperation {
                                                       supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
                                                       symbol: row.symbol, url: row.url, blacklisted: row.blisted)
                     
-                    print(tokenContract.description)
-                    
                     self.tokenContracts.update(with: tokenContract)
                     
                 }
