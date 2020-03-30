@@ -45,11 +45,11 @@ class Persistence {
         
         if self.disk.exists(forKey: key) {
             deleteDiskItem(forKey: key)
-            do {
-                try self.disk.save(object: object, forKey: key)
-            } catch {
-                print("ERROR: \(error.localizedDescription)")
-            }
+        }
+        do {
+            try self.disk.save(object: object, forKey: key)
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
         }
 
     }
