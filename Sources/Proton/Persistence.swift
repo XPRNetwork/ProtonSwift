@@ -30,7 +30,7 @@ class Persistence {
     func getDiskItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
         
         do {
-            return try self.disk.load(forKey: key, as: object.self)
+            return try self.disk.load(forKey: key, as: object)
         } catch {
             print("ERROR: \(error.localizedDescription)")
         }

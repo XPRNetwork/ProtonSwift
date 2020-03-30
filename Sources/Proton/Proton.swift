@@ -58,14 +58,11 @@ final public class Proton: ObservableObject {
     /**
      Live updated set of tokenContracts. Subscribe to this for your tokenContracts
      */
-//    @Published public var tokenContracts: Set<TokenContract> = [] {
-//        willSet {
-//            self.objectWillChange.send()
-//        }
-//    }
-    
-    public var tokenContracts: Set<TokenContract> = []
-    
+    @Published public var tokenContracts: Set<TokenContract> = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
     
     /**
      Live updated set of accounts. Subscribe to this for your accounts
@@ -116,7 +113,6 @@ final public class Proton: ObservableObject {
         self.accounts = self.storage.getDiskItem(Set<Account>.self, forKey: "accounts") ?? []
         self.tokenBalances = self.storage.getDiskItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
         self.tokenTransferActions = self.storage.getDiskItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? []
-
         
     }
     
