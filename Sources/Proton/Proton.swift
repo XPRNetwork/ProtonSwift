@@ -13,7 +13,7 @@ import UIKit
 
 final public class Proton: ObservableObject {
     
-    public struct IdentityRequest {
+    public struct ProtonSigningRequest {
         public let requestor: Account
         public let signer: Account
         public let signingRequest: SigningRequest
@@ -98,7 +98,7 @@ final public class Proton: ObservableObject {
     /**
      Live updated esr signing request. This will be initialized when a signing request is made
      */
-    @Published public var identityRequest: IdentityRequest? = nil {
+    @Published public var protonSigningRequest: ProtonSigningRequest? = nil {
         willSet {
             self.objectWillChange.send()
         }
@@ -282,7 +282,7 @@ final public class Proton: ObservableObject {
      - Parameter openURLContext: Wif formated private key
      - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
      */
-    public func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (IdentityRequest?) -> ()) {
+    public func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (ProtonSigningRequest?) -> ()) {
         
         do {
             
@@ -304,8 +304,8 @@ final public class Proton: ObservableObject {
                         requestingAccount = acc
                     }
                     
-                    let response = IdentityRequest(requestor: requestingAccount, signer: account, signingRequest: signingRequest)
-                    self.identityRequest = response
+                    let response = ProtonSigningRequest(requestor: requestingAccount, signer: account, signingRequest: signingRequest)
+                    self.protonSigningRequest = response
                     
                     completion(response)
 
