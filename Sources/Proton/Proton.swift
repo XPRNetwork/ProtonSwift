@@ -268,7 +268,12 @@ final public class Proton: ObservableObject {
 
     }
     
-    private func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (SigningRequestResponse?) -> ()) {
+    /**
+     Use this to parse an esr signing request.
+     - Parameter openURLContext: Wif formated private key
+     - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
+     */
+    public func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (SigningRequestResponse?) -> ()) {
         
         do {
             
