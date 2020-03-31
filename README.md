@@ -41,7 +41,6 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 ## Libraries Used
 [EOSIO](https://github.com/greymass/swift-eosio) - Greymass   
 [Valet](https://github.com/square/Valet) - Square   
-[EasyStash](https://github.com/onmyway133/EasyStash) - onmyway133
 
 ## Author
 
