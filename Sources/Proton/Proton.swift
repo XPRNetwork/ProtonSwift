@@ -16,14 +16,11 @@ final public class Proton: ObservableObject {
 
         public var keyChainIdentifier: String
         public var chainProvidersUrl: String
-        public var tokenContractsUrl: String
         
-        public init(keyChainIdentifier: String, chainProvidersUrl: String,
-                    tokenContractsUrl: String) {
+        public init(keyChainIdentifier: String, chainProvidersUrl: String) {
             
             self.keyChainIdentifier = keyChainIdentifier
             self.chainProvidersUrl = chainProvidersUrl
-            self.tokenContractsUrl = tokenContractsUrl
             
         }
         

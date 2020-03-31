@@ -16,12 +16,11 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 
 The main and only class that you will need to interface with is `Proton` which encapsulates all of the needed functions.
 
-With `Config` we can customize url to chainProvider and tokenContract objects as well as set the keychain indetifier string.
+With `Config` we can customize url to chainProvider object as well as set the keychain indetifier string.
 
 ```swift
 let config = Proton.Config(keyChainIdentifier: "myapp",
-                           chainProvidersUrl: "https://e8245mepe3.execute-api.us-west-2.amazonaws.com/dev/chain-providers",
-                           tokenContractsUrl: "https://e8245mepe3.execute-api.us-west-2.amazonaws.com/dev/token-contracts")
+                           chainProvidersUrl: "https://e8245mepe3.execute-api.us-west-2.amazonaws.com/dev/chain-providers")
 
 // Initialize Proton                           
 Proton.initalize(config)
