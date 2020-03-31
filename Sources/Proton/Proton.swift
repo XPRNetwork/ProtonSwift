@@ -210,20 +210,60 @@ final public class Proton: ObservableObject {
     }
     
     /**
-     Fetchs and updates all accounts. This includes, account names, avatars, balances, etc
-     - Parameter accounts?: Pass in a set of accounts or nil. Passing nil causes the function to update all known accounts from memory
+     Fetchs and updates passed account. This includes, account names, avatars, balances, etc
+     - Parameter account: Update an account
      - Parameter completion: Closure thats called when the function is complete
      */
-    public func update(accounts: Set<Account>? = nil, completion: @escaping () -> ()) {
+    public func update(account: Account, completion: @escaping () -> ()) {
         
-        let accounts = accounts ?? self.accounts
+        var account = account
         
-        if accounts.count > 0 {
+        self.fetchAccount(forAccount: account) { returnAccount in
             
-            self.fetchBalances(forAccounts: accounts) { _ in
-                self.fetchUserInfo(forAccounts: accounts) {
-                    self.fetchTransferActions(forAccounts: accounts) {
-                        self.saveAll()
+            account = returnAccount
+            self.accounts.update(with: account)
+            
+            self.fetchAccountUserInfo(forAccount: account) { returnAccount in
+                
+                account = returnAccount
+                self.accounts.update(with: account)
+                
+                self.fetchBalances(forAccount: account) { tokenBalances in
+                    
+                    if let tokenBalances = tokenBalances {
+                        
+                        self.tokenBalances = self.tokenBalances.union(tokenBalances)
+
+                    }
+                    
+                    let tokenBalancesCount = self.tokenBalances.count
+                    var tokenBalancesProcessed = 0
+                    
+                    if tokenBalancesCount > 0 {
+                        
+                        for tokenBalance in self.tokenBalances {
+                            
+                            self.fetchTransferActions(forTokenBalance: tokenBalance) { _ in
+                                
+                                tokenBalancesProcessed += 1
+                                
+                                if tokenBalancesProcessed == tokenBalancesCount {
+                                    
+                                    print("🧑‍💻 UPDATE COMPLETED")
+                                    print("ACCOUNTS => \(self.accounts.count)")
+                                    print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
+                                    print("TOKEN BALANCES => \(self.tokenBalances.count)")
+                                    print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
+                                    
+                                    completion()
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                    } else {
                         
                         print("🧑‍💻 UPDATE COMPLETED")
                         print("ACCOUNTS => \(self.accounts.count)")
@@ -233,7 +273,42 @@ final public class Proton: ObservableObject {
                         
                         completion()
                     }
+                    
                 }
+                
+            }
+            
+        }
+        
+    }
+    
+    /**
+     Fetchs and updates all accounts. This includes, account names, avatars, balances, etc
+     - Parameter completion: Closure thats called when the function is complete
+     */
+    public func update(completion: @escaping () -> ()) {
+        
+        let accountsCount = self.accounts.count
+        var accountsProcessed = 0
+        
+        if accountsCount > 0 {
+            
+            for account in self.accounts {
+                
+                self.update(account: account) {
+                    
+                    accountsProcessed += 1
+                    
+                    if accountsProcessed == accountsCount {
+                        
+                        self.saveAll()
+                        
+                        completion()
+                        
+                    }
+
+                }
+                
             }
 
         } else {
@@ -254,20 +329,32 @@ final public class Proton: ObservableObject {
             let pk = try PrivateKey(stringValue: privateKey)
             let publicKey = try pk.getPublic()
             
-            self.fetchKeyAccounts(forPublicKeys: [publicKey.stringValue]) { accounts in
-                if let accounts = accounts {
+            self.fetchKeyAccounts(forPublicKey: publicKey.stringValue) { accounts in
+                
+                if let accounts = accounts, accounts.count > 0 {
                     
                     // save private key
                     self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue)
                     
-                    self.update(accounts: accounts) {
-                        completion()
+                    let accountCount = accounts.count
+                    var accountsProcessed = 0
+                    
+                    for account in accounts {
+                        
+                        self.update(account: account) {
+                            accountsProcessed += 1
+                            if accountsProcessed == accountCount {
+                                self.saveAll()
+                                completion()
+                            }
+                        }
+                        
                     }
                     
                 } else {
-                    self.saveAll()
                     completion()
                 }
+                
             }
             
         } catch {
@@ -279,7 +366,7 @@ final public class Proton: ObservableObject {
     
     /**
      Use this to parse an esr signing request.
-     - Parameter openURLContext: Wif formated private key
+     - Parameter openURLContext: UIOpenURLContext passed when opening from custom uri: esr://
      - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
      */
     public func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (ProtonSigningRequest?) -> ()) {
@@ -322,143 +409,30 @@ final public class Proton: ObservableObject {
         
     }
     
-    private func fetchKeyAccounts(forPublicKeys publicKeys: [String], completion: @escaping (Set<Account>?) -> ()) {
-        
-        let publicKeyCount = publicKeys.count
-        var publicKeysProcessed = 0
-        
-        var retval = Set<Account>()
-        
-        if publicKeyCount > 0 && self.chainProviders.count > 0 {
-            
-            for publicKey in publicKeys {
-                
-                let chainProviderCount = self.chainProviders.count
-                var chainProvidersProcessed = 0
-                
-                for chainProvider in self.chainProviders {
-                    
-                    WebServices.shared.addMulti(FetchKeyAccountsOperation(publicKey: publicKey,
-                                                                          chainProvider: chainProvider)) { result in
-                        
-                        chainProvidersProcessed += 1
-                        
-                        switch result {
-                        case .success(let accountNames):
-                            
-                            if let accountNames = accountNames as? [String], accountNames.count > 0 {
-                                
-                                for accountName in accountNames {
-                                    
-                                    let account = Account(chainId: chainProvider.chainId, name: accountName)
-                                    if !self.accounts.contains(account) {
-                                        self.accounts.update(with: account)
-                                    }
-                                    retval.update(with: account)
-                                    
-                                }
-                                
-                                self.publicKeys.update(with: publicKey)
-                                
-                            }
-
-                        case .failure(let error):
-                            print("ERROR: \(error.localizedDescription)")
-                        }
-                                                                            
-                        if chainProvidersProcessed == chainProviderCount {
-                            
-                            publicKeysProcessed += 1
-                            
-                            if publicKeysProcessed == publicKeyCount {
-                                completion(retval)
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        } else {
-            completion(nil)
-        }
-        
-    }
-    
-    private func fetchBalances(forAccounts accounts: Set<Account>, completion: @escaping (Set<TokenBalance>?) -> ()) {
-        
-        let accountCount = accounts.count
-        var accountsProcessed = 0
-        
-        if accountCount > 0 {
-            
-            var retval = Set<TokenBalance>()
-            
-            for account in accounts {
-                
-                if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
-                    
-                    WebServices.shared.addMulti(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider)) { result in
-                        
-                        accountsProcessed += 1
-                        
-                        switch result {
-                        case .success(let tokenBalances):
-                    
-                            if let tokenBalances = tokenBalances as? Set<TokenBalance> {
-                                
-                                for tokenBalance in tokenBalances {
-                                    
-                                    self.tokenBalances.update(with: tokenBalance)
-                                    retval.update(with: tokenBalance)
-                                    
-                                    if self.tokenContracts.first(where: { $0.id == tokenBalance.tokenContractId }) == nil {
-                                        
-                                        
-                                        let unknownTokenContract = TokenContract(chainId: tokenBalance.chainId, contract: tokenBalance.contract, issuer: "",
-                                                                                 resourceToken: false, systemToken: false, name: tokenBalance.amount.symbol.name,
-                                                                                 description: "", iconUrl: "", supply: Asset(0.0, tokenBalance.amount.symbol),
-                                                                                 maxSupply: Asset(0.0, tokenBalance.amount.symbol),
-                                                                                 symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
-                                        
-                                        self.tokenContracts.update(with: unknownTokenContract)
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                        case .failure(let error):
-                            print("ERROR: \(error.localizedDescription)")
-                        }
-                        
-                        if accountsProcessed == accountCount {
-                            completion(retval)
-                        }
-                        
-                    }
-                    
-                } else {
-                    
-                    accountsProcessed += 1
-                    
-                    if accountsProcessed == accountCount {
-                        completion(retval)
-                    }
-                    
-                }
-                
-            }
-            
-        } else {
-            completion(nil)
-        }
-    
-    }
+    /**
+     Use this to parse an esr signing request.
+     - Parameter signingRequest: Wif formated private key
+     - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
+     */
+//    public func resolveSigningRequest(protonSigningRequest: ProtonSigningRequest, completion: @escaping () -> ()) {
+//        
+//        do {
+//            
+//            let signingRequest = protonSigningRequest.signingRequest
+//            let chainId = signingRequest.chainId
+//            
+//            let pk = storage.getKeychainItem(String.self, forKey: <#T##String#>)
+//            
+//            let resolved = try signingRequest.resolve(using: PermissionLevel(protonSigningRequest.signer.name, Name("active")))
+//            
+//            
+//            
+//            
+//        } catch {
+//            completion()
+//        }
+//        
+//    }
     
     private func fetchCurrencyStats(forTokenContracts tokenContracts: Set<TokenContract>, completion: @escaping () -> ()) {
         
@@ -557,111 +531,155 @@ final public class Proton: ObservableObject {
         
     }
     
-    private func fetchTransferActions(forAccounts accounts: Set<Account>, completion: @escaping () -> ()) {
+    private func fetchKeyAccounts(forPublicKey publicKey: String, completion: @escaping (Set<Account>?) -> ()) {
         
-        let accountCount = accounts.count
-        var accountsProcessed = 0
+        let chainProviderCount = self.chainProviders.count
+        var chainProvidersProcessed = 0
         
-        if accountCount > 0 {
+        var accounts = Set<Account>()
+        
+        for chainProvider in self.chainProviders {
             
-            for account in accounts {
+            WebServices.shared.addMulti(FetchKeyAccountsOperation(publicKey: publicKey,
+                                                                  chainProvider: chainProvider)) { result in
                 
-                let tokenBalances = self.tokenBalances.filter({ $0.accountId == account.id })
-                let tokenBalancesCount = tokenBalances.count
-                var tokenBalancesProcessed = 0
+                chainProvidersProcessed += 1
                 
-                if tokenBalancesCount > 0 {
+                switch result {
+                case .success(let accountNames):
                     
-                    for tokenBalance in tokenBalances {
+                    if let accountNames = accountNames as? [String], accountNames.count > 0 {
                         
-                        self.fetchTransferActions(forTokenBalance: tokenBalance) { _ in
+                        for accountName in accountNames {
                             
-                            tokenBalancesProcessed += 1
+                            let account = Account(chainId: chainProvider.chainId, name: accountName)
+                            if !self.accounts.contains(account) {
+                                accounts.update(with: account)
+                            }
                             
-                            if tokenBalancesProcessed == tokenBalancesCount {
+                        }
+                        
+                        self.publicKeys.update(with: publicKey)
+                        
+                    }
+
+                case .failure(let error):
+                    print("ERROR: \(error.localizedDescription)")
+                }
+                                                                    
+                if chainProvidersProcessed == chainProviderCount {
+                    completion(accounts)
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    private func fetchAccount(forAccount account: Account, completion: @escaping (Account) -> ()) {
+        
+        var account = account
+        
+        if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+            
+            WebServices.shared.addMulti(FetchAccountOperation(accountName: account.name.stringValue, chainProvider: chainProvider)) { result in
+                
+                switch result {
+                case .success(let acc):
+            
+                    if let acc = acc as? API.V1.Chain.GetAccount.Response {
+                        account.permissions = acc.permissions
+                    }
+                    
+                case .failure(let error):
+                    print("ERROR: \(error.localizedDescription)")
+                }
+                
+                completion(account)
+                
+            }
+            
+        } else {
+            
+            completion(account)
+            
+        }
+        
+    }
+    
+    private func fetchAccountUserInfo(forAccount account: Account, completion: @escaping (Account) -> ()) {
+        
+        var account = account
+        
+        if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+            
+            WebServices.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
+                
+                switch result {
+                case .success(let updatedAccount):
+            
+                    if let updatedAccount = updatedAccount as? Account {
+                        
+                        account = updatedAccount
+                        self.accounts.update(with: updatedAccount)
+                        
+                    }
+                    
+                case .failure(let error):
+                    print("ERROR: \(error.localizedDescription)")
+                }
+                
+                completion(account)
+                
+            }
+            
+        } else {
+            completion(account)
+        }
+        
+    }
+    
+    private func fetchBalances(forAccount account: Account, completion: @escaping (Set<TokenBalance>?) -> ()) {
+        
+        if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+            
+            WebServices.shared.addMulti(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider)) { result in
+                
+                switch result {
+                case .success(let tokenBalances):
+            
+                    if let tokenBalances = tokenBalances as? Set<TokenBalance> {
+                        
+                        for tokenBalance in tokenBalances {
+                            
+                            if self.tokenContracts.first(where: { $0.id == tokenBalance.tokenContractId }) == nil {
                                 
-                                accountsProcessed += 1
                                 
-                                if accountsProcessed == accountCount {
-                                    
-                                    completion()
-                                    
-                                }
+                                let unknownTokenContract = TokenContract(chainId: tokenBalance.chainId, contract: tokenBalance.contract, issuer: "",
+                                                                         resourceToken: false, systemToken: false, name: tokenBalance.amount.symbol.name,
+                                                                         description: "", iconUrl: "", supply: Asset(0.0, tokenBalance.amount.symbol),
+                                                                         maxSupply: Asset(0.0, tokenBalance.amount.symbol),
+                                                                         symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
+                                
+                                self.tokenContracts.update(with: unknownTokenContract)
                                 
                             }
                             
                         }
                         
-                    }
-                    
-                } else {
-                    
-                    accountsProcessed += 1
-                    
-                    if accountsProcessed == accountCount {
-                        completion()
-                    }
-                    
-                }
-
-            }
-            
-        } else {
-            completion()
-        }
-    
-    }
-    
-    private func fetchUserInfo(forAccounts accounts: Set<Account>, completion: @escaping () -> ()) {
-        
-        let accountCount = accounts.count
-        var accountsProcessed = 0
-        
-        if accountCount > 0 {
-            
-            for account in accounts {
-                
-                if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
-                    
-                    WebServices.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
-                        
-                        accountsProcessed += 1
-                        
-                        switch result {
-                        case .success(let updatedAccount):
-                    
-                            if let updatedAccount = updatedAccount as? Account {
-                                
-                                self.accounts.update(with: updatedAccount)
-                                
-                            }
-                            
-                        case .failure(let error):
-                            print("ERROR: \(error.localizedDescription)")
-                        }
-                        
-                        if accountsProcessed == accountCount {
-                            completion()
-                        }
+                        completion(tokenBalances)
                         
                     }
                     
-                } else {
-                    
-                    accountsProcessed += 1
-                    
-                    if accountsProcessed == accountCount {
-                        completion()
-                    }
-                    
+                case .failure(let error):
+                    print("ERROR: \(error.localizedDescription)")
                 }
                 
             }
             
-        } else {
-            completion()
         }
-    
+        
     }
-
+    
 }
