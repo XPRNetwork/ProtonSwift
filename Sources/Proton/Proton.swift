@@ -13,9 +13,9 @@ import UIKit
 
 final public class Proton: ObservableObject {
     
-    public struct SigningRequestResponse {
-        public let requestingAccount: Account
-        public let signingAccount: Account
+    public struct IdentityRequest {
+        public let requestor: Account
+        public let signer: Account
         public let signingRequest: SigningRequest
     }
 
@@ -90,6 +90,15 @@ final public class Proton: ObservableObject {
      Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
      */
     @Published public var tokenTransferActions: Set<TokenTransferAction> = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
+    
+    /**
+     Live updated esr signing request. This will be initialized when a signing request is made
+     */
+    @Published public var identityRequest: IdentityRequest? = nil {
         willSet {
             self.objectWillChange.send()
         }
@@ -273,7 +282,7 @@ final public class Proton: ObservableObject {
      - Parameter openURLContext: Wif formated private key
      - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
      */
-    public func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (SigningRequestResponse?) -> ()) {
+    public func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (IdentityRequest?) -> ()) {
         
         do {
             
@@ -295,7 +304,9 @@ final public class Proton: ObservableObject {
                         requestingAccount = acc
                     }
                     
-                    let response = SigningRequestResponse(requestingAccount: requestingAccount, signingAccount: account, signingRequest: signingRequest)
+                    let response = IdentityRequest(requestor: requestingAccount, signer: account, signingRequest: signingRequest)
+                    self.identityRequest = response
+                    
                     completion(response)
 
                 case .failure(let error):
