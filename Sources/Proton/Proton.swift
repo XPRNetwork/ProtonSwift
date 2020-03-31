@@ -9,8 +9,15 @@
 import Foundation
 import Combine
 import EOSIO
+import UIKit
 
 final public class Proton: ObservableObject {
+    
+    public struct SigningRequestResponse {
+        public let requestingAccount: Account
+        public let signingAccount: Account
+        public let signingRequest: SigningRequest
+    }
 
     public struct Config {
 
@@ -259,6 +266,44 @@ final public class Proton: ObservableObject {
             completion()
         }
 
+    }
+    
+    private func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (SigningRequestResponse?) -> ()) {
+        
+        do {
+            
+            let signingRequest = try SigningRequest(openURLContext.url.absoluteString)
+            let chainId = signingRequest.chainId
+            
+            guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
+            guard let account = self.accounts.first(where: { $0.chainId == chainId.description }) else { completion(nil); return }
+            guard let chainProvider = self.chainProviders.first(where: { $0.chainId == chainId.description }) else { completion(nil); return }
+            
+            var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
+            
+            WebServices.shared.addSeq(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider)) { result in
+                
+                switch result {
+                case .success(let acc):
+                    
+                    if let acc = acc as? Account {
+                        requestingAccount = acc
+                    }
+                    
+                    let response = SigningRequestResponse(requestingAccount: requestingAccount, signingAccount: account, signingRequest: signingRequest)
+                    completion(response)
+
+                case .failure(let error):
+                    print("ERROR: \(error.localizedDescription)")
+                    completion(nil)
+                }
+                
+            }
+            
+        } catch {
+            completion(nil)
+        }
+        
     }
     
     private func fetchKeyAccounts(forPublicKeys publicKeys: [String], completion: @escaping (Set<Account>?) -> ()) {
