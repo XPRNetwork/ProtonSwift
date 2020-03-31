@@ -33,7 +33,7 @@ final public class Proton: ObservableObject {
      - Parameter config: The configuration object that includes urls for chainProviders as well as your keychain indentifier string
      - Returns: Initialized Proton singleton
      */
-    public static func initalize(_ config: Config) -> Proton {
+    public static func initialize(_ config: Config) -> Proton {
         Proton.config = config
         return shared
     }

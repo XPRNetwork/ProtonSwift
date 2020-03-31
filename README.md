@@ -23,7 +23,7 @@ let config = Proton.Config(keyChainIdentifier: "myapp",
                            chainProvidersUrl: "https://e8245mepe3.execute-api.us-west-2.amazonaws.com/dev/chain-providers")
 
 // Initialize Proton                           
-Proton.initalize(config)
+Proton.initialize(config)
 
 // Now Proton can be used from anywhere through the static shared property
 Proton.shared
