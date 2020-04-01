@@ -13,10 +13,11 @@ import UIKit
 
 final public class Proton: ObservableObject {
     
-    public struct ProtonSigningRequest {
+    public struct ESR {
         public let requestor: Account
         public let signer: Account
         public let signingRequest: SigningRequest
+        public let sid: String
     }
 
     public struct Config {
@@ -96,9 +97,18 @@ final public class Proton: ObservableObject {
     }
     
     /**
+     Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+     */
+    @Published public var esrSessions: Set<ESRSession> = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
+    
+    /**
      Live updated esr signing request. This will be initialized when a signing request is made
      */
-    @Published public var protonSigningRequest: ProtonSigningRequest? = nil {
+    @Published public var esr: ESR? = nil {
         willSet {
             self.objectWillChange.send()
         }
@@ -126,7 +136,7 @@ final public class Proton: ObservableObject {
         self.accounts = self.storage.getDefaultsItem(Set<Account>.self, forKey: "accounts") ?? []
         self.tokenBalances = self.storage.getDefaultsItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
         self.tokenTransferActions = self.storage.getDefaultsItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? []
-        
+        self.esrSessions = self.storage.getDefaultsItem(Set<ESRSession>.self, forKey: "esrSessions") ?? []
     }
     
     /**
@@ -143,7 +153,7 @@ final public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.accounts, forKey: "accounts")
         self.storage.setDefaultsItem(self.tokenBalances, forKey: "tokenBalances")
         self.storage.setDefaultsItem(self.tokenTransferActions, forKey: "tokenTransferActions")
-        
+        self.storage.setDefaultsItem(self.esrSessions, forKey: "esrSessions")
     }
     
     /**
@@ -369,7 +379,7 @@ final public class Proton: ObservableObject {
      - Parameter openURLContext: UIOpenURLContext passed when opening from custom uri: esr://
      - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
      */
-    public func parseSigningReqeust(openURLContext: UIOpenURLContext, completion: @escaping (ProtonSigningRequest?) -> ()) {
+    public func parseESR(openURLContext: UIOpenURLContext, completion: @escaping (ESR?) -> ()) {
         
         do {
             
@@ -377,10 +387,14 @@ final public class Proton: ObservableObject {
             let chainId = signingRequest.chainId
             
             guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
+            guard let sid = signingRequest.getInfo("sid", as: String.self) else { completion(nil); return }
             guard let account = self.accounts.first(where: { $0.chainId == chainId.description }) else { completion(nil); return }
             guard let chainProvider = self.chainProviders.first(where: { $0.chainId == chainId.description }) else { completion(nil); return }
             
             var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
+            
+            print(chainId.name)
+            print(chainId.description)
             
             WebServices.shared.addSeq(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider)) { result in
                 
@@ -391,8 +405,8 @@ final public class Proton: ObservableObject {
                         requestingAccount = acc
                     }
                     
-                    let response = ProtonSigningRequest(requestor: requestingAccount, signer: account, signingRequest: signingRequest)
-                    self.protonSigningRequest = response
+                    let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid)
+                    self.esr = response
                     
                     completion(response)
 
@@ -413,9 +427,9 @@ final public class Proton: ObservableObject {
      Use this to decline signing request
      - Parameter completion: Closure thats called when the function is complete.
      */
-    public func declineSigningRequest(completion: @escaping () -> ()) {
+    public func declineESR(completion: @escaping () -> ()) {
         
-        self.protonSigningRequest = nil
+        self.esr = nil
         completion()
         
     }
@@ -424,16 +438,16 @@ final public class Proton: ObservableObject {
      Use this to accept signing request
      - Parameter completion: Closure thats called when the function is complete.
      */
-    public func acceptSigningRequest(completion: @escaping () -> ()) {
+    public func acceptESR(completion: @escaping () -> ()) {
         
-        guard let protonSigningRequest = self.protonSigningRequest else { completion(); return }
+        guard let esr = self.esr else { completion(); return }
         
         Authentication.shared.authenticate { (success, message, error) in
             
             if success {
                 
-                var signingRequest = protonSigningRequest.signingRequest
-                let signer = protonSigningRequest.signer
+                var signingRequest = esr.signingRequest
+                let signer = esr.signer
 
                 if let privateKey = signer.privateKey(forPermissionName: "active") {
                     
@@ -449,6 +463,8 @@ final public class Proton: ObservableObject {
                             let payload = String(bytes: payloadData, encoding: .utf8)!
                             print(payload)
                             
+                            let esrSession = ESRSession(requestor: esr.requestor, signer: signer.name, chainId: esr.signingRequest.chainId, sid: esr.sid)
+                            self.esrSessions.update(with: esrSession)
                         }
                         
                         completion()
