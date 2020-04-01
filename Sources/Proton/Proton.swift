@@ -444,6 +444,7 @@ final public class Proton: ObservableObject {
     
                         let resolved = try signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
                         if let cb = resolved.getCallback(using: [sig], blockNum: nil) {
+                            print(cb.url)
                             let payloadData = try cb.getPayload()
                             let payload = String(bytes: payloadData, encoding: .utf8)!
                             print(payload)
