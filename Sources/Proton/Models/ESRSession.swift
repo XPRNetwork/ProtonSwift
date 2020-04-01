@@ -11,11 +11,11 @@ import EOSIO
 
 public struct ESRSession: Codable, Identifiable, Hashable {
 
-    public var id: String { return "\(signer.stringValue):\(requestor.name.stringValue):\(chainId.description)" }
+    public var id: String { return "\(signer.stringValue):\(requestor.name.stringValue):\(chainId)" }
     
     public var requestor: Account
     public let signer: Name
-    public let chainId: ChainId
+    public let chainId: String
     public var sid: String
     
     public static func == (lhs: ESRSession, rhs: ESRSession) -> Bool {

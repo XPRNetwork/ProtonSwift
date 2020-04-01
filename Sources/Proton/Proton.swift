@@ -137,6 +137,14 @@ final public class Proton: ObservableObject {
         self.tokenBalances = self.storage.getDefaultsItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
         self.tokenTransferActions = self.storage.getDefaultsItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? []
         self.esrSessions = self.storage.getDefaultsItem(Set<ESRSession>.self, forKey: "esrSessions") ?? []
+        
+        print("🧑‍💻 LOAD COMPLETED")
+        print("ACCOUNTS => \(self.accounts.count)")
+        print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
+        print("TOKEN BALANCES => \(self.tokenBalances.count)")
+        print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
+        print("ESR SESSIONS => \(self.esrSessions.count)")
+        
     }
     
     /**
@@ -393,9 +401,6 @@ final public class Proton: ObservableObject {
             
             var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
             
-            print(chainId.name)
-            print(chainId.description)
-            
             WebServices.shared.addSeq(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider)) { result in
                 
                 switch result {
@@ -457,18 +462,13 @@ final public class Proton: ObservableObject {
                         signingRequest.setSignature(sig, signer: signer.name)
     
                         let resolved = try signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
-                        if let cb = resolved.getCallback(using: [sig], blockNum: nil) {
-                            print(cb.url)
-                            let payloadData = try cb.getPayload()
-                            let payload = String(bytes: payloadData, encoding: .utf8)!
-                            print(payload)
+
+                        WebServices.shared.addSeq(PostIdentityESROperation(resolvedSigningRequest: resolved, signature: sig, sid: esr.sid)) { result in
                             
-                            let esrSession = ESRSession(requestor: esr.requestor, signer: signer.name, chainId: esr.signingRequest.chainId, sid: esr.sid)
-                            self.esrSessions.update(with: esrSession)
+                            completion()
+                            
                         }
-                        
-                        completion()
-                        
+
                     } catch {
                         
                         print("Error: \(error)")
