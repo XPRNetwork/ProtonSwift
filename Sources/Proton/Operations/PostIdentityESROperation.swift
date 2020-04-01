@@ -28,9 +28,12 @@ class PostIdentityESROperation: AbstractOperation {
         do {
             
             let payloadData = try callback.getPayload(extra: ["sid": self.sid])
+            
+            guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else { self.finish(retval: nil, error: nil); return }
+            
             //guard let payload = String(bytes: payloadData, encoding: .utf8) else { self.finish(retval: nil, error: nil); return }
 
-            WebServices.shared.postRequestJSON(withPath: callback.url, data: payloadData) { result in
+            WebServices.shared.postRequestJSON(withPath: callback.url, parameters: parameters) { result in
                 
                 switch result {
                 case .success(_):
