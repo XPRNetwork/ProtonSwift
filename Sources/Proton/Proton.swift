@@ -410,29 +410,40 @@ final public class Proton: ObservableObject {
     }
     
     /**
-     Use this to parse an esr signing request.
-     - Parameter signingRequest: Wif formated private key
-     - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
+     Use this to decline signing request
+     - Parameter completion: Closure thats called when the function is complete.
      */
-//    public func resolveSigningRequest(protonSigningRequest: ProtonSigningRequest, completion: @escaping () -> ()) {
-//        
+    public func declineSigningRequest(completion: @escaping () -> ()) {
+        
+        self.protonSigningRequest = nil
+        completion()
+        
+    }
+    
+    /**
+     Use this to accept signing request
+     - Parameter completion: Closure thats called when the function is complete.
+     */
+    public func acceptSigningRequest(completion: @escaping () -> ()) {
+        self.protonSigningRequest = nil
+        completion()
 //        do {
-//            
+//
 //            let signingRequest = protonSigningRequest.signingRequest
 //            let chainId = signingRequest.chainId
-//            
+//
 //            let pk = storage.getKeychainItem(String.self, forKey: <#T##String#>)
-//            
+//
 //            let resolved = try signingRequest.resolve(using: PermissionLevel(protonSigningRequest.signer.name, Name("active")))
-//            
-//            
-//            
-//            
+//
+//
+//
+//
 //        } catch {
 //            completion()
 //        }
-//        
-//    }
+        
+    }
     
     private func fetchCurrencyStats(forTokenContracts tokenContracts: Set<TokenContract>, completion: @escaping () -> ()) {
         
