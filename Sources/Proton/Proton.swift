@@ -425,23 +425,48 @@ final public class Proton: ObservableObject {
      - Parameter completion: Closure thats called when the function is complete.
      */
     public func acceptSigningRequest(completion: @escaping () -> ()) {
-        self.protonSigningRequest = nil
-        completion()
-//        do {
-//
-//            let signingRequest = protonSigningRequest.signingRequest
-//            let chainId = signingRequest.chainId
-//
-//            let pk = storage.getKeychainItem(String.self, forKey: <#T##String#>)
-//
-//            let resolved = try signingRequest.resolve(using: PermissionLevel(protonSigningRequest.signer.name, Name("active")))
-//
-//
-//
-//
-//        } catch {
-//            completion()
-//        }
+        
+        guard let protonSigningRequest = self.protonSigningRequest else { completion(); return }
+        
+        Authentication.shared.authenticate { (success, message, error) in
+            
+            if success {
+                
+                var signingRequest = protonSigningRequest.signingRequest
+                let signer = protonSigningRequest.signer
+
+                if let privateKey = signer.privateKey(forPermissionName: "active") {
+                    
+                    do {
+                        
+                        let sig = try privateKey.sign(signingRequest.digest)
+                        signingRequest.setSignature(sig, signer: signer.name)
+    
+                        let resolved = try signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
+                        if let cb = resolved.getCallback(using: [sig], blockNum: nil) {
+                            
+                            
+                            print(cb)
+
+                        }
+                        
+                        completion()
+                        
+                    } catch {
+                        
+                        print("Error: \(error)")
+                        
+                        completion()
+                        
+                    }
+                    
+                }
+                
+            } else {
+                completion() // return error
+            }
+            
+        }
         
     }
     
