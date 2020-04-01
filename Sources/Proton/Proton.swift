@@ -458,11 +458,9 @@ final public class Proton: ObservableObject {
                     
                     do {
                         
-                        let sig = try privateKey.sign(signingRequest.digest)
-                        signingRequest.setSignature(sig, signer: signer.name)
-    
                         let resolved = try signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
-
+                        let sig = try privateKey.sign(resolved.transaction.digest(using: signingRequest.chainId))
+                        
                         WebServices.shared.addSeq(PostIdentityESROperation(resolvedSigningRequest: resolved, signature: sig, sid: esr.sid)) { result in
                             
                             completion()
