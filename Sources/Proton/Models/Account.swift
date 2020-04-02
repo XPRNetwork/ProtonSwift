@@ -113,15 +113,21 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     
     #endif
     
-//    public var totalUSDBalanceFormatted: String {
-//
-//        var retval = "$0.00"
-//
-//
-//
-//    }
+    public func totalUSDBalanceFormatted(adding: Double = 0.0) -> String {
+
+        let tokenBalances = self.tokenBalances
+        let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
+            value + (tokenBalance.amount.value * tokenBalance.usdRate)
+        }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(for: amount) ?? "$0.00"
+
+    }
     
-    func privateKey(forPermissionName: String) -> PrivateKey? {
+    public func privateKey(forPermissionName: String) -> PrivateKey? {
         
         if let permission = self.permissions.first(where: { $0.permName.stringValue == forPermissionName }) {
             

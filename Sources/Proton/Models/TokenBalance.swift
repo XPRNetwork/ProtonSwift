@@ -62,4 +62,8 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
         return Proton.shared.accounts.first(where: { $0.id == self.accountId })
     }
     
+    public var usdRate: Double {
+        return 0.25 // TODO:
+    }
+    
 }
