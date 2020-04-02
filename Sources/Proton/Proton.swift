@@ -477,6 +477,8 @@ final public class Proton: ObservableObject {
                                 self.esr = nil
                                 completion()
                             }
+                                                                            
+                            self.saveAll()
                             
                         }
 
