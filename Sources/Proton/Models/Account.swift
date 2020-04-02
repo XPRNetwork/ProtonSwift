@@ -123,7 +123,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = Locale(identifier: "en_US")
-        return formatter.string(for: amount) ?? "$0.00"
+        return formatter.string(for: amount + adding) ?? "$0.00"
 
     }
     
