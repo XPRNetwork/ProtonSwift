@@ -195,7 +195,7 @@ final public class Proton: ObservableObject {
                 
                 for chainProvider in self.chainProviders {
                     
-                    let tokenContracts = self.tokenContracts.filter({ $0.chainId == chainProvider.chainId })
+                    let tokenContracts = chainProvider.tokenContracts
                     
                     WebServices.shared.addMulti(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts)) { result in
                         
@@ -401,8 +401,8 @@ final public class Proton: ObservableObject {
             
             guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
             guard let sid = signingRequest.getInfo("sid", as: String.self) else { completion(nil); return }
-            guard let account = self.accounts.first(where: { $0.chainId == chainId.description }) else { completion(nil); return }
-            guard let chainProvider = self.chainProviders.first(where: { $0.chainId == chainId.description }) else { completion(nil); return }
+            guard let account = self.accounts.first(where: { $0.chainId == String(chainId) }) else { completion(nil); return }
+            guard let chainProvider = account.chainProvider else { completion(nil); return }
             
             var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
             
@@ -466,7 +466,7 @@ final public class Proton: ObservableObject {
                         let resolved = try signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
                         let sig = try privateKey.sign(resolved.transaction.digest(using: signingRequest.chainId))
                         
-                        WebServices.shared.addSeq(PostIdentityESROperation(resolvedSigningRequest: resolved,
+                        WebServices.shared.addSeq(PostIdentityAuthESROperation(resolvedSigningRequest: resolved,
                                                                            signature: sig, sid: esr.sid)) { result in
                             
                             switch result {
@@ -514,7 +514,7 @@ final public class Proton: ObservableObject {
             
             for tokenContract in tokenContracts {
                 
-                if let chainProvider = self.chainProviders.first(where: { $0.chainId == tokenContract.chainId }) {
+                if let chainProvider = tokenContract.chainProvider {
                     
                     WebServices.shared.addMulti(FetchTokenContractCurrencyStat(tokenContract: tokenContract, chainProvider: chainProvider)) { result in
                          
@@ -557,17 +557,17 @@ final public class Proton: ObservableObject {
     
     private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping (Set<TokenTransferAction>?) -> ()) {
         
-        guard let account = self.accounts.first(where: { $0.id == tokenBalance.accountId }) else {
+        guard let account = tokenBalance.account else {
             completion(nil)
             return
         }
         
-        guard let chainProvider = self.chainProviders.first(where: { $0.chainId == tokenBalance.chainId }) else {
+        guard let chainProvider = account.chainProvider else {
             completion(nil)
             return
         }
         
-        guard let tokenContract = self.tokenContracts.first(where: { $0.id == tokenBalance.tokenContractId }) else {
+        guard let tokenContract = tokenBalance.tokenContract else {
             completion(nil)
             return
         }
@@ -652,7 +652,7 @@ final public class Proton: ObservableObject {
         
         var account = account
         
-        if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+        if let chainProvider = account.chainProvider {
             
             WebServices.shared.addMulti(FetchAccountOperation(accountName: account.name.stringValue, chainProvider: chainProvider)) { result in
                 
@@ -683,7 +683,7 @@ final public class Proton: ObservableObject {
         
         var account = account
         
-        if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+        if let chainProvider = account.chainProvider {
             
             WebServices.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
                 
@@ -713,7 +713,7 @@ final public class Proton: ObservableObject {
     
     private func fetchBalances(forAccount account: Account, completion: @escaping (Set<TokenBalance>?) -> ()) {
         
-        if let chainProvider = self.chainProviders.first(where: { $0.chainId == account.chainId }) {
+        if let chainProvider = account.chainProvider {
             
             WebServices.shared.addMulti(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider)) { result in
                 

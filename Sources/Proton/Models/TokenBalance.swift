@@ -9,7 +9,11 @@
 import Foundation
 import EOSIO
 
-public struct TokenBalance: Codable, Identifiable, Hashable {
+protocol TokenBalancesProtocol {
+    var tokenBalances: Set<TokenBalance> { get }
+}
+
+public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtocol, TokenTransferActionsProtocol, AccountProtocol {
 
     public var id: String { return "\(accountId):\(contract):\(amount.symbol.name)" }
     
@@ -44,6 +48,18 @@ public struct TokenBalance: Codable, Identifiable, Hashable {
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
+    }
+    
+    public var tokenContract: TokenContract? {
+        return Proton.shared.tokenContracts.first(where: { $0.id == self.tokenContractId })
+    }
+    
+    public var tokenTransferActions: Set<TokenTransferAction> {
+        return Proton.shared.tokenTransferActions.filter({ $0.accountId == self.accountId && $0.tokenBalanceId == self.id })
+    }
+    
+    public var account: Account? {
+        return Proton.shared.accounts.first(where: { $0.id == self.accountId })
     }
     
 }

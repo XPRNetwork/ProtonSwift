@@ -9,7 +9,15 @@
 import Foundation
 import EOSIO
 
-public struct TokenContract: Codable, Identifiable, Hashable {
+protocol TokenContractProtocol {
+    var tokenContract: TokenContract? { get }
+}
+
+protocol TokenContractsProtocol {
+    var tokenContracts: Set<TokenContract> { get }
+}
+
+public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol {
 
     public var id: String { return "\(chainId):\(contract.stringValue):\(symbol.name)" }
     
@@ -54,6 +62,10 @@ public struct TokenContract: Codable, Identifiable, Hashable {
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
+    }
+    
+    public var chainProvider: ChainProvider? {
+        return Proton.shared.chainProviders.first(where: { $0.chainId == self.chainId })
     }
     
 }

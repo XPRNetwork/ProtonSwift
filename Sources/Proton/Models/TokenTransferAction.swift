@@ -9,6 +9,10 @@
 import Foundation
 import EOSIO
 
+protocol TokenTransferActionsProtocol {
+    var tokenTransferActions: Set<TokenTransferAction> { get }
+}
+
 public struct TokenTransferAction: Codable, Identifiable, Hashable {
 
     public var id: String { return "\(accountId):\(name):\(contract.stringValue):\(trxId)" }

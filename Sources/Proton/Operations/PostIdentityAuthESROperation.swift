@@ -1,5 +1,5 @@
 //
-//  PostIdentityESROperation.swift
+//  PostIdentityAuthESROperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 3/18/20.
@@ -9,7 +9,7 @@
 import Foundation
 import EOSIO
 
-class PostIdentityESROperation: AbstractOperation {
+class PostIdentityAuthESROperation: AbstractOperation {
     
     var resolvedSigningRequest: ResolvedSigningRequest
     var signature: Signature
@@ -31,23 +31,25 @@ class PostIdentityESROperation: AbstractOperation {
             
             guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else { self.finish(retval: nil, error: nil); return }
             
-            //guard let payload = String(bytes: payloadData, encoding: .utf8) else { self.finish(retval: nil, error: nil); return }
+            var path = callback.url
+            if path.last == "/" { path.removeLast() }
+            path += "/auth"
 
-            WebServices.shared.postRequestJSON(withPath: callback.url, parameters: parameters) { result in
+            WebServices.shared.postRequestJSON(withPath: path, parameters: parameters) { result in
                 
                 switch result {
                 case .success(_):
                     self.finish(retval: nil, error: nil)
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
-                    self.finish(retval: nil, error: WebServiceError.error("Error fetching chain providers: \(error.localizedDescription)"))
+                    self.finish(retval: nil, error: WebServiceError.error("Error posting to esr auth callback: \(error.localizedDescription)"))
                 }
                 
             }
 
         } catch {
             print("ERROR: \(error.localizedDescription)")
-            self.finish(retval: nil, error: WebServiceError.error("Error fetching chain providers: \(error.localizedDescription)"))
+            self.finish(retval: nil, error: WebServiceError.error("Error posting to esr auth callback: \(error.localizedDescription)"))
         }
 
     }

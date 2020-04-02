@@ -15,7 +15,11 @@ import AppKit
 import UIKit
 #endif
 
-public struct Account: Codable, Identifiable, Hashable {
+protocol AccountProtocol {
+    var account: Account? { get }
+}
+
+public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, TokenBalancesProtocol {
 
     public var id: String { return "\(chainId):\(name.stringValue)" }
     public var chainId: String
@@ -45,6 +49,14 @@ public struct Account: Codable, Identifiable, Hashable {
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
+    }
+    
+    public var chainProvider: ChainProvider? {
+        return Proton.shared.chainProviders.first(where: { $0.chainId == self.chainId })
+    }
+    
+    public var tokenBalances: Set<TokenBalance> {
+        return Proton.shared.tokenBalances.filter({ $0.accountId == self.id })
     }
     
     public var avatarImage: Image {
@@ -100,6 +112,14 @@ public struct Account: Codable, Identifiable, Hashable {
     }
     
     #endif
+    
+//    public var totalUSDBalanceFormatted: String {
+//
+//        var retval = "$0.00"
+//
+//
+//
+//    }
     
     func privateKey(forPermissionName: String) -> PrivateKey? {
         
