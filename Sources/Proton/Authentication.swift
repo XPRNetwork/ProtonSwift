@@ -6,7 +6,11 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 import Foundation
+#if os(macOS)
+import AppKit
+#elseif os(iOS)
 import UIKit
+#endif
 import LocalAuthentication
 
 public class Authentication {

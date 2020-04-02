@@ -9,7 +9,11 @@
 import Foundation
 import Combine
 import EOSIO
+#if os(macOS)
+import AppKit
+#elseif os(iOS)
 import UIKit
+#endif
 
 final public class Proton: ObservableObject {
     
@@ -387,6 +391,7 @@ final public class Proton: ObservableObject {
      - Parameter openURLContext: UIOpenURLContext passed when opening from custom uri: esr://
      - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
      */
+    #if os(iOS)
     public func parseESR(openURLContext: UIOpenURLContext, completion: @escaping (ESR?) -> ()) {
         
         do {
@@ -427,7 +432,7 @@ final public class Proton: ObservableObject {
         }
         
     }
-    
+    #endif
     /**
      Use this to decline signing request
      - Parameter completion: Closure thats called when the function is complete.
