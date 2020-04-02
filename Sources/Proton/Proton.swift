@@ -471,9 +471,10 @@ final public class Proton: ObservableObject {
                                                          chainId: String(signingRequest.chainId), sid: esr.sid)
                                 
                                 self.esrSessions.update(with: session)
-                                
+                                self.esr = nil
                                 completion()
                             case .failure(_):
+                                self.esr = nil
                                 completion()
                             }
                             
@@ -482,7 +483,7 @@ final public class Proton: ObservableObject {
                     } catch {
                         
                         print("Error: \(error)")
-                        
+                        self.esr = nil
                         completion()
                         
                     }
