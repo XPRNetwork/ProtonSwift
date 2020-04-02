@@ -451,7 +451,7 @@ final public class Proton: ObservableObject {
             
             if success {
                 
-                var signingRequest = esr.signingRequest
+                let signingRequest = esr.signingRequest
                 let signer = esr.signer
 
                 if let privateKey = signer.privateKey(forPermissionName: "active") {
@@ -461,9 +461,21 @@ final public class Proton: ObservableObject {
                         let resolved = try signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
                         let sig = try privateKey.sign(resolved.transaction.digest(using: signingRequest.chainId))
                         
-                        WebServices.shared.addSeq(PostIdentityESROperation(resolvedSigningRequest: resolved, signature: sig, sid: esr.sid)) { result in
+                        WebServices.shared.addSeq(PostIdentityESROperation(resolvedSigningRequest: resolved,
+                                                                           signature: sig, sid: esr.sid)) { result in
                             
-                            completion()
+                            switch result {
+                            case .success(_):
+                                
+                                let session = ESRSession(requestor: esr.requestor, signer: signer.name,
+                                                         chainId: String(signingRequest.chainId), sid: esr.sid)
+                                
+                                self.esrSessions.update(with: session)
+                                
+                                completion()
+                            case .failure(_):
+                                completion()
+                            }
                             
                         }
 
