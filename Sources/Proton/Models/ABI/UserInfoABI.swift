@@ -17,6 +17,5 @@ struct UserInfoABI: ABICodable {
     let verified: Bool
     let date: UInt64
     let data: String
-    let primary: Bool
 
 }
