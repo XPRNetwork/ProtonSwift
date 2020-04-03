@@ -10,7 +10,7 @@ import Foundation
 import EOSIO
 
 protocol TokenTransferActionsProtocol {
-    var tokenTransferActions: Set<TokenTransferAction> { get }
+    var tokenTransferActions: [TokenTransferAction] { get }
 }
 
 public struct TokenTransferAction: Codable, Identifiable, Hashable {

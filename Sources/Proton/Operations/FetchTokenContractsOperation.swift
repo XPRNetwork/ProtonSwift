@@ -12,9 +12,9 @@ import EOSIO
 class FetchTokenContractsOperation: AbstractOperation {
     
     var chainProvider: ChainProvider
-    var tokenContracts: Set<TokenContract>
+    var tokenContracts: [TokenContract]
     
-    init(chainProvider: ChainProvider, tokenContracts: Set<TokenContract>) {
+    init(chainProvider: ChainProvider, tokenContracts: [TokenContract]) {
         self.chainProvider = chainProvider
         self.tokenContracts = tokenContracts
     }
@@ -37,7 +37,10 @@ class FetchTokenContractsOperation: AbstractOperation {
             
             for row in res.rows {
                 
-                if var tokenContract = self.tokenContracts.first(where: { $0.contract.stringValue == row.tcontract.stringValue && $0.symbol.name == row.symbol.name }) {
+                if let tokenContractIndex = self.tokenContracts.firstIndex(where: { $0.contract.stringValue == row.tcontract.stringValue
+                    && $0.symbol.name == row.symbol.name && $0.chainId == self.chainProvider.chainId }) {
+                    
+                    var tokenContract = self.tokenContracts[tokenContractIndex]
                     
                     tokenContract.name = row.tname
                     tokenContract.url = row.url
@@ -45,7 +48,7 @@ class FetchTokenContractsOperation: AbstractOperation {
                     tokenContract.iconUrl = row.iconurl
                     tokenContract.blacklisted = row.blisted
                     
-                    self.tokenContracts.update(with: tokenContract)
+                    self.tokenContracts[tokenContractIndex] = tokenContract
                     
                 } else {
                     
@@ -55,7 +58,7 @@ class FetchTokenContractsOperation: AbstractOperation {
                                                       supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
                                                       symbol: row.symbol, url: row.url, blacklisted: row.blisted)
                     
-                    self.tokenContracts.update(with: tokenContract)
+                    self.tokenContracts.append(tokenContract)
                     
                 }
                 

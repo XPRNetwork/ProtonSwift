@@ -10,7 +10,7 @@ import Foundation
 import EOSIO
 
 protocol TokenBalancesProtocol {
-    var tokenBalances: Set<TokenBalance> { get }
+    var tokenBalances: [TokenBalance] { get }
 }
 
 public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtocol, TokenTransferActionsProtocol, AccountProtocol {
@@ -54,7 +54,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
         return Proton.shared.tokenContracts.first(where: { $0.id == self.tokenContractId })
     }
     
-    public var tokenTransferActions: Set<TokenTransferAction> {
+    public var tokenTransferActions: [TokenTransferAction] {
         return Proton.shared.tokenTransferActions.filter({ $0.accountId == self.accountId && $0.tokenBalanceId == self.id })
     }
     

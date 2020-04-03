@@ -57,7 +57,7 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
         hasher.combine(self.id)
     }
     
-    public var tokenContracts: Set<TokenContract> {
+    public var tokenContracts: [TokenContract] {
         return Proton.shared.tokenContracts.filter({ $0.chainId == self.chainId })
     }
     

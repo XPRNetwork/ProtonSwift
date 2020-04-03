@@ -54,12 +54,12 @@ final public class Proton: ObservableObject {
     public static let shared = Proton()
 
     var storage: Persistence!
-    var publicKeys = Set<String>()
+    var publicKeys = [String]()
     
     /**
      Live updated set of chainProviders. Subscribe to this for your chainProviders
      */
-    @Published public var chainProviders: Set<ChainProvider> = [] {
+    @Published public var chainProviders: [ChainProvider] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -68,7 +68,7 @@ final public class Proton: ObservableObject {
     /**
      Live updated set of tokenContracts. Subscribe to this for your tokenContracts
      */
-    @Published public var tokenContracts: Set<TokenContract> = [] {
+    @Published public var tokenContracts: [TokenContract] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -77,7 +77,7 @@ final public class Proton: ObservableObject {
     /**
      Live updated set of accounts. Subscribe to this for your accounts
      */
-    @Published public var accounts: Set<Account> = [] {
+    @Published public var accounts: [Account] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -86,7 +86,7 @@ final public class Proton: ObservableObject {
     /**
      Live updated set of tokenBalances. Subscribe to this for your tokenBalances
      */
-    @Published public var tokenBalances: Set<TokenBalance> = [] {
+    @Published public var tokenBalances: [TokenBalance] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -95,7 +95,7 @@ final public class Proton: ObservableObject {
     /**
      Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
      */
-    @Published public var tokenTransferActions: Set<TokenTransferAction> = [] {
+    @Published public var tokenTransferActions: [TokenTransferAction] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -104,7 +104,7 @@ final public class Proton: ObservableObject {
     /**
      Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
      */
-    @Published public var esrSessions: Set<ESRSession> = [] {
+    @Published public var esrSessions: [ESRSession] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -135,13 +135,13 @@ final public class Proton: ObservableObject {
      */
     public func loadAll() {
         
-        self.publicKeys = self.storage.getKeychainItem(Set<String>.self, forKey: "publicKeys") ?? []
-        self.chainProviders = self.storage.getDefaultsItem(Set<ChainProvider>.self, forKey: "chainProviders") ?? []
-        self.tokenContracts = self.storage.getDefaultsItem(Set<TokenContract>.self, forKey: "tokenContracts") ?? []
-        self.accounts = self.storage.getDefaultsItem(Set<Account>.self, forKey: "accounts") ?? []
-        self.tokenBalances = self.storage.getDefaultsItem(Set<TokenBalance>.self, forKey: "tokenBalances") ?? []
-        self.tokenTransferActions = self.storage.getDefaultsItem(Set<TokenTransferAction>.self, forKey: "tokenTransferActions") ?? []
-        self.esrSessions = self.storage.getDefaultsItem(Set<ESRSession>.self, forKey: "esrSessions") ?? []
+        self.publicKeys = self.storage.getKeychainItem([String].self, forKey: "publicKeys") ?? []
+        self.chainProviders = self.storage.getDefaultsItem([ChainProvider].self, forKey: "chainProviders") ?? []
+        self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
+        self.accounts = self.storage.getDefaultsItem([Account].self, forKey: "accounts") ?? []
+        self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
+        self.tokenTransferActions = self.storage.getDefaultsItem([TokenTransferAction].self, forKey: "tokenTransferActions") ?? []
+        self.esrSessions = self.storage.getDefaultsItem([ESRSession].self, forKey: "esrSessions") ?? []
         
         print("🧑‍💻 LOAD COMPLETED")
         print("ACCOUNTS => \(self.accounts.count)")
@@ -180,11 +180,19 @@ final public class Proton: ObservableObject {
             switch result {
 
             case .success(let chainProviders):
+                
                 if let chainProviders = chainProviders as? Set<ChainProvider> {
+                    
                     for chainProvider in chainProviders {
-                        self.chainProviders.update(with: chainProvider)
+                        if let idx = self.chainProviders.firstIndex(of: chainProvider) {
+                            self.chainProviders[idx] = chainProvider
+                        } else {
+                            self.chainProviders.append(chainProvider)
+                        }
                     }
+                    
                 }
+                
             case .failure(let error):
                 print("ERROR: \(error.localizedDescription)")
             }
@@ -203,11 +211,19 @@ final public class Proton: ObservableObject {
                         switch result {
 
                         case .success(let tokenContracts):
-                            if let tokenContracts = tokenContracts as? Set<TokenContract> {
+                            
+                            if let tokenContracts = tokenContracts as? [TokenContract] {
+                                
                                 for tokenContract in tokenContracts {
-                                    self.tokenContracts.update(with: tokenContract)
+                                    if let idx = self.tokenContracts.firstIndex(of: tokenContract) {
+                                        self.tokenContracts[idx] = tokenContract
+                                    } else {
+                                        self.tokenContracts.append(tokenContract)
+                                    }
                                 }
+                                
                             }
+                            
                         case .failure(let error):
                             print("ERROR: \(error.localizedDescription)")
                         }
@@ -244,18 +260,34 @@ final public class Proton: ObservableObject {
         self.fetchAccount(forAccount: account) { returnAccount in
             
             account = returnAccount
-            self.accounts.update(with: account)
+            
+            if let idx = self.accounts.firstIndex(of: account) {
+                self.accounts[idx] = account
+            } else {
+                self.accounts.append(account)
+            }
             
             self.fetchAccountUserInfo(forAccount: account) { returnAccount in
                 
                 account = returnAccount
-                self.accounts.update(with: account)
+
+                if let idx = self.accounts.firstIndex(of: account) {
+                    self.accounts[idx] = account
+                } else {
+                    self.accounts.append(account)
+                }
                 
                 self.fetchBalances(forAccount: account) { tokenBalances in
                     
                     if let tokenBalances = tokenBalances {
                         
-                        self.tokenBalances = self.tokenBalances.union(tokenBalances)
+                        for tokenBalance in tokenBalances {
+                            if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
+                                self.tokenBalances[idx] = tokenBalance
+                            } else {
+                                self.tokenBalances.append(tokenBalance)
+                            }
+                        }
 
                     }
                     
@@ -471,7 +503,11 @@ final public class Proton: ObservableObject {
                             case .success(let esrSession):
                                 
                                 if let esrSession = esrSession as? ESRSession {
-                                    self.esrSessions.update(with: esrSession)
+                                    if let idx = self.esrSessions.firstIndex(of: esrSession) {
+                                        self.esrSessions[idx] = esrSession
+                                    } else {
+                                        self.esrSessions.append(esrSession)
+                                    }
                                 }
                                 self.esr = nil
                                 completion()
@@ -516,7 +552,7 @@ final public class Proton: ObservableObject {
         
     }
     
-    private func fetchCurrencyStats(forTokenContracts tokenContracts: Set<TokenContract>, completion: @escaping () -> ()) {
+    private func fetchCurrencyStats(forTokenContracts tokenContracts: [TokenContract], completion: @escaping () -> ()) {
         
         let tokenContractCount = tokenContracts.count
         var tokenContractsProcessed = 0
@@ -533,7 +569,11 @@ final public class Proton: ObservableObject {
                          case .success(let updatedTokenContract):
                      
                              if let updatedTokenContract = updatedTokenContract as? TokenContract {
-                                self.tokenContracts.update(with: updatedTokenContract)
+                                if let idx = self.tokenContracts.firstIndex(of: updatedTokenContract) {
+                                    self.tokenContracts[idx] = updatedTokenContract
+                                } else {
+                                    self.tokenContracts.append(updatedTokenContract)
+                                }
                              }
                              
                          case .failure(let error):
@@ -566,7 +606,7 @@ final public class Proton: ObservableObject {
 
     }
     
-    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping (Set<TokenTransferAction>?) -> ()) {
+    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ([TokenTransferAction]?) -> ()) {
         
         guard let account = tokenBalance.account else {
             completion(nil)
@@ -583,7 +623,7 @@ final public class Proton: ObservableObject {
             return
         }
         
-        var retval = Set<TokenTransferAction>()
+        var retval = [TokenTransferAction]()
         
         WebServices.shared.addMulti(FetchTokenTransferActionsOperation(account: account, tokenContract: tokenContract,
                                                                        chainProvider: chainProvider, tokenBalance: tokenBalance)) { result in
@@ -595,10 +635,15 @@ final public class Proton: ObservableObject {
                     
                     for transferAction in transferActions {
                         
-                        self.tokenTransferActions.update(with: transferAction)
-                        retval.update(with: transferAction)
+                        if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
+                            self.tokenTransferActions[idx] = transferAction
+                        } else {
+                            self.tokenTransferActions.append(transferAction)
+                        }
                         
                     }
+                    
+                    retval = Array(transferActions)
                     
                 }
                 
@@ -630,18 +675,18 @@ final public class Proton: ObservableObject {
                 switch result {
                 case .success(let accountNames):
                     
-                    if let accountNames = accountNames as? [String], accountNames.count > 0 {
+                    if let accountNames = accountNames as? Set<String>, accountNames.count > 0 {
                         
                         for accountName in accountNames {
                             
                             let account = Account(chainId: chainProvider.chainId, name: accountName)
-                            if !self.accounts.contains(account) {
+                            if self.accounts.firstIndex(of: account) == nil {
                                 accounts.update(with: account)
                             }
                             
                         }
-                        
-                        self.publicKeys.update(with: publicKey)
+                        self.publicKeys.append(publicKey)
+                        self.publicKeys = self.publicKeys.unique()
                         
                     }
 
@@ -692,8 +737,6 @@ final public class Proton: ObservableObject {
     
     private func fetchAccountUserInfo(forAccount account: Account, completion: @escaping (Account) -> ()) {
         
-        var account = account
-        
         if let chainProvider = account.chainProvider {
             
             WebServices.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
@@ -703,8 +746,11 @@ final public class Proton: ObservableObject {
             
                     if let updatedAccount = updatedAccount as? Account {
                         
-                        account = updatedAccount
-                        self.accounts.update(with: updatedAccount)
+                        if let idx = self.accounts.firstIndex(of: updatedAccount) {
+                            self.accounts[idx] = updatedAccount
+                        } else {
+                            self.accounts.append(updatedAccount)
+                        }
                         
                     }
                     
@@ -744,7 +790,7 @@ final public class Proton: ObservableObject {
                                                                          maxSupply: Asset(0.0, tokenBalance.amount.symbol),
                                                                          symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
                                 
-                                self.tokenContracts.update(with: unknownTokenContract)
+                                self.tokenContracts.append(unknownTokenContract)
                                 
                             }
                             

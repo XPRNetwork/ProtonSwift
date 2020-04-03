@@ -41,6 +41,8 @@ class FetchTokenBalancesOperation: AbstractOperation {
                         
                         if let tokenBalance = TokenBalance(accountId: self.account.id, contract: Name(contract),
                                                            amount: amount, precision: precision, symbol: symbol) {
+                            
+                            
                             tokenBalances.update(with: tokenBalance)
                         }
                         

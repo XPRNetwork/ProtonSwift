@@ -14,7 +14,7 @@ protocol TokenContractProtocol {
 }
 
 protocol TokenContractsProtocol {
-    var tokenContracts: Set<TokenContract> { get }
+    var tokenContracts: [TokenContract] { get }
 }
 
 public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol {

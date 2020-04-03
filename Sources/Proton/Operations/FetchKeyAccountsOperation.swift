@@ -24,7 +24,7 @@ class FetchKeyAccountsOperation: AbstractOperation {
         
         WebServices.shared.getRequest(withPath: path) { (result: Result<[String: [String]], Error>) in
             
-            var accountNames = [String]()
+            var accountNames = Set<String>()
             
             switch result {
             case .success(let res):
@@ -33,7 +33,7 @@ class FetchKeyAccountsOperation: AbstractOperation {
                     
                     for name in names {
                         if !name.contains(".") {
-                            accountNames.append(name)
+                            accountNames.update(with: name)
                         }
                     }
                     

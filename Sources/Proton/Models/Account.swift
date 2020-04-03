@@ -55,7 +55,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return Proton.shared.chainProviders.first(where: { $0.chainId == self.chainId })
     }
     
-    public var tokenBalances: Set<TokenBalance> {
+    public var tokenBalances: [TokenBalance] {
         return Proton.shared.tokenBalances.filter({ $0.accountId == self.id })
     }
     
