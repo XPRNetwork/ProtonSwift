@@ -279,16 +279,12 @@ public final class Proton: ObservableObject {
                 
                 self.fetchBalances(forAccount: account) { tokenBalances in
                     
-                    if let tokenBalances = tokenBalances {
-                        
-                        for tokenBalance in tokenBalances {
-                            if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
-                                self.tokenBalances[idx] = tokenBalance
-                            } else {
-                                self.tokenBalances.append(tokenBalance)
-                            }
+                    for tokenBalance in tokenBalances {
+                        if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
+                            self.tokenBalances[idx] = tokenBalance
+                        } else {
+                            self.tokenBalances.append(tokenBalance)
                         }
-                        
                     }
                     
                     let tokenBalancesCount = self.tokenBalances.count
@@ -298,9 +294,19 @@ public final class Proton: ObservableObject {
                         
                         for tokenBalance in self.tokenBalances {
                             
-                            self.fetchTransferActions(forTokenBalance: tokenBalance) { _ in
+                            self.fetchTransferActions(forTokenBalance: tokenBalance) { transferActions in
                                 
                                 tokenBalancesProcessed += 1
+                                
+                                for transferAction in transferActions {
+                                    
+                                    if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
+                                        self.tokenTransferActions[idx] = transferAction
+                                    } else {
+                                        self.tokenTransferActions.append(transferAction)
+                                    }
+                                    
+                                }
                                 
                                 if tokenBalancesProcessed == tokenBalancesCount {
                                     
@@ -606,24 +612,24 @@ public final class Proton: ObservableObject {
         
     }
     
-    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ([TokenTransferAction]?) -> ()) {
+    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping (Set<TokenTransferAction>) -> ()) {
+        
+        var retval = Set<TokenTransferAction>()
         
         guard let account = tokenBalance.account else {
-            completion(nil)
+            completion(retval)
             return
         }
         
         guard let chainProvider = account.chainProvider else {
-            completion(nil)
+            completion(retval)
             return
         }
         
         guard let tokenContract = tokenBalance.tokenContract else {
-            completion(nil)
+            completion(retval)
             return
         }
-        
-        var retval = [TokenTransferAction]()
         
         WebServices.shared.addMulti(FetchTokenTransferActionsOperation(account: account, tokenContract: tokenContract,
                                                                        chainProvider: chainProvider, tokenBalance: tokenBalance)) { result in
@@ -632,27 +638,14 @@ public final class Proton: ObservableObject {
             case .success(let transferActions):
                 
                 if let transferActions = transferActions as? Set<TokenTransferAction> {
-                    
-                    for transferAction in transferActions {
-                        
-                        if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
-                            self.tokenTransferActions[idx] = transferAction
-                        } else {
-                            self.tokenTransferActions.append(transferAction)
-                        }
-                        
-                    }
-                    
-                    retval = Array(transferActions)
-                    
+                    retval = transferActions
                 }
-                
-                completion(retval)
-                
+
             case .failure(let error):
                 print("ERROR: \(error.localizedDescription)")
-                completion(nil)
             }
+                                                                        
+            completion(retval)
             
         }
         
@@ -737,6 +730,8 @@ public final class Proton: ObservableObject {
     
     private func fetchAccountUserInfo(forAccount account: Account, completion: @escaping (Account) -> ()) {
         
+        var account = account
+        
         if let chainProvider = account.chainProvider {
             
             WebServices.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
@@ -745,13 +740,7 @@ public final class Proton: ObservableObject {
                 case .success(let updatedAccount):
                     
                     if let updatedAccount = updatedAccount as? Account {
-                        
-                        if let idx = self.accounts.firstIndex(of: updatedAccount) {
-                            self.accounts[idx] = updatedAccount
-                        } else {
-                            self.accounts.append(updatedAccount)
-                        }
-                        
+                        account = updatedAccount
                     }
                     
                 case .failure(let error):
@@ -768,7 +757,9 @@ public final class Proton: ObservableObject {
         
     }
     
-    private func fetchBalances(forAccount account: Account, completion: @escaping (Set<TokenBalance>?) -> ()) {
+    private func fetchBalances(forAccount account: Account, completion: @escaping (Set<TokenBalance>) -> ()) {
+        
+        var retval = Set<TokenBalance>()
         
         if let chainProvider = account.chainProvider {
             
@@ -795,13 +786,15 @@ public final class Proton: ObservableObject {
                             
                         }
                         
-                        completion(tokenBalances)
+                        retval = tokenBalances
                         
                     }
                     
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
                 }
+                
+                completion(retval)
                 
             }
             
