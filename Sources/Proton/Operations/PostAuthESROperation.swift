@@ -40,7 +40,7 @@ class PostAuthESROperation: AbstractOperation {
                 case .success:
                     
                     let session = ESRSession(requestor: self.esr.requestor, signer: self.esr.signer.name,
-                                             chainId: String(self.esr.signingRequest.chainId), sid: self.esr.sid, callbackUrl: path)
+                                             chainId: String(self.esr.signingRequest.chainId), sid: self.esr.sid, callbackUrl: path.replacingOccurrences(of: "/auth", with: ""))
                     
                     self.finish(retval: session, error: nil)
                 case .failure(let error):
