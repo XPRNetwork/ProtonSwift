@@ -1,5 +1,5 @@
 //
-//  PostIdentityAuthESROperation.swift
+//  PostAuthESROperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 3/18/20.
@@ -9,25 +9,24 @@
 import Foundation
 import EOSIO
 
-class PostIdentityAuthESROperation: AbstractOperation {
+class PostAuthESROperation: AbstractOperation {
     
-    var resolvedSigningRequest: ResolvedSigningRequest
-    var signature: Signature
-    var sid: String
+    var esr: Proton.ESR
+    var sig: Signature
     
-    init(resolvedSigningRequest: ResolvedSigningRequest, signature: Signature, sid: String) {
-        self.resolvedSigningRequest = resolvedSigningRequest
-        self.signature = signature
-        self.sid = sid
+    init(esr: Proton.ESR, sig: Signature) {
+        self.esr = esr
+        self.sig = sig
     }
     
     override func main() {
         
-        guard let callback = resolvedSigningRequest.getCallback(using: [self.signature], blockNum: nil) else { self.finish(retval: nil, error: nil); return }
+        guard let resolved = self.esr.resolved else { self.finish(retval: nil, error: nil); return }
+        guard let callback = resolved.getCallback(using: [self.sig], blockNum: nil) else { self.finish(retval: nil, error: nil); return }
         
         do {
             
-            let payloadData = try callback.getPayload(extra: ["sid": self.sid])
+            let payloadData = try callback.getPayload(extra: ["sid": self.esr.sid])
             
             guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else { self.finish(retval: nil, error: nil); return }
             
@@ -39,7 +38,11 @@ class PostIdentityAuthESROperation: AbstractOperation {
                 
                 switch result {
                 case .success(_):
-                    self.finish(retval: nil, error: nil)
+                    
+                    let session = ESRSession(requestor: self.esr.requestor, signer: self.esr.signer.name,
+                                             chainId: String(self.esr.signingRequest.chainId), sid: self.esr.sid, callbackUrl: path)
+                    
+                    self.finish(retval: session, error: nil)
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
                     self.finish(retval: nil, error: WebServiceError.error("Error posting to esr auth callback: \(error.localizedDescription)"))

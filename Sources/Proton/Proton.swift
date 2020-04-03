@@ -18,10 +18,11 @@ import UIKit
 final public class Proton: ObservableObject {
     
     public struct ESR {
-        public let requestor: Account
-        public let signer: Account
-        public let signingRequest: SigningRequest
-        public let sid: String
+        public var requestor: Account
+        public var signer: Account
+        public var signingRequest: SigningRequest
+        public var sid: String
+        public var resolved: ResolvedSigningRequest?
     }
 
     public struct Config {
@@ -456,31 +457,30 @@ final public class Proton: ObservableObject {
             
             if success {
                 
-                let signingRequest = esr.signingRequest
-                let signer = esr.signer
-
-                if let privateKey = signer.privateKey(forPermissionName: "active") {
+                if let privateKey = esr.signer.privateKey(forPermissionName: "active") {
                     
                     do {
                         
-                        let resolved = try signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
-                        let sig = try privateKey.sign(resolved.transaction.digest(using: signingRequest.chainId))
+                        self.esr?.resolved = try esr.signingRequest.resolve(using: PermissionLevel(esr.signer.name, Name("active")))
                         
-                        WebServices.shared.addSeq(PostIdentityAuthESROperation(resolvedSigningRequest: resolved,
-                                                                           signature: sig, sid: esr.sid)) { result in
+                        let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: esr.signingRequest.chainId))
+                        
+                        WebServices.shared.addSeq(PostAuthESROperation(esr: self.esr!, sig: sig)) { result in
                             
                             switch result {
-                            case .success(_):
+                            case .success(let esrSession):
                                 
-                                let session = ESRSession(requestor: esr.requestor, signer: signer.name,
-                                                         chainId: String(signingRequest.chainId), sid: esr.sid)
-                                
-                                self.esrSessions.update(with: session)
+                                if let esrSession = esrSession as? ESRSession {
+                                    self.esrSessions.update(with: esrSession)
+                                }
                                 self.esr = nil
                                 completion()
+                                
                             case .failure(_):
+                                
                                 self.esr = nil
                                 completion()
+                                
                             }
                                                                             
                             self.saveAll()
@@ -502,6 +502,17 @@ final public class Proton: ObservableObject {
             }
             
         }
+        
+    }
+    
+    /**
+     Use this to remove authorization
+     - Parameter forId: esr Session Id
+     */
+    public func removeESRSession(forId: String) {
+        
+        guard let esrSession = self.esrSessions.first(where: { $0.id == forId }) else { return }
+        WebServices.shared.addMulti(PostReauthESROperation(esrSession: esrSession)) { result in }
         
     }
     
