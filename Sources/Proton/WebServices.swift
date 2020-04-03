@@ -18,7 +18,7 @@ class WebServices: NSObject {
     var operationQueueMulti: OperationQueue
     
     static let shared = WebServices()
-
+    
     private override init() {
         
         operationQueueSeq = OperationQueue()
@@ -29,13 +29,13 @@ class WebServices: NSObject {
         operationQueueMulti = OperationQueue()
         operationQueueMulti.qualityOfService = .background
         operationQueueMulti.name = "\(UUID()).multi"
-
+        
     }
     
     // MARK: - Operation Services
     
     func addSeq(_ operation: AbstractOperation,
-             completion: ((Result<Any?, Error>) -> Void)?) {
+                completion: ((Result<Any?, Error>) -> Void)?) {
         
         operation.completion = completion
         operationQueueSeq.addOperation(operation)
@@ -43,7 +43,7 @@ class WebServices: NSObject {
     }
     
     func addMulti(_ operation: AbstractOperation,
-             completion: ((Result<Any?, Error>) -> Void)?) {
+                  completion: ((Result<Any?, Error>) -> Void)?) {
         
         operation.completion = completion
         operationQueueSeq.addOperation(operation)
@@ -63,12 +63,12 @@ class WebServices: NSObject {
     // MARK: - HTTP Base Requests
     
     func getRequest(withPath path: String, completion: ((Result<Data?, Error>) -> Void)?) {
-    
+        
         let session = URLSession.shared
         let url = URL(string: path)!
         
         let task = session.dataTask(with: url) { data, response, error in
-
+            
             if let error = error {
                 print("Client error!")
                 DispatchQueue.main.async {
@@ -84,7 +84,7 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
                 print("Response error!")
                 DispatchQueue.main.async {
@@ -92,7 +92,7 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             guard let mime = response.mimeType, mime == "application/json" else {
                 print("Wrong MIME type!")
                 DispatchQueue.main.async {
@@ -100,26 +100,26 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             do {
                 
                 _ = try JSONSerialization.jsonObject(with: data, options: [])
-                //print(json)
+                // print(json)
                 DispatchQueue.main.async {
                     completion?(.success(data))
                 }
-
+                
             } catch {
                 print("JSON error: \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     completion?(.failure(WebServiceError.error("JSON error: \(error.localizedDescription)")))
                 }
             }
-
-        }
-
-        task.resume()
             
+        }
+        
+        task.resume()
+        
     }
     
     func getRequestJSON(withPath path: String, completion: ((Result<Any?, Error>) -> Void)?) {
@@ -127,7 +127,7 @@ class WebServices: NSObject {
         getRequest(withPath: path) { result in
             
             switch result {
-  
+                
             case .success(let data):
                 
                 guard let data = data else {
@@ -149,7 +149,6 @@ class WebServices: NSObject {
                         completion?(.failure(WebServiceError.error("JSON error: \(error.localizedDescription)")))
                     }
                 }
-
                 
             case .failure(let error):
                 
@@ -185,7 +184,7 @@ class WebServices: NSObject {
                     DispatchQueue.main.async {
                         completion?(.success(res))
                     }
-                } catch let error {
+                } catch {
                     print(error)
                 }
                 
@@ -223,7 +222,7 @@ class WebServices: NSObject {
         }
         
         let task = session.dataTask(with: request) { data, response, error in
-
+            
             if let error = error {
                 print("Client error!")
                 DispatchQueue.main.async {
@@ -239,7 +238,7 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
                 print("Response error!")
                 DispatchQueue.main.async {
@@ -247,7 +246,7 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             guard let mime = response.mimeType, mime == "application/json" else {
                 print("Wrong MIME type!")
                 DispatchQueue.main.async {
@@ -255,15 +254,15 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             do {
                 
                 let json = try JSONSerialization.jsonObject(with: data, options: [])
-                //print(json)
+                // print(json)
                 DispatchQueue.main.async {
                     completion?(.success(json))
                 }
-
+                
             } catch {
                 print("JSON error: \(error.localizedDescription)")
                 DispatchQueue.main.async {
@@ -271,7 +270,7 @@ class WebServices: NSObject {
                 }
             }
         }
-
+        
         task.resume()
         
     }
@@ -286,9 +285,9 @@ class WebServices: NSObject {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.httpBody = data
-
+        
         let task = session.dataTask(with: request) { data, response, error in
-
+            
             if let error = error {
                 print("Client error!")
                 DispatchQueue.main.async {
@@ -304,7 +303,7 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
                 print("Response error!")
                 DispatchQueue.main.async {
@@ -312,7 +311,7 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             guard let mime = response.mimeType, mime == "application/json" else {
                 print("Wrong MIME type!")
                 DispatchQueue.main.async {
@@ -320,15 +319,15 @@ class WebServices: NSObject {
                 }
                 return
             }
-
+            
             do {
                 
                 let json = try JSONSerialization.jsonObject(with: data, options: [])
-                //print(json)
+                // print(json)
                 DispatchQueue.main.async {
                     completion?(.success(json))
                 }
-
+                
             } catch {
                 print("JSON error: \(error.localizedDescription)")
                 DispatchQueue.main.async {
@@ -336,7 +335,7 @@ class WebServices: NSObject {
                 }
             }
         }
-
+        
         task.resume()
         
     }

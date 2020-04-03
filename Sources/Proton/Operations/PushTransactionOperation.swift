@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class PushTransactionOperation: AbstractOperation {
     
@@ -31,7 +31,7 @@ class PushTransactionOperation: AbstractOperation {
         do {
             
             let client = Client(address: url)
-
+            
             let req = API.V1.Chain.PushTransaction(self.signedTransaction)
             let res = try client.sendSync(req).get()
             

@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class FetchTokenContractsOperation: AbstractOperation {
     
@@ -25,20 +25,21 @@ class FetchTokenContractsOperation: AbstractOperation {
             self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url for get table rows"))
             return
         }
-
+        
         let client = Client(address: url)
-        let req = API.V1.Chain.GetTableRows<TokenContractABI>(code: Name(stringValue: chainProvider.tokensTableCode),
-                                                      table: Name(stringValue: "tokens"),
-                                                      scope: chainProvider.tokensTableScope)
-
+        let req = API.V1.Chain.GetTableRows<TokenContractABI>(code: Name(stringValue: self.chainProvider.tokensTableCode),
+                                                              table: Name(stringValue: "tokens"),
+                                                              scope: self.chainProvider.tokensTableScope)
+        
         do {
-
+            
             let res = try client.sendSync(req).get()
             
             for row in res.rows {
                 
                 if let tokenContractIndex = self.tokenContracts.firstIndex(where: { $0.contract.stringValue == row.tcontract.stringValue
-                    && $0.symbol.name == row.symbol.name && $0.chainId == self.chainProvider.chainId }) {
+                        && $0.symbol.name == row.symbol.name && $0.chainId == self.chainProvider.chainId
+                }) {
                     
                     var tokenContract = self.tokenContracts[tokenContractIndex]
                     
@@ -63,9 +64,9 @@ class FetchTokenContractsOperation: AbstractOperation {
                 }
                 
             }
-
+            
             self.finish(retval: self.tokenContracts, error: nil)
-
+            
         } catch {
             print("ERROR: \(error.localizedDescription)")
             self.finish(retval: nil, error: error)

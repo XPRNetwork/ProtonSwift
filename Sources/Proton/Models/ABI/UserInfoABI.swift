@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 struct UserInfoABI: ABICodable {
 
@@ -18,5 +18,5 @@ struct UserInfoABI: ABICodable {
     let date: UInt64
     let data: String
     let primary: Bool
-    
+
 }

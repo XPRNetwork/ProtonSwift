@@ -6,13 +6,13 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 struct TokenContractCurrencyStatsABI: ABICodable {
-    
+
     let supply: Asset
     let maxSupply: Asset
     let issuer: Name
-    
+
 }

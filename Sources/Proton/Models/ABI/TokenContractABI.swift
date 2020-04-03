@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 struct TokenContractABI: ABICodable {
 
@@ -19,5 +19,5 @@ struct TokenContractABI: ABICodable {
     let iconurl: String
     let symbol: Asset.Symbol
     let blisted: Bool
-    
+
 }

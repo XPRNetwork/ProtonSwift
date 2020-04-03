@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class FetchAccountOperation: AbstractOperation {
     
@@ -26,18 +26,16 @@ class FetchAccountOperation: AbstractOperation {
         }
         
         let client = Client(address: url)
-        let req = API.V1.Chain.GetAccount(Name(stringValue: accountName))
+        let req = API.V1.Chain.GetAccount(Name(stringValue: self.accountName))
         
         do {
-            
             let res = try client.sendSync(req).get()
             self.finish(retval: res, error: nil)
-             
+            
         } catch {
             print("ERROR: \(error.localizedDescription)")
             self.finish(retval: nil, error: error)
         }
-        
     }
     
 }

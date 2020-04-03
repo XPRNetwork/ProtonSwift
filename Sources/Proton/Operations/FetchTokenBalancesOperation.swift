@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class FetchTokenBalancesOperation: AbstractOperation {
     
@@ -20,7 +20,7 @@ class FetchTokenBalancesOperation: AbstractOperation {
     }
     
     override func main() {
-
+        
         let path = "\(chainProvider.stateHistoryUrl)/v2/state/get_tokens?account=\(self.account.name)"
         
         WebServices.shared.getRequestJSON(withPath: path) { result in
@@ -31,7 +31,7 @@ class FetchTokenBalancesOperation: AbstractOperation {
                 var tokenBalances = Set<TokenBalance>()
                 
                 if let res = res as? [String: Any], let tokens = res["tokens"] as? [[String: Any]] {
-                
+                    
                     for token in tokens {
                         
                         guard let symbol = token["symbol"] as? String else { return }
@@ -42,12 +42,11 @@ class FetchTokenBalancesOperation: AbstractOperation {
                         if let tokenBalance = TokenBalance(accountId: self.account.id, contract: Name(contract),
                                                            amount: amount, precision: precision, symbol: symbol) {
                             
-                            
                             tokenBalances.update(with: tokenBalance)
                         }
                         
                     }
-
+                    
                 }
                 
                 self.finish(retval: tokenBalances, error: nil)

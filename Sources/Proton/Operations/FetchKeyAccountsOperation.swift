@@ -19,7 +19,7 @@ class FetchKeyAccountsOperation: AbstractOperation {
     }
     
     override func main() {
-
+        
         let path = "\(chainProvider.stateHistoryUrl)/v2/state/get_key_accounts?public_key=\(self.publicKey)"
         
         WebServices.shared.getRequest(withPath: path) { (result: Result<[String: [String]], Error>) in
@@ -44,7 +44,7 @@ class FetchKeyAccountsOperation: AbstractOperation {
                 } else {
                     self.finish(retval: nil, error: WebServiceError.error("No Accounts found"))
                 }
-
+                
             case .failure(let error):
                 
                 self.finish(retval: nil, error: WebServiceError.error("Error fetching accounts: \(error.localizedDescription)"))

@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 protocol TokenTransferActionsProtocol {
     var tokenTransferActions: [TokenTransferAction] { get }
@@ -16,7 +16,7 @@ protocol TokenTransferActionsProtocol {
 public struct TokenTransferAction: Codable, Identifiable, Hashable {
 
     public var id: String { return "\(accountId):\(name):\(contract.stringValue):\(trxId)" }
-    
+
     public let chainId: String
     public let accountId: String
     public let tokenBalanceId: String
@@ -27,7 +27,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable {
     public let trxId: String
     public let date: Date
     public let sent: Bool
-    
+
     public let from: Name
     public let to: Name
     public let quantity: Asset
@@ -38,12 +38,12 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.id)
+        hasher.combine(id)
     }
-    
+
     public init?(account: Account, tokenBalance: TokenBalance,
-                             tokenContract: TokenContract, transferActionABI: TransferActionABI,
-                             dictionary: [String: Any]) {
+                 tokenContract: TokenContract, transferActionABI: TransferActionABI,
+                 dictionary: [String: Any]) {
 
         guard let act = dictionary["act"] as? [String: Any] else { return nil }
         guard let name = act["name"] as? String else { return nil }
@@ -51,18 +51,18 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable {
         guard let trxId = dictionary["trx_id"] as? String else { return nil }
         guard let timestamp = dictionary["@timestamp"] as? String,
             let date = Date.dateFromAction(timeStamp: timestamp) else { return nil }
-        
+
         self.init(chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
                   tokenContractId: tokenContract.id, name: name, contract: Name(contract), trxId: trxId,
                   date: date, sent: account.name.stringValue == transferActionABI.from.stringValue ? true : false,
                   from: transferActionABI.from, to: transferActionABI.to, quantity: transferActionABI.quantity, memo: transferActionABI.memo)
 
     }
-    
+
     init(chainId: String, accountId: String, tokenBalanceId: String, tokenContractId: String,
-                  name: String, contract: Name, trxId: String, date: Date, sent: Bool,
-                  from: Name, to: Name, quantity: Asset, memo: String) {
-        
+         name: String, contract: Name, trxId: String, date: Date, sent: Bool,
+         from: Name, to: Name, quantity: Asset, memo: String) {
+
         self.chainId = chainId
         self.accountId = accountId
         self.tokenBalanceId = tokenBalanceId
@@ -76,7 +76,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable {
         self.to = to
         self.quantity = quantity
         self.memo = memo
-        
+
     }
 
 }

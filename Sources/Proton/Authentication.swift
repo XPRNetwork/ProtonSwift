@@ -70,7 +70,7 @@ public class Authentication {
                     DispatchQueue.main.async {
                         completion(false, message, error._code)
                     }
-                
+                    
                 }
                 
             }
@@ -86,13 +86,13 @@ public class Authentication {
             
             // Show appropriate alert if biometry/TouchID/FaceID is lockout or not enrolled
             
-            let message = self.evaluateAuthenticationPolicyMessageForLA(errorCode: error._code)
+            let message = evaluateAuthenticationPolicyMessageForLA(errorCode: error._code)
             print(message)
             
             DispatchQueue.main.async {
                 completion(false, message, error._code)
             }
-
+            
         }
         
     }
@@ -137,7 +137,7 @@ public class Authentication {
     internal func evaluatePolicyFailErrorMessageForLA(errorCode: Int) -> String {
         
         var message = ""
-
+        
         switch errorCode {
         case LAError.biometryNotAvailable.rawValue:
             message = "Authentication could not start because the device does not support biometric authentication."
@@ -163,6 +163,5 @@ public class Authentication {
 //        return popup
 //
 //    }
-
+    
 }
-

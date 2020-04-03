@@ -6,11 +6,11 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class FetchTokenContractCurrencyStat: AbstractOperation {
-    
+
     var tokenContract: TokenContract
     var chainProvider: ChainProvider
 
@@ -18,18 +18,18 @@ class FetchTokenContractCurrencyStat: AbstractOperation {
         self.tokenContract = tokenContract
         self.chainProvider = chainProvider
     }
-    
+
     override func main() {
-        
+
         guard let url = URL(string: self.chainProvider.chainUrl) else {
             self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url for get table rows"))
             return
         }
 
         let client = Client(address: url)
-        let req = API.V1.Chain.GetTableRows<TokenContractCurrencyStatsABI>(code: tokenContract.contract,
-                                                      table: Name(stringValue: "stat"),
-                                                      scope: self.tokenContract.symbol.symbolCode)
+        let req = API.V1.Chain.GetTableRows<TokenContractCurrencyStatsABI>(code: self.tokenContract.contract,
+                                                                           table: Name(stringValue: "stat"),
+                                                                           scope: self.tokenContract.symbol.symbolCode)
 
         do {
 
@@ -46,7 +46,7 @@ class FetchTokenContractCurrencyStat: AbstractOperation {
             print("ERROR: \(error.localizedDescription)")
             self.finish(retval: nil, error: error)
         }
-        
+
     }
-    
+
 }

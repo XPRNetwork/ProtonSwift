@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 public struct TransferActionABI: ABICodable {
 
@@ -15,14 +15,14 @@ public struct TransferActionABI: ABICodable {
     public let to: Name
     public let quantity: Asset
     public let memo: String
-    
+
     public init(from: Name, to: Name, quantity: Asset, memo: String = "") {
         self.from = from
         self.to = to
         self.quantity = quantity
         self.memo = memo
     }
-    
+
     static let abi = ABI(
         structs: [
             ["transfer": [
@@ -34,5 +34,5 @@ public struct TransferActionABI: ABICodable {
         ],
         actions: ["transfer"]
     )
-    
+
 }

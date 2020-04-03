@@ -26,8 +26,8 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     }
     
     override func main() {
-
-        let path = "\(self.chainProvider.stateHistoryUrl)/v2/history/get_actions?transfer.symbol=\(tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
+        
+        let path = "\(self.chainProvider.stateHistoryUrl)/v2/history/get_actions?transfer.symbol=\(self.tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
         
         WebServices.shared.getRequestJSON(withPath: path) { result in
             
@@ -40,7 +40,7 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
                     
                     let jsonDecoder = JSONDecoder()
                     let jsonEncoder = JSONEncoder()
-                
+                    
                     for action in actions {
                         
                         if let act = action["act"] as? [String: Any], var data = act["data"] as? [String: Any] {
@@ -67,9 +67,9 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
                             }
                             
                         }
-
+                        
                     }
-
+                    
                 }
                 
                 self.finish(retval: tokenTranfsers, error: nil)

@@ -15,7 +15,7 @@ protocol ChainProviderProtocol {
 }
 
 public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProtocol {
-
+    
     public var id: String { return chainId }
     
     public let chainId: String
@@ -54,11 +54,11 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.id)
+        hasher.combine(id)
     }
     
     public var tokenContracts: [TokenContract] {
-        return Proton.shared.tokenContracts.filter({ $0.chainId == self.chainId })
+        return Proton.shared.tokenContracts.filter { $0.chainId == self.chainId }
     }
     
 }

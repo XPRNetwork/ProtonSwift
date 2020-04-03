@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 protocol TokenContractProtocol {
     var tokenContract: TokenContract? { get }
@@ -18,8 +18,8 @@ protocol TokenContractsProtocol {
 }
 
 public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol {
-
-    public var id: String { return "\(chainId):\(contract.stringValue):\(symbol.name)" }
+    
+    public var id: String { return "\(self.chainId):\(self.contract.stringValue):\(self.symbol.name)" }
     
     public let chainId: String
     

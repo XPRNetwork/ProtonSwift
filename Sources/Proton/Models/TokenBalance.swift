@@ -6,16 +6,16 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 protocol TokenBalancesProtocol {
     var tokenBalances: [TokenBalance] { get }
 }
 
 public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtocol, TokenTransferActionsProtocol, AccountProtocol {
-
-    public var id: String { return "\(accountId):\(contract):\(amount.symbol.name)" }
+    
+    public var id: String { return "\(self.accountId):\(self.contract):\(self.amount.symbol.name)" }
     
     public let accountId: String
     public let tokenContractId: String
@@ -39,7 +39,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
             print("ERROR: \(error.localizedDescription)")
             return nil
         }
-    
+        
     }
     
     public static func == (lhs: TokenBalance, rhs: TokenBalance) -> Bool {
@@ -55,7 +55,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     }
     
     public var tokenTransferActions: [TokenTransferAction] {
-        return Proton.shared.tokenTransferActions.filter({ $0.accountId == self.accountId && $0.tokenBalanceId == self.id })
+        return Proton.shared.tokenTransferActions.filter { $0.accountId == self.accountId && $0.tokenBalanceId == self.id }
     }
     
     public var account: Account? {

@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class PostAuthESROperation: AbstractOperation {
     
@@ -33,11 +33,11 @@ class PostAuthESROperation: AbstractOperation {
             var path = callback.url
             if path.last == "/" { path.removeLast() }
             path += "/auth"
-
+            
             WebServices.shared.postRequestJSON(withPath: path, parameters: parameters) { result in
                 
                 switch result {
-                case .success(_):
+                case .success:
                     
                     let session = ESRSession(requestor: self.esr.requestor, signer: self.esr.signer.name,
                                              chainId: String(self.esr.signingRequest.chainId), sid: self.esr.sid, callbackUrl: path)
@@ -49,12 +49,12 @@ class PostAuthESROperation: AbstractOperation {
                 }
                 
             }
-
+            
         } catch {
             print("ERROR: \(error.localizedDescription)")
             self.finish(retval: nil, error: WebServiceError.error("Error posting to esr auth callback: \(error.localizedDescription)"))
         }
-
+        
     }
     
 }

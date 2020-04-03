@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class SignTransactionOperation: AbstractOperation {
     
@@ -30,7 +30,7 @@ class SignTransactionOperation: AbstractOperation {
             return
         }
         
-        if actions.count == 0 {
+        if self.actions.count == 0 {
             self.finish(retval: nil, error: WebServiceError.error("ERROR: Need 1 or more actions"))
             return
         }
@@ -39,7 +39,7 @@ class SignTransactionOperation: AbstractOperation {
             
             let client = Client(address: url)
             let info = try client.sendSync(API.V1.Chain.GetInfo()).get()
-
+            
             let expiration = info.headBlockTime.addingTimeInterval(60)
             let header = TransactionHeader(expiration: TimePointSec(expiration),
                                            refBlockId: info.lastIrreversibleBlockId)
@@ -59,4 +59,3 @@ class SignTransactionOperation: AbstractOperation {
     }
     
 }
-

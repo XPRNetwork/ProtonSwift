@@ -6,16 +6,16 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import Combine
 import EOSIO
+import Foundation
 #if os(macOS)
 import AppKit
 #elseif os(iOS)
 import UIKit
 #endif
 
-final public class Proton: ObservableObject {
+public final class Proton: ObservableObject {
     
     public struct ESR {
         public var requestor: Account
@@ -24,9 +24,9 @@ final public class Proton: ObservableObject {
         public var sid: String
         public var resolved: ResolvedSigningRequest?
     }
-
+    
     public struct Config {
-
+        
         public var keyChainIdentifier: String
         public var chainProvidersUrl: String
         
@@ -48,11 +48,11 @@ final public class Proton: ObservableObject {
      */
     public static func initialize(_ config: Config) -> Proton {
         Proton.config = config
-        return shared
+        return self.shared
     }
     
     public static let shared = Proton()
-
+    
     var storage: Persistence!
     var publicKeys = [String]()
     
@@ -176,9 +176,9 @@ final public class Proton: ObservableObject {
     public func fetchRequirements(completion: @escaping () -> ()) {
         
         WebServices.shared.addSeq(FetchChainProvidersOperation()) { result in
-
+            
             switch result {
-
+                
             case .success(let chainProviders):
                 
                 if let chainProviders = chainProviders as? Set<ChainProvider> {
@@ -209,7 +209,7 @@ final public class Proton: ObservableObject {
                     WebServices.shared.addMulti(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts)) { result in
                         
                         switch result {
-
+                            
                         case .success(let tokenContracts):
                             
                             if let tokenContracts = tokenContracts as? [TokenContract] {
@@ -227,23 +227,23 @@ final public class Proton: ObservableObject {
                         case .failure(let error):
                             print("ERROR: \(error.localizedDescription)")
                         }
-
+                        
                         self.saveAll()
                         
                         chainProvidersProcessed += 1
                         
                         if chainProvidersProcessed == chainProvidersCount {
-                           completion()
+                            completion()
                         }
-
+                        
                     }
                     
                 }
-                    
+                
             } else {
                 completion()
             }
-
+            
         }
         
     }
@@ -270,7 +270,7 @@ final public class Proton: ObservableObject {
             self.fetchAccountUserInfo(forAccount: account) { returnAccount in
                 
                 account = returnAccount
-
+                
                 if let idx = self.accounts.firstIndex(of: account) {
                     self.accounts[idx] = account
                 } else {
@@ -288,7 +288,7 @@ final public class Proton: ObservableObject {
                                 self.tokenBalances.append(tokenBalance)
                             }
                         }
-
+                        
                     }
                     
                     let tokenBalancesCount = self.tokenBalances.count
@@ -361,11 +361,11 @@ final public class Proton: ObservableObject {
                         completion()
                         
                     }
-
+                    
                 }
                 
             }
-
+            
         } else {
             completion()
         }
@@ -416,7 +416,7 @@ final public class Proton: ObservableObject {
             print("ERROR: \(error.localizedDescription)")
             completion()
         }
-
+        
     }
     
     /**
@@ -452,7 +452,7 @@ final public class Proton: ObservableObject {
                     self.esr = response
                     
                     completion(response)
-
+                    
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
                     completion(nil)
@@ -485,7 +485,7 @@ final public class Proton: ObservableObject {
         
         guard let esr = self.esr else { completion(); return }
         
-        Authentication.shared.authenticate { (success, message, error) in
+        Authentication.shared.authenticate { success, _, error in
             
             if success {
                 
@@ -512,17 +512,17 @@ final public class Proton: ObservableObject {
                                 self.esr = nil
                                 completion()
                                 
-                            case .failure(_):
+                            case .failure:
                                 
                                 self.esr = nil
                                 completion()
                                 
                             }
-                                                                            
+                            
                             self.saveAll()
                             
                         }
-
+                        
                     } catch {
                         
                         print("Error: \(error)")
@@ -548,7 +548,7 @@ final public class Proton: ObservableObject {
     public func removeESRSession(forId: String) {
         
         guard let esrSession = self.esrSessions.first(where: { $0.id == forId }) else { return }
-        WebServices.shared.addMulti(PostReauthESROperation(esrSession: esrSession)) { result in }
+        WebServices.shared.addMulti(PostReauthESROperation(esrSession: esrSession)) { _ in }
         
     }
     
@@ -564,28 +564,28 @@ final public class Proton: ObservableObject {
                 if let chainProvider = tokenContract.chainProvider {
                     
                     WebServices.shared.addMulti(FetchTokenContractCurrencyStat(tokenContract: tokenContract, chainProvider: chainProvider)) { result in
-                         
-                         switch result {
-                         case .success(let updatedTokenContract):
-                     
-                             if let updatedTokenContract = updatedTokenContract as? TokenContract {
+                        
+                        switch result {
+                        case .success(let updatedTokenContract):
+                            
+                            if let updatedTokenContract = updatedTokenContract as? TokenContract {
                                 if let idx = self.tokenContracts.firstIndex(of: updatedTokenContract) {
                                     self.tokenContracts[idx] = updatedTokenContract
                                 } else {
                                     self.tokenContracts.append(updatedTokenContract)
                                 }
-                             }
-                             
-                         case .failure(let error):
-                             print("ERROR: \(error.localizedDescription)")
-                         }
-                    
+                            }
+                            
+                        case .failure(let error):
+                            print("ERROR: \(error.localizedDescription)")
+                        }
+                        
                         tokenContractsProcessed += 1
                         
                         if tokenContractsProcessed == tokenContractCount {
                             completion()
                         }
-                    
+                        
                     }
                     
                 } else {
@@ -599,11 +599,11 @@ final public class Proton: ObservableObject {
                 }
                 
             }
-
+            
         } else {
             completion()
         }
-
+        
     }
     
     private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ([TokenTransferAction]?) -> ()) {
@@ -630,7 +630,7 @@ final public class Proton: ObservableObject {
             
             switch result {
             case .success(let transferActions):
-        
+                
                 if let transferActions = transferActions as? Set<TokenTransferAction> {
                     
                     for transferAction in transferActions {
@@ -689,11 +689,11 @@ final public class Proton: ObservableObject {
                         self.publicKeys = self.publicKeys.unique()
                         
                     }
-
+                    
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
                 }
-                                                                    
+                
                 if chainProvidersProcessed == chainProviderCount {
                     completion(accounts)
                 }
@@ -714,7 +714,7 @@ final public class Proton: ObservableObject {
                 
                 switch result {
                 case .success(let acc):
-            
+                    
                     if let acc = acc as? API.V1.Chain.GetAccount.Response {
                         account.permissions = acc.permissions
                     }
@@ -743,7 +743,7 @@ final public class Proton: ObservableObject {
                 
                 switch result {
                 case .success(let updatedAccount):
-            
+                    
                     if let updatedAccount = updatedAccount as? Account {
                         
                         if let idx = self.accounts.firstIndex(of: updatedAccount) {
@@ -776,13 +776,12 @@ final public class Proton: ObservableObject {
                 
                 switch result {
                 case .success(let tokenBalances):
-            
+                    
                     if let tokenBalances = tokenBalances as? Set<TokenBalance> {
                         
                         for tokenBalance in tokenBalances {
                             
                             if self.tokenContracts.first(where: { $0.id == tokenBalance.tokenContractId }) == nil {
-                                
                                 
                                 let unknownTokenContract = TokenContract(chainId: tokenBalance.chainId, contract: tokenBalance.contract, issuer: "",
                                                                          resourceToken: false, systemToken: false, name: tokenBalance.amount.symbol.name,

@@ -5,13 +5,13 @@
 //  Created by Jacob Davis on 3/18/20.
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
-
-import Foundation
-import SwiftUI
-import EOSIO
 #if os(macOS)
 import AppKit
-#elseif os(iOS)
+#endif
+import EOSIO
+import Foundation
+import SwiftUI
+#if os(iOS)
 import UIKit
 #endif
 
@@ -20,8 +20,8 @@ protocol AccountProtocol {
 }
 
 public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, TokenBalancesProtocol {
-
-    public var id: String { return "\(chainId):\(name.stringValue)" }
+    
+    public var id: String { return "\(self.chainId):\(self.name.stringValue)" }
     public var chainId: String
     public var name: Name
     public var verified: Bool
@@ -56,7 +56,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     }
     
     public var tokenBalances: [TokenBalance] {
-        return Proton.shared.tokenBalances.filter({ $0.accountId == self.id })
+        return Proton.shared.tokenBalances.filter { $0.accountId == self.id }
     }
     
     public var avatarImage: Image {
@@ -66,9 +66,9 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return Image(nsImage: self.avatarNSImage)
         
         #elseif os(iOS)
-
+        
         return Image(uiImage: self.avatarUIImage)
-
+        
         #endif
         
     }
@@ -88,7 +88,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         }
         
         return defaultAvatar
-
+        
     }
     
     #endif
@@ -114,7 +114,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     #endif
     
     public func totalUSDBalanceFormatted(adding: Double = 0.0) -> String {
-
+        
         let tokenBalances = self.tokenBalances
         let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
             value + (tokenBalance.amount.value * tokenBalance.usdRate)
@@ -124,7 +124,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         formatter.numberStyle = .currency
         formatter.locale = Locale(identifier: "en_US")
         return formatter.string(for: amount + adding) ?? "$0.00"
-
+        
     }
     
     public func privateKey(forPermissionName: String) -> PrivateKey? {
@@ -144,5 +144,5 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return nil
         
     }
-
+    
 }

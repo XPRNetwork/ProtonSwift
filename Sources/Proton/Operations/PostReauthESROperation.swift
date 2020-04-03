@@ -6,8 +6,8 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class PostReauthESROperation: AbstractOperation {
     
@@ -19,16 +19,16 @@ class PostReauthESROperation: AbstractOperation {
     
     override func main() {
         
-        let parameters = [ "sid": self.esrSession.sid, "sa": self.esrSession.signer.stringValue ]
+        let parameters = ["sid": self.esrSession.sid, "sa": self.esrSession.signer.stringValue]
         
         var path = self.esrSession.callbackUrl
         if path.last == "/" { path.removeLast() }
         path += "/reauth"
-
+        
         WebServices.shared.postRequestJSON(withPath: path, parameters: parameters) { result in
             
             switch result {
-            case .success(_):
+            case .success:
                 self.finish(retval: nil, error: nil)
             case .failure(let error):
                 print("ERROR: \(error.localizedDescription)")
@@ -36,7 +36,7 @@ class PostReauthESROperation: AbstractOperation {
             }
             
         }
-
+        
     }
     
 }

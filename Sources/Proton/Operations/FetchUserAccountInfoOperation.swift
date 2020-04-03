@@ -6,30 +6,30 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Foundation
 import EOSIO
+import Foundation
 
 class FetchUserAccountInfoOperation: AbstractOperation {
-    
+
     var account: Account
     var chainProvider: ChainProvider
-    
+
     init(account: Account, chainProvider: ChainProvider) {
         self.account = account
         self.chainProvider = chainProvider
     }
-    
+
     override func main() {
-        
+
         guard let url = URL(string: chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url for get table rows"))
+            finish(retval: nil, error: WebServiceError.error("ERROR: Missing url for get table rows"))
             return
         }
 
         let client = Client(address: url)
         var req = API.V1.Chain.GetTableRows<UserInfoABI>(code: Name(stringValue: chainProvider.usersInfoTableCode),
-                                                      table: Name(stringValue: "usersinfo"),
-                                                      scope: chainProvider.usersInfoTableScope)
+                                                         table: Name(stringValue: "usersinfo"),
+                                                         scope: chainProvider.usersInfoTableScope)
         req.lowerBound = account.name.stringValue
         req.upperBound = account.name.stringValue
 
@@ -43,13 +43,13 @@ class FetchUserAccountInfoOperation: AbstractOperation {
                 account.verified = userInfo.verified
             }
 
-            self.finish(retval: account, error: nil)
+            finish(retval: account, error: nil)
 
         } catch {
             print("ERROR: \(error.localizedDescription)")
-            self.finish(retval: nil, error: error)
+            finish(retval: nil, error: error)
         }
-        
+
     }
-    
+
 }
