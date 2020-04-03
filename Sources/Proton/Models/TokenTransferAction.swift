@@ -78,5 +78,9 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable {
         self.memo = memo
 
     }
+    
+    public var other: Name {
+        return self.sent ? self.to : self.from
+    }
 
 }
