@@ -23,6 +23,7 @@ public final class Proton: ObservableObject {
         public var signingRequest: SigningRequest
         public var sid: String
         public var resolved: ResolvedSigningRequest?
+        public var actions: [ESRAction]
     }
     
     public struct Config {
@@ -454,7 +455,9 @@ public final class Proton: ObservableObject {
                         requestingAccount = acc
                     }
                     
-                    let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid)
+                    let actions: [ESRAction] = signingRequest.actions.map { ESRAction(account: $0.account, name: $0.name, chainId: String(chainId)) }
+                    let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
+                    
                     self.esr = response
                     
                     completion(response)
@@ -503,6 +506,14 @@ public final class Proton: ObservableObject {
                         completion(url)
                     }
                     
+                } else if esr.signingRequest.actions.count > 0 {
+
+                    self.handleActionsESR { url in
+                        self.esr = nil
+                        self.saveAll()
+                        completion(url)
+                    }
+                    
                 } else {
                     
                     self.esr = nil
@@ -530,6 +541,65 @@ public final class Proton: ObservableObject {
         
         guard let esrSession = self.esrSessions.first(where: { $0.id == forId }) else { return }
         WebServices.shared.addMulti(PostRemoveSessionESROperation(esrSession: esrSession)) { _ in }
+        
+    }
+    
+    private func handleActionsESR(completion: @escaping (URL?) -> ()) {
+        
+        guard let privateKey = esr?.signer.privateKey(forPermissionName: "active") else { completion(nil); return }
+        guard let signer = esr?.signer else { completion(nil); return }
+        guard let chainId = esr?.signingRequest.chainId else { completion(nil); return }
+        guard let sid = esr?.sid else { completion(nil); return }
+
+        do {
+
+            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
+            guard let _ = self.esr?.resolved else { completion(nil); return }
+            let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
+            guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
+            print(callback.url)
+            print(sig)
+            
+            let session = ESRSession(requestor: self.esr!.requestor, signer: signer.name,
+                                     chainId: String(chainId), sid: sid,
+                                     callbackUrl: callback.url, rs: self.esr?.signingRequest.getInfo("rs", as: String.self))
+            
+            if callback.background {
+                
+                WebServices.shared.addSeq(PostIdentityESROperation(esr: self.esr!, sig: sig)) { result in
+                    
+                    switch result {
+                    case .success:
+
+                        if let idx = self.esrSessions.firstIndex(of: session) {
+                            self.esrSessions[idx] = session
+                        } else {
+                            self.esrSessions.append(session)
+                        }
+                        
+                        completion(nil)
+                        
+                    case .failure:
+
+                        completion(nil)
+                        
+                    }
+
+                }
+
+            } else {
+                
+                var newPath = callback.url
+                newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
+                print(newPath)
+                completion(URL(string: newPath))
+                
+            }
+            
+        } catch {
+            
+            completion(nil)
+        }
         
     }
     
