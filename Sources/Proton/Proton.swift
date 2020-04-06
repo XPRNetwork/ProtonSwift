@@ -544,7 +544,7 @@ public final class Proton: ObservableObject {
             guard let _ = self.esr?.resolved else { completion(nil); return }
             let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
             guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
-            
+            print(callback.url)
             print(sig)
             
             let session = ESRSession(requestor: self.esr!.requestor, signer: signer.name,
