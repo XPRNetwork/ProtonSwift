@@ -9,13 +9,15 @@
 import EOSIO
 import Foundation
 
-public struct ESRAction: Codable, Identifiable, Hashable {
+public struct ESRAction: Identifiable, Hashable {
 
     public var id = UUID()
 
     public var account: Name
     public let name: Name
     public let chainId: String
+    public var decodedAbi: ABI
+    public let data: [String: Any]
 
     public static func == (lhs: ESRAction, rhs: ESRAction) -> Bool {
         lhs.id == rhs.id

@@ -455,13 +455,78 @@ public final class Proton: ObservableObject {
                         requestingAccount = acc
                     }
                     
-                    let actions: [ESRAction] = signingRequest.actions.map { ESRAction(account: $0.account, name: $0.name, chainId: String(chainId)) }
-                    let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
-                    
-                    self.esr = response
-                    
-                    completion(response)
-                    
+                    if signingRequest.isIdentity {
+                        
+                        let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: [])
+                        self.esr = response
+                        completion(response)
+                        
+                    } else {
+                        
+                        var abiAccounts = signingRequest.actions.map { $0.account }
+                        abiAccounts = abiAccounts.unique()
+                        
+                        var abiAccountsProcessed = 0
+                        var rawAbis: [String: API.V1.Chain.GetRawAbi.Response] = [:]
+                        
+                        if abiAccounts.count == 0 { completion(nil); return }
+                        
+                        for abiAccount in abiAccounts {
+                            
+                            WebServices.shared.addMulti(FetchRawAbiOperation(account: abiAccount, chainProvider: chainProvider)) { result in
+                                
+                                abiAccountsProcessed += 1
+                                
+                                switch result {
+                                case .success(let rawAbi):
+                                    
+                                    if let rawAbi = rawAbi as? API.V1.Chain.GetRawAbi.Response {
+                                        
+                                        rawAbis[abiAccount.stringValue] = rawAbi
+                                        
+                                    }
+                                    
+                                    if abiAccountsProcessed == abiAccounts.count && abiAccounts.count == rawAbis.count {
+                                        
+                                        let actions: [ESRAction] = signingRequest.actions.compactMap {
+                                            
+                                            if let decodedAbi = rawAbis[$0.account.stringValue]?.decodedAbi {
+                                                
+                                                do {
+                                                    let data = try $0.data(using: decodedAbi)
+                                                    return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), decodedAbi: decodedAbi, data: data)
+                                                    
+                                                } catch {
+                                                    return nil
+                                                }
+
+                                            }
+                                            
+                                            return nil
+                                            
+                                        }
+                                        
+                                        print("ESR ACTIONS => \(actions.count)")
+                                        
+                                        let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
+                                        
+                                        self.esr = response
+                                        
+                                        completion(response)
+                                        
+                                    }
+                                    
+                                case .failure(let error):
+                                    print("ERROR: \(error.localizedDescription)")
+                                    completion(nil)
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                    }
+
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
                     completion(nil)
