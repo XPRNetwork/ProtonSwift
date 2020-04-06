@@ -600,8 +600,6 @@ public final class Proton: ObservableObject {
                     self.esrSessions.append(session)
                 }
                 
-                print(self.esrSessions.count)
-                
                 completion(URL(string: newPath))
                 
             }
@@ -661,6 +659,13 @@ public final class Proton: ObservableObject {
                 var newPath = callback.url
                 newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
                 print(newPath)
+                
+                if let idx = self.esrSessions.firstIndex(of: session) {
+                    self.esrSessions[idx] = session
+                } else {
+                    self.esrSessions.append(session)
+                }
+                
                 completion(URL(string: newPath))
                 
             }
