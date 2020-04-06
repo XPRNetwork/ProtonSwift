@@ -503,6 +503,7 @@ public final class Proton: ObservableObject {
                     self.handleIdentityESR { url in
                         self.esr = nil
                         self.saveAll()
+                        print(self.esrSessions.count)
                         completion(url)
                     }
                     
@@ -598,6 +599,8 @@ public final class Proton: ObservableObject {
                 } else {
                     self.esrSessions.append(session)
                 }
+                
+                print(self.esrSessions.count)
                 
                 completion(URL(string: newPath))
                 
