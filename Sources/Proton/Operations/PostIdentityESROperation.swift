@@ -1,5 +1,5 @@
 //
-//  PostAuthESROperation.swift
+//  PostIdentityESROperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 3/18/20.
@@ -9,7 +9,7 @@
 import EOSIO
 import Foundation
 
-class PostAuthESROperation: AbstractOperation {
+class PostIdentityESROperation: AbstractOperation {
     
     var esr: Proton.ESR
     var sig: Signature
@@ -30,19 +30,12 @@ class PostAuthESROperation: AbstractOperation {
             
             guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else { self.finish(retval: nil, error: nil); return }
             
-            var path = callback.url
-            if path.last == "/" { path.removeLast() }
-            path += "/auth"
-            
-            WebServices.shared.postRequestJSON(withPath: path, parameters: parameters) { result in
+            WebServices.shared.postRequestJSON(withPath: callback.url, parameters: parameters) { result in
                 
                 switch result {
                 case .success:
-                    
-                    let session = ESRSession(requestor: self.esr.requestor, signer: self.esr.signer.name,
-                                             chainId: String(self.esr.signingRequest.chainId), sid: self.esr.sid, callbackUrl: path.replacingOccurrences(of: "/auth", with: ""))
-                    
-                    self.finish(retval: session, error: nil)
+
+                    self.finish(retval: nil, error: nil)
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
                     self.finish(retval: nil, error: WebServiceError.error("Error posting to esr auth callback: \(error.localizedDescription)"))

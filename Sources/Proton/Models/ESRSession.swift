@@ -18,6 +18,7 @@ public struct ESRSession: Codable, Identifiable, Hashable {
     public let chainId: String
     public var sid: String
     public var callbackUrl: String
+    public var rs: String?
 
     public static func == (lhs: ESRSession, rhs: ESRSession) -> Bool {
         lhs.id == rhs.id

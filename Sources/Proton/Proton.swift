@@ -487,60 +487,33 @@ public final class Proton: ObservableObject {
      Use this to accept signing request
      - Parameter completion: Closure thats called when the function is complete.
      */
-    public func acceptESR(completion: @escaping () -> ()) {
+    public func acceptESR(completion: @escaping (URL?) -> ()) {
         
-        guard let esr = self.esr else { completion(); return }
+        guard let esr = self.esr else { completion(nil); return }
         
         Authentication.shared.authenticate { success, _, error in
             
             if success {
                 
-                if let privateKey = esr.signer.privateKey(forPermissionName: "active") {
+                if esr.signingRequest.isIdentity {
                     
-                    do {
-                        
-                        self.esr?.resolved = try esr.signingRequest.resolve(using: PermissionLevel(esr.signer.name, Name("active")))
-                        
-                        let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: esr.signingRequest.chainId))
-                        
-                        WebServices.shared.addSeq(PostAuthESROperation(esr: self.esr!, sig: sig)) { result in
-                            
-                            switch result {
-                            case .success(let esrSession):
-                                
-                                if let esrSession = esrSession as? ESRSession {
-                                    if let idx = self.esrSessions.firstIndex(of: esrSession) {
-                                        self.esrSessions[idx] = esrSession
-                                    } else {
-                                        self.esrSessions.append(esrSession)
-                                    }
-                                }
-                                self.esr = nil
-                                completion()
-                                
-                            case .failure:
-                                
-                                self.esr = nil
-                                completion()
-                                
-                            }
-                            
-                            self.saveAll()
-                            
-                        }
-                        
-                    } catch {
-                        
-                        print("Error: \(error)")
+                    self.handleIdentityESR { url in
                         self.esr = nil
-                        completion()
-                        
+                        self.saveAll()
+                        completion(url)
                     }
                     
                 }
                 
+                self.esr = nil
+                self.saveAll()
+                
+                completion(nil)
+                
             } else {
-                completion() // return error
+                self.esr = nil
+                self.saveAll()
+                completion(nil) // return error
             }
             
         }
@@ -554,7 +527,66 @@ public final class Proton: ObservableObject {
     public func removeESRSession(forId: String) {
         
         guard let esrSession = self.esrSessions.first(where: { $0.id == forId }) else { return }
-        WebServices.shared.addMulti(PostReauthESROperation(esrSession: esrSession)) { _ in }
+        WebServices.shared.addMulti(PostRemoveSessionESROperation(esrSession: esrSession)) { _ in }
+        
+    }
+    
+    private func handleIdentityESR(completion: @escaping (URL?) -> ()) {
+        
+        guard let privateKey = esr?.signer.privateKey(forPermissionName: "active") else { completion(nil); return }
+        guard let signer = esr?.signer else { completion(nil); return }
+        guard let chainId = esr?.signingRequest.chainId else { completion(nil); return }
+        guard let sid = esr?.sid else { completion(nil); return }
+
+        do {
+
+            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
+            guard let _ = self.esr?.resolved else { completion(nil); return }
+            let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
+            guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
+            
+            print(sig)
+            
+            let session = ESRSession(requestor: self.esr!.requestor, signer: signer.name,
+                                     chainId: String(chainId), sid: sid,
+                                     callbackUrl: callback.url, rs: self.esr?.signingRequest.getInfo("rs", as: String.self))
+            
+            if callback.background {
+                
+                WebServices.shared.addSeq(PostIdentityESROperation(esr: self.esr!, sig: sig)) { result in
+                    
+                    switch result {
+                    case .success:
+
+                        if let idx = self.esrSessions.firstIndex(of: session) {
+                            self.esrSessions[idx] = session
+                        } else {
+                            self.esrSessions.append(session)
+                        }
+                        
+                        completion(nil)
+                        
+                    case .failure:
+
+                        completion(nil)
+                        
+                    }
+
+                }
+
+            } else {
+                
+                var newPath = callback.url
+                newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
+                print(newPath)
+                completion(URL(string: newPath))
+                
+            }
+            
+        } catch {
+            
+            completion(nil)
+        }
         
     }
     
