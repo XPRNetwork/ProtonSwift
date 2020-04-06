@@ -508,6 +508,10 @@ public final class Proton: ObservableObject {
                                         
                                         print("ESR ACTIONS => \(actions.count)")
                                         
+                                        for action in actions {
+                                            print(action.data)
+                                        }
+
                                         let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
                                         
                                         self.esr = response
