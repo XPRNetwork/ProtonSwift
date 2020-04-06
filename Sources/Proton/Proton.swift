@@ -17,7 +17,7 @@ import UIKit
 
 public final class Proton: ObservableObject {
     
-    public struct ESR {
+    public struct ESR: Equatable {
         public var requestor: Account
         public var signer: Account
         public var signingRequest: SigningRequest
