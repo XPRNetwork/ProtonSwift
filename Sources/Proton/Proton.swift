@@ -510,6 +510,7 @@ public final class Proton: ObservableObject {
                                         
                                         for action in actions {
                                             print(action.data)
+                                            print(action.decodedAbi.getStruct(action.name.stringValue))
                                         }
 
                                         let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
