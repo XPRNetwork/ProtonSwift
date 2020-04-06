@@ -503,13 +503,15 @@ public final class Proton: ObservableObject {
                         completion(url)
                     }
                     
+                } else {
+                    
+                    self.esr = nil
+                    self.saveAll()
+                    
+                    completion(nil)
+                    
                 }
-                
-                self.esr = nil
-                self.saveAll()
-                
-                completion(nil)
-                
+
             } else {
                 self.esr = nil
                 self.saveAll()
