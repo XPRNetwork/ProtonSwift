@@ -17,7 +17,7 @@ public struct ESRAction: Identifiable, Hashable {
     public let name: Name
     public let chainId: String
     public var decodedAbi: ABI
-    public let data: [String: Any]
+    public let data: Data
 
     public static func == (lhs: ESRAction, rhs: ESRAction) -> Bool {
         lhs.id == rhs.id

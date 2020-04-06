@@ -492,13 +492,7 @@ public final class Proton: ObservableObject {
                                             
                                             if let decodedAbi = rawAbis[$0.account.stringValue]?.decodedAbi {
                                                 
-                                                do {
-                                                    let data = try $0.data(using: decodedAbi)
-                                                    return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), decodedAbi: decodedAbi, data: data)
-                                                    
-                                                } catch {
-                                                    return nil
-                                                }
+                                                return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), decodedAbi: decodedAbi, data: $0.data)
 
                                             }
                                             
@@ -509,8 +503,8 @@ public final class Proton: ObservableObject {
                                         print("ESR ACTIONS => \(actions.count)")
                                         
                                         for action in actions {
-                                            print(action.data)
-                                            print(action.decodedAbi.resolveStruct(action.name.stringValue))
+                                            let dec = ABIDecoder()
+                                            print(try? dec.decode(TransferActionABI.self, from: action.data))
                                         }
 
                                         let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
