@@ -529,7 +529,7 @@ public final class Proton: ObservableObject {
                                                         
                                                         
                                                         let basicDisplay = ESRAction.BasicDisplay(actiontype: .transfer, name: tokenContract.name,
-                                                                                                  secondary: transferActionABI.quantity.stringValue, extra: extra, tokenContract: tokenContract)
+                                                                                                  secondary: transferActionABI.quantity.stringValue, extra: "-\(extra)", tokenContract: tokenContract)
                                                         
                                                         return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay)
                                                         
