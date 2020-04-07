@@ -247,6 +247,9 @@ class WebServices: NSObject {
                 return
             }
             
+            
+            print(response.mimeType)
+            
             guard let mime = response.mimeType, mime == "application/json" else {
                 print("Wrong MIME type!")
                 DispatchQueue.main.async {
