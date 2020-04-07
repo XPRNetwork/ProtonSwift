@@ -696,7 +696,7 @@ public final class Proton: ObservableObject {
             
             for action in actions {
                 if let abi = action.abi {
-                    abis[action.name] = abi
+                    abis[action.account] = abi
                 }
             }
             
