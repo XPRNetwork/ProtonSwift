@@ -39,7 +39,7 @@ public class Authentication {
         context.localizedFallbackTitle = "Use Passcode"
         
         var authError: NSError?
-        let reasonString = "Used to authenticate and secure your EOS wallet data"
+        let reasonString = "Used to authenticate signing requests"
         
         if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError) {
             
