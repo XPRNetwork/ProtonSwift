@@ -13,16 +13,18 @@ class PostBackgroundESROperation: AbstractOperation {
     
     var esr: Proton.ESR
     var sig: Signature
+    var blockNum: BlockNum?
     
-    init(esr: Proton.ESR, sig: Signature) {
+    init(esr: Proton.ESR, sig: Signature, blockNum: BlockNum?) {
         self.esr = esr
         self.sig = sig
+        self.blockNum = blockNum
     }
     
     override func main() {
         
         guard let resolved = self.esr.resolved else { self.finish(retval: nil, error: nil); return }
-        guard let callback = resolved.getCallback(using: [self.sig], blockNum: nil) else { self.finish(retval: nil, error: nil); return }
+        guard let callback = resolved.getCallback(using: [self.sig], blockNum: self.blockNum) else { self.finish(retval: nil, error: nil); return }
         
         do {
             
