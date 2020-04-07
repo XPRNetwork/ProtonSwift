@@ -689,83 +689,103 @@ public final class Proton: ObservableObject {
         guard let chainId = esr?.signingRequest.chainId else { completion(nil); return }
         guard let sid = esr?.sid else { completion(nil); return }
         guard let actions = esr?.actions else { completion(nil); return }
-
-        do {
-
-            var abis: [Name: ABI] = [:]
-            
-            for action in actions {
-                if let abi = action.abi {
-                    abis[action.account] = abi
-                }
+        
+        var abis: [Name: ABI] = [:]
+        
+        for action in actions {
+            if let abi = action.abi {
+                abis[action.account] = abi
             }
+        }
+        
+        if abis.count == 0 { completion(nil); return }
+        
+        WebServices.shared.addSeq(FetchChainInfoOperation(chainProvider: chainProvider)) { result in
             
-            if abis.count == 0 { completion(nil); return }
-            
-            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")), abis: abis, tapos: self.esr!.signingRequest.transaction.header)
-            guard let _ = self.esr?.resolved else { completion(nil); return }
-            let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
-            guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
-            print(callback.url)
-            print(sig)
-
-            let signedTransaction = SignedTransaction(self.esr!.resolved!.transaction)
-            
-            if self.esr!.signingRequest.broadcast {
+            switch result {
+            case .success(let info):
                 
-                WebServices.shared.addSeq(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
+                if let info = info as? API.V1.Chain.GetInfo.Response {
                     
-                    switch result {
-                    case .success:
+                    let expiration = info.headBlockTime.addingTimeInterval(60)
+                    let header = TransactionHeader(expiration: TimePointSec(expiration),
+                                                   refBlockId: info.lastIrreversibleBlockId)
+                    
+                    do {
+
+                        self.esr?.resolved = try self.esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")), abis: abis, tapos: header)
+                        guard let _ = self.esr?.resolved else { completion(nil); return }
+                        let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
+                        guard let callback = self.esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
+
+                        let signedTransaction = SignedTransaction(self.esr!.resolved!.transaction)
                         
-                        self.update(account: signer) { }
-                        
-                        if callback.background {
+                        if self.esr!.signingRequest.broadcast {
                             
-                            WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig)) { result in
+                            WebServices.shared.addSeq(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
                                 
                                 switch result {
                                 case .success:
-
-                                    completion(nil)
                                     
+                                    self.update(account: signer) { }
+                                    
+                                    if callback.background {
+                                        
+                                        WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig)) { result in
+                                            
+                                            switch result {
+                                            case .success:
+
+                                                completion(nil)
+                                                
+                                            case .failure:
+
+                                                completion(nil)
+                                                
+                                            }
+
+                                        }
+                                        
+                                    } else {
+                                        
+                                        var newPath = callback.url
+                                        newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
+                                        print(newPath)
+                                        
+                                        completion(URL(string: newPath))
+                                        
+                                    }
+
                                 case .failure:
 
                                     completion(nil)
                                     
                                 }
-
+                                
                             }
                             
                         } else {
                             
-                            var newPath = callback.url
-                            newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
-                            print(newPath)
-                            
-                            completion(URL(string: newPath))
+                            completion(nil)
                             
                         }
-
-                    case .failure:
-
-                        completion(nil)
                         
+                    } catch {
+                        print(error.localizedDescription)
+                        completion(nil)
                     }
-                    
+
+                } else {
+                    completion(nil)
                 }
                 
-            } else {
-                
+            case .failure(let error):
+                print(error)
                 completion(nil)
-                
             }
             
-        } catch {
-            print(error.localizedDescription)
-            completion(nil)
         }
-        
+
     }
     
     private func handleIdentityESR(completion: @escaping (URL?) -> ()) {
