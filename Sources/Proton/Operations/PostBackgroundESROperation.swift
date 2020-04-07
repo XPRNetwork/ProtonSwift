@@ -1,5 +1,5 @@
 //
-//  PostIdentityESROperation.swift
+//  PostBackgroundESROperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 3/18/20.
@@ -9,7 +9,7 @@
 import EOSIO
 import Foundation
 
-class PostIdentityESROperation: AbstractOperation {
+class PostBackgroundESROperation: AbstractOperation {
     
     var esr: Proton.ESR
     var sig: Signature
@@ -38,14 +38,14 @@ class PostIdentityESROperation: AbstractOperation {
                     self.finish(retval: nil, error: nil)
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")
-                    self.finish(retval: nil, error: WebServiceError.error("Error posting to esr auth callback: \(error.localizedDescription)"))
+                    self.finish(retval: nil, error: WebServiceError.error("Error posting to esr callback: \(error.localizedDescription)"))
                 }
                 
             }
             
         } catch {
             print("ERROR: \(error.localizedDescription)")
-            self.finish(retval: nil, error: WebServiceError.error("Error posting to esr auth callback: \(error.localizedDescription)"))
+            self.finish(retval: nil, error: WebServiceError.error("Error posting to esr callback: \(error.localizedDescription)"))
         }
         
     }

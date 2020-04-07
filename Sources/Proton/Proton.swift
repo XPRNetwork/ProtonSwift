@@ -685,6 +685,7 @@ public final class Proton: ObservableObject {
         
         guard let privateKey = esr?.signer.privateKey(forPermissionName: "active") else { completion(nil); return }
         guard let signer = esr?.signer else { completion(nil); return }
+        guard let chainProvider = signer.chainProvider else { completion(nil); return }
         guard let chainId = esr?.signingRequest.chainId else { completion(nil); return }
         guard let sid = esr?.sid else { completion(nil); return }
 
@@ -696,47 +697,56 @@ public final class Proton: ObservableObject {
             guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
             print(callback.url)
             print(sig)
+
+            let signedTransaction = SignedTransaction(self.esr!.resolved!.transaction)
             
-            let session = ESRSession(requestor: self.esr!.requestor, signer: signer.name,
-                                     chainId: String(chainId), sid: sid,
-                                     callbackUrl: callback.url, rs: self.esr?.signingRequest.getInfo("rs", as: String.self))
-            
-            if callback.background {
+            if self.esr!.signingRequest.broadcast {
                 
-                WebServices.shared.addSeq(PostIdentityESROperation(esr: self.esr!, sig: sig)) { result in
+                WebServices.shared.addSeq(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
                     
                     switch result {
                     case .success:
+                        
+                        self.update(account: signer) { }
+                        
+                        if callback.background {
+                            
+                            WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig)) { result in
+                                
+                                switch result {
+                                case .success:
 
-                        if let idx = self.esrSessions.firstIndex(of: session) {
-                            self.esrSessions[idx] = session
+                                    completion(nil)
+                                    
+                                case .failure:
+
+                                    completion(nil)
+                                    
+                                }
+
+                            }
+                            
                         } else {
-                            self.esrSessions.append(session)
+                            
+                            var newPath = callback.url
+                            newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
+                            print(newPath)
+                            
+                            completion(URL(string: newPath))
+                            
                         }
-                        
-                        completion(nil)
-                        
+
                     case .failure:
 
                         completion(nil)
                         
                     }
-
+                    
                 }
-
+                
             } else {
                 
-                var newPath = callback.url
-                newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
-                print(newPath)
-                
-                if let idx = self.esrSessions.firstIndex(of: session) {
-                    self.esrSessions[idx] = session
-                } else {
-                    self.esrSessions.append(session)
-                }
-                
-                completion(URL(string: newPath))
+                completion(nil)
                 
             }
             
@@ -769,7 +779,7 @@ public final class Proton: ObservableObject {
             
             if callback.background {
                 
-                WebServices.shared.addSeq(PostIdentityESROperation(esr: self.esr!, sig: sig)) { result in
+                WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig)) { result in
                     
                     switch result {
                     case .success:
