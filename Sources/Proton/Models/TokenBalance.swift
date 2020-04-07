@@ -67,7 +67,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     }
     
     public var usdRate: Double {
-        return 0.25 // TODO:
+        return tokenContract?.usdRate ?? 0.25 // TODO:
     }
     
 }

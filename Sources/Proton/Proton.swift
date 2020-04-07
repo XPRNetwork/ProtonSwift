@@ -522,8 +522,14 @@ public final class Proton: ObservableObject {
                                                     if let tokenContract = self.tokenContracts.first(where: { $0.chainId == String(chainId)
                                                                                                                 && $0.symbol == symbol && $0.contract == account }) {
                                                         
+                                                        let formatter = NumberFormatter()  // TODO: make this more effiecent
+                                                        formatter.numberStyle = .currency
+                                                        formatter.locale = Locale(identifier: "en_US")
+                                                        let extra = formatter.string(for: transferActionABI.quantity.value * tokenContract.usdRate) ?? "$0.00"
+                                                        
+                                                        
                                                         let basicDisplay = ESRAction.BasicDisplay(actiontype: .transfer, name: tokenContract.name,
-                                                                                                  secondary: transferActionABI.quantity.stringValue, extra: "$0.00", tokenContract: tokenContract)
+                                                                                                  secondary: transferActionABI.quantity.stringValue, extra: extra, tokenContract: tokenContract)
                                                         
                                                         return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay)
                                                         

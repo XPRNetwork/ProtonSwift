@@ -77,4 +77,8 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
                              symbol: try! Asset.Symbol(4, "XPR"), url: "https://protonchain.com", blacklisted: false)
     }
     
+    public var usdRate: Double {
+        return 0.25 // TODO:
+    }
+    
 }
