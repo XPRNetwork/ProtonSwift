@@ -614,18 +614,33 @@ public final class Proton: ObservableObject {
                 if esr.signingRequest.isIdentity {
                     
                     self.handleIdentityESR { url in
+                        
                         self.esr = nil
                         self.saveAll()
-                        print(self.esrSessions.count)
-                        completion(url)
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        
+                            print(self.esrSessions.count)
+                            completion(url)
+                            
+                        }
+
                     }
                     
                 } else if esr.signingRequest.actions.count > 0 {
 
                     self.handleActionsESR { url in
+                        
                         self.esr = nil
                         self.saveAll()
-                        completion(url)
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            
+                            print(self.esrSessions.count)
+                            completion(url)
+                            
+                        }
+                        
                     }
                     
                 } else {
