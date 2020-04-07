@@ -716,10 +716,6 @@ public final class Proton: ObservableObject {
                         self.esr?.resolved = try self.esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")), abis: abis, tapos: header)
                         guard let _ = self.esr?.resolved else { completion(nil); return }
                         let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
-                        guard let callback = self.esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
-
-                        print(self.esr!.resolved!.transaction)
-                        
                         let signedTransaction = SignedTransaction(self.esr!.resolved!.transaction, signatures: [sig])
                         
                         if self.esr!.signingRequest.broadcast {
@@ -727,34 +723,40 @@ public final class Proton: ObservableObject {
                             WebServices.shared.addSeq(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
                                 
                                 switch result {
-                                case .success:
+                                case .success(let res):
                                     
-                                    self.update(account: signer) { }
-                                    
-                                    if callback.background {
+                                    if let res = res as? API.V1.Chain.PushTransaction.Response {
                                         
-                                        WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig)) { result in
+                                        guard let callback = self.esr!.resolved!.getCallback(using: [sig], blockNum: res.processed.blockNum) else { completion(nil); return }
+                                        
+                                        self.update(account: signer) { }
+                                        
+                                        if callback.background {
                                             
-                                            switch result {
-                                            case .success:
-
-                                                completion(nil)
+                                            WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig)) { result in
                                                 
-                                            case .failure:
+                                                switch result {
+                                                case .success:
 
-                                                completion(nil)
-                                                
+                                                    completion(nil)
+                                                    
+                                                case .failure:
+
+                                                    completion(nil)
+                                                    
+                                                }
+
                                             }
-
+                                            
+                                        } else {
+                                            
+                                            var newPath = callback.url
+                                            newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
+                                            print(newPath)
+                                            
+                                            completion(URL(string: newPath))
+                                            
                                         }
-                                        
-                                    } else {
-                                        
-                                        var newPath = callback.url
-                                        newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
-                                        print(newPath)
-                                        
-                                        completion(URL(string: newPath))
                                         
                                     }
 
