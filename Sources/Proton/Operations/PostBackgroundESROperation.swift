@@ -32,6 +32,8 @@ class PostBackgroundESROperation: AbstractOperation {
             
             guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else { self.finish(retval: nil, error: nil); return }
             
+            print(parameters)
+            
             WebServices.shared.postRequestData(withPath: callback.url, parameters: parameters) { result in
                 
                 switch result {
