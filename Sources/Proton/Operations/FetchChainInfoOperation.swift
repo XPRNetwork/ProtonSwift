@@ -20,7 +20,7 @@ class FetchChainInfoOperation: AbstractOperation {
     override func main() {
         
         guard let url = URL(string: chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url for get table rows"))
+            self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url"))
             return
         }
         
