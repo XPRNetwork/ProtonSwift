@@ -471,6 +471,8 @@ public final class Proton: ObservableObject {
                         
                         if abiAccounts.count == 0 { completion(nil); return }
                         
+                        let abidecoder = ABIDecoder()
+                        
                         for abiAccount in abiAccounts {
                             
                             WebServices.shared.addMulti(FetchRawAbiOperation(account: abiAccount, chainProvider: chainProvider)) { result in
@@ -490,9 +492,32 @@ public final class Proton: ObservableObject {
                                         
                                         let actions: [ESRAction] = signingRequest.actions.compactMap {
                                             
-                                            if let decodedAbi = rawAbis[$0.account.stringValue]?.decodedAbi {
+                                            let account = $0.account
+                                            
+                                            if let _ = rawAbis[account.stringValue]?.decodedAbi { // TODO
                                                 
-                                                return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), decodedAbi: decodedAbi, data: $0.data)
+                                                if let transferActionABI = try? abidecoder.decode(TransferActionABI.self, from: $0.data) {
+                                                    
+                                                    let symbol = transferActionABI.quantity.symbol
+                                                    
+                                                    if let tokenContract = self.tokenContracts.first(where: { $0.chainId == String(chainId)
+                                                                                                                && $0.symbol == symbol && $0.contract == account }) {
+                                                        
+                                                        let basicDisplay = ESRAction.BasicDisplay(actiontype: .transfer, name: tokenContract.name,
+                                                                                                  secondary: transferActionABI.quantity.stringValue, extra: "$0.00", tokenContract: tokenContract)
+                                                        
+                                                        return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay)
+                                                        
+                                                    }
+
+                                                } else {
+                                                    
+                                                    let basicDisplay = ESRAction.BasicDisplay(actiontype: .custom, name: $0.name.stringValue.uppercased(),
+                                                                                              secondary: nil, extra: nil, tokenContract: nil)
+                                                    
+                                                    return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay)
+                                                    
+                                                }
 
                                             }
                                             
@@ -502,17 +527,16 @@ public final class Proton: ObservableObject {
                                         
                                         print("ESR ACTIONS => \(actions.count)")
                                         
-                                        for action in actions {
-                                            let dec = ABIDecoder()
-                                            print(try? dec.decode(TransferActionABI.self, from: action.data))
+                                        if actions.count > 0 {
+                                            
+                                            let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
+                                            self.esr = response
+                                            completion(response)
+
+                                        } else {
+                                            completion(nil)
                                         }
 
-                                        let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
-                                        
-                                        self.esr = response
-                                        
-                                        completion(response)
-                                        
                                     }
                                     
                                 case .failure(let error):
