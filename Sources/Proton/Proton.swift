@@ -702,7 +702,7 @@ public final class Proton: ObservableObject {
             
             if abis.count == 0 { completion(nil); return }
             
-            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")), abis: abis)
+            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")), abis: abis, tapos: self.esr!.signingRequest.transaction.header)
             guard let _ = self.esr?.resolved else { completion(nil); return }
             let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
             guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
