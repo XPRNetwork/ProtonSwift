@@ -30,11 +30,10 @@ class PostBackgroundESROperation: AbstractOperation {
             
             guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else { self.finish(retval: nil, error: nil); return }
             
-            WebServices.shared.postRequestJSON(withPath: callback.url, parameters: parameters) { result in
+            WebServices.shared.postRequestData(withPath: callback.url, parameters: parameters) { result in
                 
                 switch result {
                 case .success:
-
                     self.finish(retval: nil, error: nil)
                 case .failure(let error):
                     print("ERROR: \(error.localizedDescription)")

@@ -23,7 +23,7 @@ class PostRemoveSessionESROperation: AbstractOperation {
         
         if let path = self.esrSession.rs {
             
-            WebServices.shared.postRequestJSON(withPath: path, parameters: parameters) { result in
+            WebServices.shared.postRequestData(withPath: path, parameters: parameters) { result in
                 
                 switch result {
                 case .success:

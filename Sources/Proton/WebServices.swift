@@ -199,6 +199,64 @@ class WebServices: NSObject {
         
     }
     
+    func postRequestData(withPath path: String, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
+        
+        let session = URLSession.shared
+        let url = URL(string: path)!
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        if let parameters = parameters, !parameters.isEmpty {
+            do {
+                let body = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                request.httpBody = body
+            } catch {
+                print("Parameter Serialization problem")
+                DispatchQueue.main.async {
+                    completion?(.failure(WebServiceError.error("Parameter Serialization problem")))
+                }
+            }
+        }
+        
+        let task = session.dataTask(with: request) { data, response, error in
+            
+            if let error = error {
+                print("Client error!")
+                DispatchQueue.main.async {
+                    completion?(.failure(WebServiceError.error(error.localizedDescription)))
+                }
+                return
+            }
+            
+            guard let data = data else {
+                print("Client Data error!")
+                DispatchQueue.main.async {
+                    completion?(.failure(WebServiceError.error("No data")))
+                }
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
+                print("Response error!")
+                DispatchQueue.main.async {
+                    completion?(.failure(WebServiceError.error("Response Error")))
+                }
+                return
+            }
+            
+            DispatchQueue.main.async {
+                completion?(.success(data))
+            }
+            
+        }
+        
+        task.resume()
+        
+    }
+    
     func postRequestJSON(withPath path: String, parameters: [String: Any]? = nil, completion: ((Result<Any?, Error>) -> Void)?) {
         
         let session = URLSession.shared
