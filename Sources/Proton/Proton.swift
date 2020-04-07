@@ -40,7 +40,7 @@ public final class Proton: ObservableObject {
                         sid: "123", resolved: nil, actions: [ESRAction(account: Name("eosio.token"), name: Name("transfer"),
                         chainId: "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd",
                         basicDisplay: ESRAction.BasicDisplay(actiontype: .transfer, name: "Proton", secondary: "1 XPT",
-                        extra: "", tokenContract: TokenContract.testObject))])
+                                                             extra: "", tokenContract: TokenContract.testObject), abi: TransferActionABI.abi)])
             
         }
     }
@@ -513,7 +513,7 @@ public final class Proton: ObservableObject {
                                             
                                             let account = $0.account
                                             
-                                            if let _ = rawAbis[account.stringValue]?.decodedAbi { // TODO
+                                            if let abi = rawAbis[account.stringValue]?.decodedAbi { // TODO
                                                 
                                                 if let transferActionABI = try? abidecoder.decode(TransferActionABI.self, from: $0.data) {
                                                     
@@ -531,7 +531,7 @@ public final class Proton: ObservableObject {
                                                         let basicDisplay = ESRAction.BasicDisplay(actiontype: .transfer, name: tokenContract.name,
                                                                                                   secondary: transferActionABI.quantity.stringValue, extra: "-\(extra)", tokenContract: tokenContract)
                                                         
-                                                        return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay)
+                                                        return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay, abi: abi)
                                                         
                                                     }
 
@@ -540,7 +540,7 @@ public final class Proton: ObservableObject {
                                                     let basicDisplay = ESRAction.BasicDisplay(actiontype: .custom, name: $0.name.stringValue.uppercased(),
                                                                                               secondary: nil, extra: nil, tokenContract: nil)
                                                     
-                                                    return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay)
+                                                    return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay, abi: abi)
                                                     
                                                 }
 
@@ -688,10 +688,21 @@ public final class Proton: ObservableObject {
         guard let chainProvider = signer.chainProvider else { completion(nil); return }
         guard let chainId = esr?.signingRequest.chainId else { completion(nil); return }
         guard let sid = esr?.sid else { completion(nil); return }
+        guard let actions = esr?.actions else { completion(nil); return }
 
         do {
 
-            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
+            var abis: [Name: ABI] = [:]
+            
+            for action in actions {
+                if let abi = action.abi {
+                    abis[action.name] = abi
+                }
+            }
+            
+            if abis.count == 0 { completion(nil); return }
+            
+            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")), abis: abis)
             guard let _ = self.esr?.resolved else { completion(nil); return }
             let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
             guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }

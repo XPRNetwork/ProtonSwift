@@ -29,6 +29,7 @@ public struct ESRAction: Identifiable, Hashable {
     public let name: Name
     public let chainId: String
     public let basicDisplay: BasicDisplay
+    public let abi: ABI?
 
     public static func == (lhs: ESRAction, rhs: ESRAction) -> Bool {
         lhs.id == rhs.id
