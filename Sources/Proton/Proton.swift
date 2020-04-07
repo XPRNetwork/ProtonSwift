@@ -25,6 +25,13 @@ public final class Proton: ObservableObject {
         public var resolved: ResolvedSigningRequest?
         public var actions: [ESRAction]
         
+        public var basicTransfer: Bool {
+            if let action = self.actions.first, actions.count == 1 {
+                return action.basicDisplay.actiontype == ESRAction.ActionType.transfer ? true : false
+            }
+            return false
+        }
+        
         public static var testObject: ESR {
             
             return ESR(requestor: Account(chainId: "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd", name: "requestor"),

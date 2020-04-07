@@ -16,11 +16,11 @@ public struct ESRAction: Identifiable, Hashable {
     }
     
     public struct BasicDisplay {
-        let actiontype: ActionType
-        let name: String
-        let secondary: String?
-        let extra: String?
-        let tokenContract: TokenContract?
+        public let actiontype: ActionType
+        public let name: String
+        public let secondary: String?
+        public let extra: String?
+        public let tokenContract: TokenContract?
     }
 
     public var id = UUID()
