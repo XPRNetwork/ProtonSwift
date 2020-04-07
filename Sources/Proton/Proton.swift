@@ -751,7 +751,7 @@ public final class Proton: ObservableObject {
             }
             
         } catch {
-            
+            print(error.localizedDescription)
             completion(nil)
         }
         
