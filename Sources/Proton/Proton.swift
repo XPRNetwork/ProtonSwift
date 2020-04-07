@@ -814,7 +814,7 @@ public final class Proton: ObservableObject {
             
             if callback.background {
                 
-                WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig)) { result in
+                WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: nil)) { result in
                     
                     switch result {
                     case .success:
