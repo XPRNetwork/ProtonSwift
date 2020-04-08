@@ -10,7 +10,7 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 - [x] Persist and manage Proton Accounts
 - [x] Persist and manage private keys via keychain
 - [x] Signing transactions
-- [ ] Handle ESR Signing requests
+- [x] Handle ESR Signing requests
 
 ## Usage
 
