@@ -170,10 +170,6 @@ public final class Proton: ObservableObject {
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
         
-        for a in self.accounts {
-            print(a.chainId)
-        }
-        
     }
     
     /**
@@ -461,7 +457,6 @@ public final class Proton: ObservableObject {
             
             let signingRequest = try SigningRequest(openURLContext.url.absoluteString)
             let chainId = signingRequest.chainId
-            print(String(chainId))
             
             guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
             guard let sid = signingRequest.getInfo("sid", as: String.self) else { completion(nil); return }
