@@ -457,6 +457,7 @@ public final class Proton: ObservableObject {
             
             let signingRequest = try SigningRequest(openURLContext.url.absoluteString)
             let chainId = signingRequest.chainId
+            print(String(chainId))
             
             guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
             guard let sid = signingRequest.getInfo("sid", as: String.self) else { completion(nil); return }
