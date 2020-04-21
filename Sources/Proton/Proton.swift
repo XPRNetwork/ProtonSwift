@@ -170,6 +170,10 @@ public final class Proton: ObservableObject {
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
         
+        for a in self.accounts {
+            print(a.chainId)
+        }
+        
     }
     
     /**
