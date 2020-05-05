@@ -59,6 +59,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return Proton.shared.tokenBalances.filter { $0.accountId == self.id }
     }
     
+    @available(iOS 13.0, *)
     public var avatarImage: Image {
         
         #if os(macOS)

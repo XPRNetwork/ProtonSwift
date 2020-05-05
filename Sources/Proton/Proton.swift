@@ -6,7 +6,6 @@
 //  Copyright © 2020 Needly, Inc. All rights reserved.
 //
 
-import Combine
 import EOSIO
 import Foundation
 #if os(macOS)
@@ -15,7 +14,7 @@ import AppKit
 import UIKit
 #endif
 
-public final class Proton: ObservableObject {
+public final class Proton {
     
     public struct Config {
         
@@ -45,69 +44,107 @@ public final class Proton: ObservableObject {
     
     public static let shared = Proton()
     
+    public enum Notifications {
+        static let chainProvidersWillSet = Notification.Name("chainProvidersWillSet")
+        static let chainProvidersDidSet = Notification.Name("chainProvidersDidSet")
+        static let tokenContractsWillSet = Notification.Name("tokenContractsWillSet")
+        static let tokenContractsDidSet = Notification.Name("tokenContractsDidSet")
+        static let accountsWillSet = Notification.Name("accountsWillSet")
+        static let accountsDidSet = Notification.Name("accountsDidSet")
+        static let tokenBalancesWillSet = Notification.Name("tokenBalancesWillSet")
+        static let tokenBalancesDidSet = Notification.Name("tokenBalancesDidSet")
+        static let tokenTransferActionsWillSet = Notification.Name("tokenTransferActionsWillSet")
+        static let tokenTransferActionsDidSet = Notification.Name("tokenTransferActionsDidSet")
+        static let esrSessionsWillSet = Notification.Name("esrSessionsWillSet")
+        static let esrSessionsDidSet = Notification.Name("esrSessionsDidSet")
+        static let esrWillSet = Notification.Name("esrWillSet")
+        static let esrDidSet = Notification.Name("esrDidSet")
+    }
+    
     var storage: Persistence!
     var publicKeys = [String]()
     
     /**
-     Live updated set of chainProviders. Subscribe to this for your chainProviders
+     Live updated array of chainProviders. You can observe changes via NotificaitonCenter: chainProvidersWillSet, chainProvidersDidSet
      */
-    @Published public var chainProviders: [ChainProvider] = [] {
+    public var chainProviders: [ChainProvider] = [] {
         willSet {
-            self.objectWillChange.send()
+            NotificationCenter.default.post(name: Notifications.chainProvidersWillSet, object: nil, userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.chainProvidersDidSet, object: nil)
         }
     }
     
     /**
-     Live updated set of tokenContracts. Subscribe to this for your tokenContracts
+     Live updated array of tokenContracts. You can observe changes via NotificaitonCenter: tokenContractsWillSet, tokenContractsDidSet
      */
-    @Published public var tokenContracts: [TokenContract] = [] {
+    public var tokenContracts: [TokenContract] = [] {
         willSet {
-            self.objectWillChange.send()
+            NotificationCenter.default.post(name: Notifications.tokenContractsWillSet, object: nil, userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.tokenContractsDidSet, object: nil)
         }
     }
     
     /**
-     Live updated set of accounts. Subscribe to this for your accounts
+     Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet
      */
-    @Published public var accounts: [Account] = [] {
+    public var accounts: [Account] = [] {
         willSet {
-            self.objectWillChange.send()
+            NotificationCenter.default.post(name: Notifications.accountsWillSet, object: nil, userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.accountsDidSet, object: nil)
         }
     }
     
     /**
-     Live updated set of tokenBalances. Subscribe to this for your tokenBalances
+     Live updated array of tokenBalances. You can observe changes via NotificaitonCenter: tokenBalancesWillSet, tokenBalancesDidSet
      */
-    @Published public var tokenBalances: [TokenBalance] = [] {
+    public var tokenBalances: [TokenBalance] = [] {
         willSet {
-            self.objectWillChange.send()
+            NotificationCenter.default.post(name: Notifications.tokenBalancesWillSet, object: nil, userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.tokenBalancesDidSet, object: nil)
         }
     }
     
     /**
-     Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+     Live updated array of tokenTransferActions. You can observe changes via NotificaitonCenter: tokenTransferActionsWillSet, tokenTransferActionsDidSet
      */
-    @Published public var tokenTransferActions: [TokenTransferAction] = [] {
+    public var tokenTransferActions: [TokenTransferAction] = [] {
         willSet {
-            self.objectWillChange.send()
+            NotificationCenter.default.post(name: Notifications.tokenTransferActionsWillSet, object: nil, userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.tokenTransferActionsDidSet, object: nil)
         }
     }
     
     /**
-     Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+     Live updated array of esrSessions. You can observe changes via NotificaitonCenter: esrSessionsWillSet, esrSessionsDidSet
      */
-    @Published public var esrSessions: [ESRSession] = [] {
+    public var esrSessions: [ESRSession] = [] {
         willSet {
-            self.objectWillChange.send()
+            NotificationCenter.default.post(name: Notifications.esrSessionsWillSet, object: nil, userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.esrSessionsDidSet, object: nil)
         }
     }
     
     /**
-     Live updated esr signing request. This will be initialized when a signing request is made
+     Live updated esr. You can observe changes via NotificaitonCenter: esrWillSet, esrDidSet
      */
-    @Published public var esr: ESR? = nil {
+    public var esr: ESR? = nil {
         willSet {
-            self.objectWillChange.send()
+            NotificationCenter.default.post(name: Notifications.esrWillSet, object: nil, userInfo: newValue != nil ? ["newValue": newValue!] : nil)
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.esrDidSet, object: nil)
         }
     }
     
@@ -419,15 +456,14 @@ public final class Proton: ObservableObject {
     
     /**
      Use this to parse an esr signing request.
-     - Parameter openURLContext: UIOpenURLContext passed when opening from custom uri: esr://
+     - Parameter withURL: URL passed when opening from custom uri: esr://
      - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
      */
-    #if os(iOS)
-    public func parseESR(openURLContext: UIOpenURLContext, completion: @escaping (ESR?) -> ()) {
+    public func parseESR(withURL url: URL, completion: @escaping (ESR?) -> ()) {
         
         do {
             
-            let signingRequest = try SigningRequest(openURLContext.url.absoluteString)
+            let signingRequest = try SigningRequest(url.absoluteString)
             let chainId = signingRequest.chainId
             
             guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
@@ -559,7 +595,7 @@ public final class Proton: ObservableObject {
         }
         
     }
-    #endif
+
     /**
      Use this to decline signing request
      - Parameter completion: Closure thats called when the function is complete.
