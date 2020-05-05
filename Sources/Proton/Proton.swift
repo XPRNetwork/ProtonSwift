@@ -69,7 +69,8 @@ public final class Proton {
      */
     public var chainProviders: [ChainProvider] = [] {
         willSet {
-            NotificationCenter.default.post(name: Notifications.chainProvidersWillSet, object: nil, userInfo: ["newValue": newValue])
+            NotificationCenter.default.post(name: Notifications.chainProvidersWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.chainProvidersDidSet, object: nil)
@@ -81,7 +82,8 @@ public final class Proton {
      */
     public var tokenContracts: [TokenContract] = [] {
         willSet {
-            NotificationCenter.default.post(name: Notifications.tokenContractsWillSet, object: nil, userInfo: ["newValue": newValue])
+            NotificationCenter.default.post(name: Notifications.tokenContractsWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.tokenContractsDidSet, object: nil)
@@ -93,7 +95,8 @@ public final class Proton {
      */
     public var accounts: [Account] = [] {
         willSet {
-            NotificationCenter.default.post(name: Notifications.accountsWillSet, object: nil, userInfo: ["newValue": newValue])
+            NotificationCenter.default.post(name: Notifications.accountsWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.accountsDidSet, object: nil)
@@ -105,7 +108,8 @@ public final class Proton {
      */
     public var tokenBalances: [TokenBalance] = [] {
         willSet {
-            NotificationCenter.default.post(name: Notifications.tokenBalancesWillSet, object: nil, userInfo: ["newValue": newValue])
+            NotificationCenter.default.post(name: Notifications.tokenBalancesWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.tokenBalancesDidSet, object: nil)
@@ -117,7 +121,8 @@ public final class Proton {
      */
     public var tokenTransferActions: [TokenTransferAction] = [] {
         willSet {
-            NotificationCenter.default.post(name: Notifications.tokenTransferActionsWillSet, object: nil, userInfo: ["newValue": newValue])
+            NotificationCenter.default.post(name: Notifications.tokenTransferActionsWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.tokenTransferActionsDidSet, object: nil)
@@ -129,7 +134,8 @@ public final class Proton {
      */
     public var esrSessions: [ESRSession] = [] {
         willSet {
-            NotificationCenter.default.post(name: Notifications.esrSessionsWillSet, object: nil, userInfo: ["newValue": newValue])
+            NotificationCenter.default.post(name: Notifications.esrSessionsWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.esrSessionsDidSet, object: nil)
@@ -141,7 +147,8 @@ public final class Proton {
      */
     public var esr: ESR? = nil {
         willSet {
-            NotificationCenter.default.post(name: Notifications.esrWillSet, object: nil, userInfo: newValue != nil ? ["newValue": newValue!] : nil)
+            NotificationCenter.default.post(name: Notifications.esrWillSet, object: nil,
+                                            userInfo: newValue != nil ? ["newValue": newValue!] : nil)
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.esrDidSet, object: nil)
