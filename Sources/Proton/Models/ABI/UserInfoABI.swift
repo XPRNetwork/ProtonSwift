@@ -9,47 +9,6 @@
 import EOSIO
 import Foundation
 
-//{
-//    "name": "acc",
-//    "type": "name"
-//},
-//{
-//    "name": "name",
-//    "type": "string"
-//},
-//{
-//    "name": "avatar",
-//    "type": "string"
-//},
-//{
-//    "name": "verified",
-//    "type": "bool"
-//},
-//{
-//    "name": "date",
-//    "type": "uint64"
-//},
-//{
-//    "name": "verifiedon",
-//    "type": "uint64"
-//},
-//{
-//    "name": "verifier",
-//    "type": "name"
-//},
-//{
-//    "name": "raccs",
-//    "type": "name[]"
-//},
-//{
-//    "name": "aacts",
-//    "type": "tuple_name_name[]"
-//},
-//{
-//    "name": "ac",
-//    "type": "tuple_name_string[]"
-//}
-
 struct UserInfoABI: ABICodable {
     
     struct acct: ABICodable {
