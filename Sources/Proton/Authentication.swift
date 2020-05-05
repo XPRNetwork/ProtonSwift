@@ -156,12 +156,4 @@ public class Authentication {
         
     }
     
-//    func getAuthRequiredPopup() -> PopupDialog {
-//
-//        let popup = PopupDialog.getDialog(withTitle: "Passcode Required", description: "Lynx Wallet requires that you have at least a phone passcode set so that you can save and retrieve your sensitive data securely. We highly suggest also enabling FaceID or TouchID.", buttons: nil)
-//
-//        return popup
-//
-//    }
-    
 }

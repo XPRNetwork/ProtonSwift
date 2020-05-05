@@ -11,11 +11,11 @@ import Foundation
 
 class PostBackgroundESROperation: AbstractOperation {
     
-    var esr: Proton.ESR
+    var esr: ESR
     var sig: Signature
     var blockNum: BlockNum?
     
-    init(esr: Proton.ESR, sig: Signature, blockNum: BlockNum?) {
+    init(esr: ESR, sig: Signature, blockNum: BlockNum?) {
         self.esr = esr
         self.sig = sig
         self.blockNum = blockNum
