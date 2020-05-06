@@ -274,6 +274,8 @@ public final class Proton {
                                     }
                                 }
                                 
+                                self.tokenContracts = self.tokenContracts // Hack
+                                
                             }
                             
                         case .failure: break
@@ -735,6 +737,7 @@ public final class Proton {
                                                                          symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
                                 
                                 self.tokenContracts.append(unknownTokenContract)
+                                self.tokenContracts = self.tokenContracts // Hack. For some reason appending does not call didSet or willSet
                                 
                             }
                             
