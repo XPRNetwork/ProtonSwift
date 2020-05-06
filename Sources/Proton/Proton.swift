@@ -19,14 +19,10 @@ public final class Proton {
     
     public struct Config {
         
-        public var keyChainIdentifier: String
         public var chainProvidersUrl: String
         
-        public init(keyChainIdentifier: String, chainProvidersUrl: String) {
-            
-            self.keyChainIdentifier = keyChainIdentifier
+        public init(chainProvidersUrl: String) {
             self.chainProvidersUrl = chainProvidersUrl
-            
         }
         
     }
@@ -35,7 +31,7 @@ public final class Proton {
     
     /**
      Use this function as your starting point to initialize the singleton class Proton
-     - Parameter config: The configuration object that includes urls for chainProviders as well as your keychain indentifier string
+     - Parameter config: The configuration object that includes urls for chainProviders
      - Returns: Initialized Proton singleton
      */
     public static func initialize(_ config: Config) -> Proton {
@@ -60,9 +56,9 @@ public final class Proton {
         static let esrSessionsDidSet = Notification.Name("esrSessionsDidSet")
         static let esrWillSet = Notification.Name("esrWillSet")
         static let esrDidSet = Notification.Name("esrDidSet")
+        static let activeAccountWillSet = Notification.Name("activeAccountWillSet")
+        static let activeAccountDidSet = Notification.Name("activeAccountDidSet")
     }
-    
-    var publicKeys = [String]()
     
     /**
      Live updated array of chainProviders. You can observe changes via NotificaitonCenter: chainProvidersWillSet, chainProvidersDidSet
@@ -161,6 +157,20 @@ public final class Proton {
         }
     }
     
+    /**
+     Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet
+     */
+    @UserDefault("activeAccount", defaultValue: nil)
+    public var activeAccount: Account? {
+        willSet {
+            NotificationCenter.default.post(name: Notifications.activeAccountWillSet, object: nil,
+                                            userInfo: newValue != nil ? ["newValue": newValue!] : nil)
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.activeAccountDidSet, object: nil)
+        }
+    }
+    
     private init() {
         
         guard let _ = Proton.config else {
@@ -168,12 +178,64 @@ public final class Proton {
         }
         
         print("🧑‍💻 LOAD COMPLETED")
+        print("ACTIVE ACCOUNT => \(String(describing: self.activeAccount))")
         print("ACCOUNTS => \(self.accounts.count)")
         print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
 
+    }
+    
+    /**
+     Sets the active account, fetchs and updates. This includes, account names, avatars, balances, etc
+     - Parameter forAccountName: Proton account name not including @
+     - Parameter chainId: chainId for the account
+     - Parameter completion: Closure returning Result<Account, Error>
+     */
+    public func setActiveAccount(forAccountName accountName: String, chainId: String,
+                                 completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        self.setActiveAccount(Account(chainId: chainId, name: accountName)) { result in
+            switch result {
+            case .success(let account):
+                completion(.success(account))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+        
+    }
+    
+    /**
+     Sets the active account, fetchs and updates. This includes, account names, avatars, balances, etc
+     - Parameter account: Account
+     - Parameter completion: Closure returning Result<Account, Error>
+     */
+    public func setActiveAccount(_ account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        var account = account
+        
+        if let activeAccount = self.activeAccount, activeAccount == account {
+            account = activeAccount
+        } else {
+            self.activeAccount = account
+            self.tokenBalances.removeAll()
+            self.tokenTransferActions.removeAll()
+            self.esrSessions.removeAll()
+            self.esr = nil
+        }
+
+        self.update { result in
+            switch result {
+            case .success(let account):
+                self.activeAccount = account
+                completion(.success(account))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+        
     }
     
     /**
@@ -253,13 +315,15 @@ public final class Proton {
     }
     
     /**
-     Fetchs and updates passed account. This includes, account names, avatars, balances, etc
-     - Parameter account: Update an account
-     - Parameter completion: Closure returning Result<Set<Account>, Error>
+     Fetchs and updates the active account. This includes, account names, avatars, balances, etc
+     - Parameter completion: Closure returning Result<Account, Error>
      */
-    public func update(account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func update(completion: @escaping ((Result<Account, Error>) -> Void)) {
         
-        var account = account
+        guard var account = self.activeAccount else {
+            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            return
+        }
         
         self.fetchAccount(forAccount: account) { result in
             
@@ -382,13 +446,7 @@ public final class Proton {
                 
                 try keychain.set(Data(privateKey.utf8), key: publicKey.stringValue)
                 
-                if let idx = self.accounts.firstIndex(of: account) {
-                    self.accounts[idx] = account
-                } else {
-                    self.accounts.append(account)
-                }
-                
-                self.update(account: account) { result in
+                self.setActiveAccount(account) { result in
                     switch result {
                     case .success(let account):
                         completion(.success(account))
@@ -579,8 +637,6 @@ public final class Proton {
                             }
                             
                         }
-                        self.publicKeys.append(publicKey)
-                        self.publicKeys = self.publicKeys.unique()
                         
                     }
                     
@@ -987,7 +1043,7 @@ public final class Proton {
                                         
                                         guard let callback = self.esr!.resolved!.getCallback(using: [sig], blockNum: res.processed.blockNum) else { completion(nil); return }
                                         
-                                        self.update(account: signer) { _ in }
+                                        self.update { _ in }
                                         
                                         if callback.background {
                                             
