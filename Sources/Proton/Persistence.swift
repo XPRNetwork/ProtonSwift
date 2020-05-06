@@ -27,7 +27,7 @@ class Persistence {
             return nil
         }
         
-        guard let decodedObject = try? self.decoder.decode(object, from: data) else {
+        guard let decodedObject = try? self.decoder.decode(object.self, from: data) else {
             return nil
         }
         
@@ -39,6 +39,7 @@ class Persistence {
         guard let encodedData = try? self.encoder.encode(object) else {
             return
         }
+        
         
         self.defaults.set(encodedData, forKey: key)
         self.defaults.synchronize()
