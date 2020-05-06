@@ -24,7 +24,12 @@ class FetchTokenBalancesOperation: AbstractOperation {
         
         let path = "\(chainProvider.stateHistoryUrl)\(rpcPath)?account=\(self.account.name)"
         
-        WebServices.shared.getRequestJSON(withPath: path) { result in
+        guard let url = URL(string: path) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for \(rpcPath)"))
+            return
+        }
+        
+        WebServices.shared.getRequestJSON(withURL: url) { result in
             
             switch result {
             case .success(let res):

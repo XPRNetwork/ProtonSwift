@@ -41,7 +41,12 @@ class PostBackgroundESROperation: AbstractOperation {
                 return
             }
             
-            WebServices.shared.postRequestData(withPath: callback.url, parameters: parameters) { result in
+            guard let url = URL(string: callback.url) else {
+                self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for ESR callback"))
+                return
+            }
+            
+            WebServices.shared.postRequestData(withURL: url, parameters: parameters) { result in
                 
                 switch result {
                 case .success:

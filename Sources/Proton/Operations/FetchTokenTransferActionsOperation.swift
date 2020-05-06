@@ -30,7 +30,12 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
         
         let path = "\(self.chainProvider.stateHistoryUrl)\(rpcPath)?transfer.symbol=\(self.tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
         
-        WebServices.shared.getRequestJSON(withPath: path) { result in
+        guard let url = URL(string: path) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for \(rpcPath)"))
+            return
+        }
+        
+        WebServices.shared.getRequestJSON(withURL: url) { result in
             
             switch result {
             case .success(let res):

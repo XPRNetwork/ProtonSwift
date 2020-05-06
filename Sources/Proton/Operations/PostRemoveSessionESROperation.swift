@@ -23,7 +23,12 @@ class PostRemoveSessionESROperation: AbstractOperation {
         
         if let path = self.esrSession.rs {
             
-            WebServices.shared.postRequestData(withPath: path, parameters: parameters) { result in
+            guard let url = URL(string: path) else {
+                self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for ESR remove session"))
+                return
+            }
+            
+            WebServices.shared.postRequestData(withURL: url, parameters: parameters) { result in
                 
                 switch result {
                 case .success:

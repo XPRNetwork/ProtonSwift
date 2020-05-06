@@ -62,10 +62,9 @@ class WebServices: NSObject {
     
     // MARK: - HTTP Base Requests
     
-    func getRequest(withPath path: String, completion: ((Result<Data?, Error>) -> Void)?) {
+    func getRequest(withURL url: URL, completion: ((Result<Data?, Error>) -> Void)?) {
         
         let session = URLSession.shared
-        let url = URL(string: path)!
         
         let task = session.dataTask(with: url) { data, response, error in
             
@@ -122,9 +121,9 @@ class WebServices: NSObject {
         
     }
     
-    func getRequestJSON(withPath path: String, completion: ((Result<Any?, Error>) -> Void)?) {
+    func getRequestJSON(withURL url: URL, completion: ((Result<Any?, Error>) -> Void)?) {
         
-        getRequest(withPath: path) { result in
+        getRequest(withURL: url) { result in
             
             switch result {
                 
@@ -163,9 +162,9 @@ class WebServices: NSObject {
         
     }
     
-    func getRequest<T: Codable>(withPath path: String, completion: ((Result<T, Error>) -> Void)?) {
+    func getRequest<T: Codable>(withURL url: URL, completion: ((Result<T, Error>) -> Void)?) {
         
-        getRequest(withPath: path) { result in
+        getRequest(withURL: url) { result in
             
             switch result {
                 
@@ -199,10 +198,9 @@ class WebServices: NSObject {
         
     }
     
-    func postRequestData(withPath path: String, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
+    func postRequestData(withURL url: URL, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
         
         let session = URLSession.shared
-        let url = URL(string: path)!
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -257,10 +255,9 @@ class WebServices: NSObject {
         
     }
     
-    func postRequestJSON(withPath path: String, parameters: [String: Any]? = nil, completion: ((Result<Any?, Error>) -> Void)?) {
+    func postRequestJSON(withURL url: URL, parameters: [String: Any]? = nil, completion: ((Result<Any?, Error>) -> Void)?) {
         
         let session = URLSession.shared
-        let url = URL(string: path)!
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -332,10 +329,9 @@ class WebServices: NSObject {
         
     }
     
-    func postRequestJSON(withPath path: String, data: Data, completion: ((Result<Any?, Error>) -> Void)?) {
+    func postRequestJSON(withURL url: URL, data: Data, completion: ((Result<Any?, Error>) -> Void)?) {
         
         let session = URLSession.shared
-        let url = URL(string: path)!
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

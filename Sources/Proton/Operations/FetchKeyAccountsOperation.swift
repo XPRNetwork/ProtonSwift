@@ -23,7 +23,12 @@ class FetchKeyAccountsOperation: AbstractOperation {
         
         let path = "\(chainProvider.stateHistoryUrl)\(rpcPath)?public_key=\(self.publicKey)"
         
-        WebServices.shared.getRequest(withPath: path) { (result: Result<[String: [String]], Error>) in
+        guard let url = URL(string: path) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for \(rpcPath)"))
+            return
+        }
+        
+        WebServices.shared.getRequest(withURL: url) { (result: Result<[String: [String]], Error>) in
             
             var accountNames = Set<String>()
             

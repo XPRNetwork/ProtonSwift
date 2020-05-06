@@ -15,8 +15,13 @@ class FetchChainProvidersOperation: AbstractOperation {
         guard let path = Proton.config?.chainProvidersUrl else {
             fatalError("⚛️ PROTON ERROR: Must provider chainProvidersUrl in Proton config")
         }
+        
+        guard let url = URL(string: path) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url chainProviders endpoint"))
+            return
+        }
 
-        WebServices.shared.getRequest(withPath: path) { (result: Result<[String: ChainProvider], Error>) in
+        WebServices.shared.getRequest(withURL: url) { (result: Result<[String: ChainProvider], Error>) in
 
             switch result {
             case .success(let chainProviders):
