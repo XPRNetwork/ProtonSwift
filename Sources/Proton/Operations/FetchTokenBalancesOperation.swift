@@ -13,7 +13,7 @@ class FetchTokenBalancesOperation: AbstractOperation {
     
     var account: Account
     var chainProvider: ChainProvider
-    let rpcPath = "/v2/state/get_key_accounts"
+    let rpcPath = "/v2/state/get_tokens"
     
     init(account: Account, chainProvider: ChainProvider) {
         self.account = account
