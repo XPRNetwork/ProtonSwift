@@ -1178,7 +1178,7 @@ public enum ProtonError: Error, LocalizedError {
     case history(String)
     case esr(String)
 
-    public var errorDescription: String {
+    public var errorDescription: String? {
         switch self {
         case .error(let message):
             return "⚛️ PROTON ERROR\n======================\n\(message)\n======================\n"
