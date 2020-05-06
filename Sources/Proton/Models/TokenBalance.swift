@@ -63,7 +63,10 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     }
     
     public var account: Account? {
-        return Proton.shared.accounts.first(where: { $0.id == self.accountId })
+        if let acc = Proton.shared.activeAccount, acc.id == self.accountId {
+            return acc
+        }
+        return nil
     }
     
     public var usdRate: Double {

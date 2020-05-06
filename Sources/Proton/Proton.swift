@@ -89,20 +89,6 @@ public final class Proton {
     }
     
     /**
-     Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet
-     */
-    @UserDefault("accounts", defaultValue: [])
-    public var accounts: [Account] {
-        willSet {
-            NotificationCenter.default.post(name: Notifications.accountsWillSet, object: nil,
-                                            userInfo: ["newValue": newValue])
-        }
-        didSet {
-            NotificationCenter.default.post(name: Notifications.accountsDidSet, object: nil)
-        }
-    }
-    
-    /**
      Live updated array of tokenBalances. You can observe changes via NotificaitonCenter: tokenBalancesWillSet, tokenBalancesDidSet
      */
     @UserDefault("tokenBalances", defaultValue: [])
@@ -179,7 +165,6 @@ public final class Proton {
         
         print("🧑‍💻 LOAD COMPLETED")
         print("ACTIVE ACCOUNT => \(String(describing: self.activeAccount))")
-        print("ACCOUNTS => \(self.accounts.count)")
         print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
@@ -332,12 +317,6 @@ public final class Proton {
                 
                 account = returnAccount
                 
-                if let idx = self.accounts.firstIndex(of: account) {
-                    self.accounts[idx] = account
-                } else {
-                    self.accounts.append(account)
-                }
-                
                 self.fetchAccountUserInfo(forAccount: account) { result in
                     
                     account = returnAccount
@@ -346,12 +325,6 @@ public final class Proton {
                     case .success(let returnAccount):
                         
                         account = returnAccount
-                        
-                        if let idx = self.accounts.firstIndex(of: account) {
-                            self.accounts[idx] = account
-                        } else {
-                            self.accounts.append(account)
-                        }
                         
                         self.fetchBalances(forAccount: account) { result in
                             
@@ -628,16 +601,9 @@ public final class Proton {
                 case .success(let accountNames):
                     
                     if let accountNames = accountNames as? Set<String>, accountNames.count > 0 {
-                        
                         for accountName in accountNames {
-                            
-                            let account = Account(chainId: chainProvider.chainId, name: accountName)
-                            if self.accounts.firstIndex(of: account) == nil {
-                                accounts.update(with: account)
-                            }
-                            
+                            accounts.update(with: Account(chainId: chainProvider.chainId, name: accountName))
                         }
-                        
                     }
                     
                 case .failure: break
@@ -766,6 +732,7 @@ public final class Proton {
     // 🚧 UNDER CONSTRUCTION
     
     /**
+     🚧 UNDER CONSTRUCTION
      Use this to parse an esr signing request.
      - Parameter withURL: URL passed when opening from custom uri: esr://
      - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
@@ -779,7 +746,7 @@ public final class Proton {
             
             guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
             guard let sid = signingRequest.getInfo("sid", as: String.self) else { completion(nil); return }
-            guard let account = self.accounts.first(where: { $0.chainId == String(chainId) }) else { completion(nil); return }
+            guard let account = self.activeAccount, account.chainId == String(chainId) else { completion(nil); return }
             guard let chainProvider = account.chainProvider else { completion(nil); return }
             
             var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
@@ -908,6 +875,7 @@ public final class Proton {
     }
 
     /**
+     🚧 UNDER CONSTRUCTION
      Use this to decline signing request
      - Parameter completion: Closure thats called when the function is complete.
      */
@@ -919,6 +887,7 @@ public final class Proton {
     }
     
     /**
+     🚧 UNDER CONSTRUCTION
      Use this to accept signing request
      - Parameter completion: Closure thats called when the function is complete.
      */
@@ -985,6 +954,7 @@ public final class Proton {
     }
     
     /**
+     🚧 UNDER CONSTRUCTION
      Use this to remove authorization
      - Parameter forId: esr Session Id
      */
