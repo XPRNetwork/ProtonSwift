@@ -38,7 +38,7 @@ class FetchTokenContractsOperation: AbstractOperation {
             for row in res.rows {
                 
                 if let tokenContractIndex = self.tokenContracts.firstIndex(where: { $0.contract.stringValue == row.tcontract.stringValue
-                        && $0.symbol.name == row.symbol.name && $0.chainId == self.chainProvider.chainId
+                    && $0.maxSupply.symbol.name == row.symbol.name && $0.chainId == self.chainProvider.chainId
                 }) {
                     
                     var tokenContract = self.tokenContracts[tokenContractIndex]
@@ -57,7 +57,7 @@ class FetchTokenContractsOperation: AbstractOperation {
                                                       issuer: row.tcontract, resourceToken: false, systemToken: false,
                                                       name: row.tname, desc: row.desc, iconUrl: row.iconurl,
                                                       supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
-                                                      symbol: row.symbol, url: row.url, blacklisted: row.blisted)
+                                                    url: row.url, blacklisted: row.blisted)
                     
                     self.tokenContracts.append(tokenContract)
                     

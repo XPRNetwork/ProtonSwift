@@ -29,7 +29,7 @@ class FetchTokenContractCurrencyStat: AbstractOperation {
         let client = Client(address: url)
         let req = API.V1.Chain.GetTableRows<TokenContractCurrencyStatsABI>(code: self.tokenContract.contract,
                                                                            table: Name(stringValue: "stat"),
-                                                                           scope: self.tokenContract.symbol.symbolCode)
+                                                                           scope: self.tokenContract.maxSupply.symbol)
 
         do {
 

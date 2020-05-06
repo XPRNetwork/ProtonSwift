@@ -19,7 +19,7 @@ protocol TokenContractsProtocol {
 
 public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol {
     
-    public var id: String { return "\(self.chainId):\(self.contract.stringValue):\(self.symbol.name)" }
+    public var id: String { return "\(self.chainId):\(self.contract.stringValue):\(self.maxSupply.symbol.name)" }
     
     public let chainId: String
     
@@ -32,13 +32,13 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     public var iconUrl: String
     public var supply: Asset
     public var maxSupply: Asset
-    public var symbol: Asset.Symbol
+    //public var symbol: Asset.Symbol
     public var url: String
     public var blacklisted: Bool
     
     internal init(chainId: String, contract: Name, issuer: Name, resourceToken: Bool,
                   systemToken: Bool, name: String, desc: String, iconUrl: String,
-                  supply: Asset, maxSupply: Asset, symbol: Asset.Symbol, url: String, blacklisted: Bool) {
+                  supply: Asset, maxSupply: Asset, url: String, blacklisted: Bool) {
         
         self.chainId = chainId
         self.contract = contract
@@ -50,7 +50,6 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
         self.iconUrl = iconUrl
         self.supply = supply
         self.maxSupply = maxSupply
-        self.symbol = symbol
         self.url = url
         self.blacklisted = blacklisted
         
@@ -74,7 +73,7 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
                              systemToken: true, name: "Proton", desc: "The proton token",
                              iconUrl: "https://static.protonchain.com/images/eosio-tokenXPR-testnet.png",
                              supply: try! Asset(stringValue: "179641154.1139 XPR"), maxSupply: try! Asset(stringValue: "10000000000.0000 XPR"),
-                             symbol: try! Asset.Symbol(4, "XPR"), url: "https://protonchain.com", blacklisted: false)
+                              url: "https://protonchain.com", blacklisted: false)
     }
     
     public var usdRate: Double {
