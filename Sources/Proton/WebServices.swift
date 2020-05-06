@@ -8,8 +8,15 @@
 
 import Foundation
 
-enum WebServiceError: Error {
+enum WebServiceError: Error, LocalizedError {
     case error(String)
+    
+    public var errorDescription: String? {
+        switch self {
+        case .error(let message):
+            return "🌐 \(message)"
+        }
+    }
 }
 
 class WebServices: NSObject {
