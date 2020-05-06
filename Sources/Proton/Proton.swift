@@ -471,7 +471,37 @@ public final class Proton {
             case .success(let accounts):
                 
                 if accounts.count > 0 {
-                    completion(.success(accounts))
+                    
+                    let accountCount = accounts.count
+                    var accountsProcessed = 0
+                    
+                    for var account in accounts {
+                        
+                        self.fetchAccount(forAccount: account) { result in
+                            switch result {
+                            case .success(let acc):
+                                account = acc
+                            case .failure: break
+                            }
+                            
+                            self.fetchAccountUserInfo(forAccount: account) { result in
+                                switch result {
+                                case .success(let acc):
+                                    account = acc
+                                case .failure: break
+                                }
+                                
+                                accountsProcessed += 1
+                                
+                                if accountCount == accountsProcessed {
+                                    completion(.success(accounts))
+                                }
+                            }
+                            
+                        }
+                        
+                    }
+
                 } else {
                     completion(.failure(ProtonError.error("MESSAGE => No accounts found for publicKey: \(publicKey)")))
                 }
