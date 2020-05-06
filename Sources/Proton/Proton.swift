@@ -274,7 +274,7 @@ public final class Proton {
                                     }
                                 }
                                 
-                                self.tokenContracts = self.tokenContracts // Hack
+                                self.tokenContracts = Array(self.tokenContracts) // Hack
                                 
                             }
                             
@@ -737,7 +737,7 @@ public final class Proton {
                                                                          symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
                                 
                                 self.tokenContracts.append(unknownTokenContract)
-                                self.tokenContracts = self.tokenContracts // Hack. For some reason appending does not call didSet or willSet
+                                self.tokenContracts = Array(self.tokenContracts) // Hack. For some reason appending does not call didSet or willSet
                                 
                             }
                             
