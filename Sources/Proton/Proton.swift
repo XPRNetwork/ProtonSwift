@@ -207,7 +207,7 @@ public final class Proton {
             self.activeAccount = account
             self.tokenBalances.removeAll()
             self.tokenTransferActions.removeAll()
-            self.esrSessions.removeAll()
+            self.esrSessions.removeAll() // TODO: Actually loop through call the remove session callbacks, etc
             self.esr = nil
         }
 
