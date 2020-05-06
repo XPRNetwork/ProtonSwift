@@ -767,7 +767,7 @@ public final class Proton {
                                                                          resourceToken: false, systemToken: false, name: tokenBalance.amount.symbol.name,
                                                                          desc: "", iconUrl: "", supply: Asset(0.0, tokenBalance.amount.symbol),
                                                                          maxSupply: Asset(0.0, tokenBalance.amount.symbol),
-                                                                         url: "", blacklisted: true)
+                                                                         symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
                                 
                                 self.tokenContracts.append(unknownTokenContract)
                                 
@@ -871,7 +871,7 @@ public final class Proton {
                                                     let symbol = transferActionABI.quantity.symbol
                                                     
                                                     if let tokenContract = self.tokenContracts.first(where: { $0.chainId == String(chainId)
-                                                        && $0.maxSupply.symbol == symbol && $0.contract == account }) {
+                                                                                                                && $0.symbol == symbol && $0.contract == account }) {
                                                         
                                                         let formatter = NumberFormatter()  // TODO: make this more effiecent
                                                         formatter.numberStyle = .currency

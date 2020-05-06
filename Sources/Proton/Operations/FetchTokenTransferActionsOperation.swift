@@ -28,7 +28,7 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     
     override func main() {
         
-        let path = "\(self.chainProvider.stateHistoryUrl)\(rpcPath)?transfer.symbol=\(self.tokenContract.maxSupply.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
+        let path = "\(self.chainProvider.stateHistoryUrl)\(rpcPath)?transfer.symbol=\(self.tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
         
         guard let url = URL(string: path) else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for \(rpcPath)"))
