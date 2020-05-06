@@ -478,8 +478,10 @@ public final class Proton {
                     for var account in accounts {
                         
                         self.fetchAccount(forAccount: account) { result in
+                            
                             switch result {
                             case .success(let acc):
+                                account = acc
                                 accounts.update(with: acc)
                             case .failure: break
                             }
