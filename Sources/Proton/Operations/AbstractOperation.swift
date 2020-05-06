@@ -52,8 +52,8 @@ class AbstractOperation: Operation {
     func finish(retval: Any? = nil, error: Error? = nil) {
         DispatchQueue.main.async {
             if let error = error {
+                print(error.localizedDescription)
                 self.completion?(.failure(error))
-                print("OPERATION ERROR => \(error)")
             } else {
                 self.completion?(.success(retval))
             }
@@ -65,8 +65,8 @@ class AbstractOperation: Operation {
     func finish<T: Codable>(retval: T? = nil, error: Error? = nil) {
         DispatchQueue.main.async {
             if let error = error {
+                print(error.localizedDescription)
                 self.completion?(.failure(error))
-                print("OPERATION ERROR => \(error)")
             } else {
                 self.completion?(.success(retval))
             }

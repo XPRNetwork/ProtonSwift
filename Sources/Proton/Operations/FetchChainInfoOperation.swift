@@ -20,19 +20,16 @@ class FetchChainInfoOperation: AbstractOperation {
     override func main() {
         
         guard let url = URL(string: chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url"))
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
         
         do {
-            
             let client = Client(address: url)
             let info = try client.sendSync(API.V1.Chain.GetInfo()).get()
             self.finish(retval: info, error: nil)
-            
         } catch {
-            print("ERROR: \(error.localizedDescription)")
-            self.finish(retval: nil, error: error)
+            self.finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetInfo.path)\nERROR => \(error.localizedDescription)"))
         }
         
     }

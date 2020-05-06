@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "KeychainAccess",
+        "repositoryURL": "https://github.com/kishikawakatsumi/KeychainAccess.git",
+        "state": {
+          "branch": null,
+          "revision": "3d0ea2c0806791abcc5d7f0d9f62f1cfd4a7264d",
+          "version": "4.2.0"
+        }
+      },
+      {
         "package": "secp256k1",
         "repositoryURL": "https://github.com/greymass/secp256k1.git",
         "state": {
@@ -17,15 +26,6 @@
           "branch": "master",
           "revision": "8ba630ed4cc88a74bc7aa0b01951b11335a522c1",
           "version": null
-        }
-      },
-      {
-        "package": "Valet",
-        "repositoryURL": "https://github.com/Square/Valet",
-        "state": {
-          "branch": null,
-          "revision": "7447d1661d938643b0004084367e7bdcb94fdcc4",
-          "version": "3.2.8"
         }
       }
     ]

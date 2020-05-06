@@ -22,7 +22,7 @@ class FetchTokenContractsOperation: AbstractOperation {
     override func main() {
         
         guard let url = URL(string: self.chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: WebServiceError.error("ERROR: Missing url for get table rows"))
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
         
@@ -68,8 +68,7 @@ class FetchTokenContractsOperation: AbstractOperation {
             self.finish(retval: self.tokenContracts, error: nil)
             
         } catch {
-            print("ERROR: \(error.localizedDescription)")
-            self.finish(retval: nil, error: error)
+            self.finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetTableRows<TokenContractABI>.path)\nERROR => \(error.localizedDescription)"))
         }
         
     }

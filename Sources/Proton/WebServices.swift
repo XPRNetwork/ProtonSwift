@@ -22,12 +22,12 @@ class WebServices: NSObject {
     private override init() {
         
         operationQueueSeq = OperationQueue()
-        operationQueueSeq.qualityOfService = .background
+        operationQueueSeq.qualityOfService = .utility
         operationQueueSeq.maxConcurrentOperationCount = 1
         operationQueueSeq.name = "\(UUID()).seq"
         
         operationQueueMulti = OperationQueue()
-        operationQueueMulti.qualityOfService = .background
+        operationQueueMulti.qualityOfService = .utility
         operationQueueMulti.name = "\(UUID()).multi"
         
     }

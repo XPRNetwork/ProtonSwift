@@ -29,14 +29,13 @@ class PostRemoveSessionESROperation: AbstractOperation {
                 case .success:
                     self.finish(retval: nil, error: nil)
                 case .failure(let error):
-                    print("ERROR: \(error.localizedDescription)")
-                    self.finish(retval: nil, error: WebServiceError.error("Error posting to esr reauth callback: \(error.localizedDescription)"))
+                    self.finish(retval: nil, error: ProtonError.esr("MESSAGE => Issue removing esr session\nESRSession => \(self.esrSession)\nERROR => \(error.localizedDescription)"))
                 }
                 
             }
             
         } else {
-            self.finish(retval: nil, error: WebServiceError.error("No remove session url found"))
+            self.finish(retval: nil, error: ProtonError.esr("MESSAGE => No remove session url found\nESRSession => \(self.esrSession)"))
         }
     
     }

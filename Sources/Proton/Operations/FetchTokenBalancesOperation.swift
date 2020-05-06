@@ -13,6 +13,7 @@ class FetchTokenBalancesOperation: AbstractOperation {
     
     var account: Account
     var chainProvider: ChainProvider
+    let rpcPath = "/v2/state/get_key_accounts"
     
     init(account: Account, chainProvider: ChainProvider) {
         self.account = account
@@ -21,7 +22,7 @@ class FetchTokenBalancesOperation: AbstractOperation {
     
     override func main() {
         
-        let path = "\(chainProvider.stateHistoryUrl)/v2/state/get_tokens?account=\(self.account.name)"
+        let path = "\(chainProvider.stateHistoryUrl)\(rpcPath)?account=\(self.account.name)"
         
         WebServices.shared.getRequestJSON(withPath: path) { result in
             
@@ -52,7 +53,7 @@ class FetchTokenBalancesOperation: AbstractOperation {
                 self.finish(retval: tokenBalances, error: nil)
                 
             case .failure(let error):
-                self.finish(retval: nil, error: WebServiceError.error("Error fetching token balances: \(error.localizedDescription)"))
+                self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nERROR => \(error.localizedDescription)"))
             }
             
         }

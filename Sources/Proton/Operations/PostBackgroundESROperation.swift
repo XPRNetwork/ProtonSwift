@@ -23,16 +23,23 @@ class PostBackgroundESROperation: AbstractOperation {
     
     override func main() {
         
-        guard let resolved = self.esr.resolved else { self.finish(retval: nil, error: nil); return }
-        guard let callback = resolved.getCallback(using: [self.sig], blockNum: self.blockNum) else { self.finish(retval: nil, error: nil); return }
+        guard let resolved = self.esr.resolved else {
+            self.finish(retval: nil, error: ProtonError.esr("MESSAGE => Issue getting resolved esr\nESR => \(esr.signingRequest)\nSIG => \(sig.stringValue)"))
+            return
+        }
+        guard let callback = resolved.getCallback(using: [self.sig], blockNum: self.blockNum) else {
+            self.finish(retval: nil, error: ProtonError.esr("MESSAGE => Issue getting esr callback\nESR => \(esr.signingRequest)\nSIG => \(sig.stringValue)"))
+            return
+        }
         
         do {
             
             let payloadData = try callback.getPayload(extra: ["sid": self.esr.sid])
             
-            guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else { self.finish(retval: nil, error: nil); return }
-            
-            print(parameters)
+            guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else {
+                self.finish(retval: nil, error: ProtonError.esr("MESSAGE => Issue getting payload data\nESR => \(esr.signingRequest)\nSIG => \(sig.stringValue)"))
+                return
+            }
             
             WebServices.shared.postRequestData(withPath: callback.url, parameters: parameters) { result in
                 
@@ -40,15 +47,13 @@ class PostBackgroundESROperation: AbstractOperation {
                 case .success:
                     self.finish(retval: nil, error: nil)
                 case .failure(let error):
-                    print("ERROR: \(error.localizedDescription)")
-                    self.finish(retval: nil, error: WebServiceError.error("Error posting to esr callback: \(error.localizedDescription)"))
+                    self.finish(retval: nil, error: ProtonError.esr("MESSAGE => Issue posting callback\nESR => \(self.esr.signingRequest)\nSIG => \(self.sig.stringValue)\nERROR => \(error.localizedDescription)"))
                 }
                 
             }
             
         } catch {
-            print("ERROR: \(error.localizedDescription)")
-            self.finish(retval: nil, error: WebServiceError.error("Error posting to esr callback: \(error.localizedDescription)"))
+            self.finish(retval: nil, error: ProtonError.esr("MESSAGE => Issue posting callback\nESR => \(esr.signingRequest)\nSIG => \(sig.stringValue)\nERROR => \(error.localizedDescription)"))
         }
         
     }

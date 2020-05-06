@@ -14,6 +14,28 @@ import AppKit
 import UIKit
 #endif
 
+public enum ProtonError: Error, LocalizedError {
+    
+    case error(String)
+    case chain(String)
+    case history(String)
+    case esr(String)
+
+    public var errorDescription: String {
+        switch self {
+        case let .error(message):
+            return "⚛️ PROTON ERROR\n======================\n\(message)\n======================\n"
+        case let .chain(message):
+            return "⚛️⛓️ PROTON CHAIN ERROR\n======================\n\(message)\n======================\n"
+        case let .history(message):
+            return "⚛️📜 PROTON HISTORY ERROR\n======================\n\(message)\n======================\n"
+        case let .esr(message):
+            return "⚛️✍️ PROTON SIGNING REQUEST ERROR\n======================\n\(message)\n======================\n"
+        }
+    }
+    
+}
+
 public final class Proton {
     
     public struct Config {
@@ -61,13 +83,13 @@ public final class Proton {
         static let esrDidSet = Notification.Name("esrDidSet")
     }
     
-    var storage: Persistence!
     var publicKeys = [String]()
     
     /**
      Live updated array of chainProviders. You can observe changes via NotificaitonCenter: chainProvidersWillSet, chainProvidersDidSet
      */
-    public var chainProviders: [ChainProvider] = [] {
+    @UserDefault("chainProviders", defaultValue: [])
+    public var chainProviders: [ChainProvider] {
         willSet {
             NotificationCenter.default.post(name: Notifications.chainProvidersWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -80,7 +102,8 @@ public final class Proton {
     /**
      Live updated array of tokenContracts. You can observe changes via NotificaitonCenter: tokenContractsWillSet, tokenContractsDidSet
      */
-    public var tokenContracts: [TokenContract] = [] {
+    @UserDefault("tokenContracts", defaultValue: [])
+    public var tokenContracts: [TokenContract] {
         willSet {
             NotificationCenter.default.post(name: Notifications.tokenContractsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -93,7 +116,8 @@ public final class Proton {
     /**
      Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet
      */
-    public var accounts: [Account] = [] {
+    @UserDefault("accounts", defaultValue: [])
+    public var accounts: [Account] {
         willSet {
             NotificationCenter.default.post(name: Notifications.accountsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -106,7 +130,8 @@ public final class Proton {
     /**
      Live updated array of tokenBalances. You can observe changes via NotificaitonCenter: tokenBalancesWillSet, tokenBalancesDidSet
      */
-    public var tokenBalances: [TokenBalance] = [] {
+    @UserDefault("tokenBalances", defaultValue: [])
+    public var tokenBalances: [TokenBalance] {
         willSet {
             NotificationCenter.default.post(name: Notifications.tokenBalancesWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -119,7 +144,8 @@ public final class Proton {
     /**
      Live updated array of tokenTransferActions. You can observe changes via NotificaitonCenter: tokenTransferActionsWillSet, tokenTransferActionsDidSet
      */
-    public var tokenTransferActions: [TokenTransferAction] = [] {
+    @UserDefault("tokenTransferActions", defaultValue: [])
+    public var tokenTransferActions: [TokenTransferAction] {
         willSet {
             NotificationCenter.default.post(name: Notifications.tokenTransferActionsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -132,7 +158,8 @@ public final class Proton {
     /**
      Live updated array of esrSessions. You can observe changes via NotificaitonCenter: esrSessionsWillSet, esrSessionsDidSet
      */
-    public var esrSessions: [ESRSession] = [] {
+    @UserDefault("esrSessions", defaultValue: [])
+    public var esrSessions: [ESRSession] {
         willSet {
             NotificationCenter.default.post(name: Notifications.esrSessionsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -157,27 +184,9 @@ public final class Proton {
     
     private init() {
         
-        guard let config = Proton.config else {
-            fatalError("ERROR: You must call setup before accessing ProtonWalletManager.shared")
+        guard let _ = Proton.config else {
+            fatalError("ERROR: You must call setup before accessing Proton.shared")
         }
-        self.storage = Persistence(keyChainIdentifier: config.keyChainIdentifier)
-        
-        self.loadAll()
-        
-    }
-    
-    /**
-     Loads all data objects from disk into memory
-     */
-    public func loadAll() {
-        
-        self.publicKeys = self.storage.getKeychainItem([String].self, forKey: "publicKeys") ?? []
-        self.chainProviders = self.storage.getDefaultsItem([ChainProvider].self, forKey: "chainProviders") ?? []
-        self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
-        self.accounts = self.storage.getDefaultsItem([Account].self, forKey: "accounts") ?? []
-        self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
-        self.tokenTransferActions = self.storage.getDefaultsItem([TokenTransferAction].self, forKey: "tokenTransferActions") ?? []
-        self.esrSessions = self.storage.getDefaultsItem([ESRSession].self, forKey: "esrSessions") ?? []
         
         print("🧑‍💻 LOAD COMPLETED")
         print("ACCOUNTS => \(self.accounts.count)")
@@ -185,24 +194,7 @@ public final class Proton {
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
-        
-    }
-    
-    /**
-     Saves all current data objects that are in memory to disk
-     */
-    public func saveAll() {
-        
-        if self.publicKeys.count > 0 { // saftey
-            self.storage.setKeychainItem(self.publicKeys, forKey: "publicKeys")
-        }
-        
-        self.storage.setDefaultsItem(self.chainProviders, forKey: "chainProviders")
-        self.storage.setDefaultsItem(self.tokenContracts, forKey: "tokenContracts")
-        self.storage.setDefaultsItem(self.accounts, forKey: "accounts")
-        self.storage.setDefaultsItem(self.tokenBalances, forKey: "tokenBalances")
-        self.storage.setDefaultsItem(self.tokenTransferActions, forKey: "tokenTransferActions")
-        self.storage.setDefaultsItem(self.esrSessions, forKey: "esrSessions")
+
     }
     
     /**
@@ -263,8 +255,6 @@ public final class Proton {
                         case .failure(let error):
                             print("ERROR: \(error.localizedDescription)")
                         }
-                        
-                        self.saveAll()
                         
                         chainProvidersProcessed += 1
                         
@@ -365,41 +355,6 @@ public final class Proton {
     }
     
     /**
-     Fetchs and updates all accounts. This includes, account names, avatars, balances, etc
-     - Parameter completion: Closure thats called when the function is complete
-     */
-    public func update(completion: @escaping () -> ()) {
-        
-        let accountsCount = self.accounts.count
-        var accountsProcessed = 0
-        
-        if accountsCount > 0 {
-            
-            for account in self.accounts {
-                
-                self.update(account: account) {
-                    
-                    accountsProcessed += 1
-                    
-                    if accountsProcessed == accountsCount {
-                        
-                        self.saveAll()
-                        
-                        completion()
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        } else {
-            completion()
-        }
-        
-    }
-    
-    /**
      Use this to add an account
      - Parameter privateKey: Wif formated private key
      - Parameter completion: Closure thats called when the function is complete
@@ -416,7 +371,9 @@ public final class Proton {
                 if let accounts = accounts, accounts.count > 0 {
                     
                     // save private key
-                    self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue)
+//                    self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue)
+                    
+                                    // TODO: - KEYCHAIN
                     
                     let accountCount = accounts.count
                     var accountsProcessed = 0
@@ -426,7 +383,6 @@ public final class Proton {
                         self.update(account: account) {
                             accountsProcessed += 1
                             if accountsProcessed == accountCount {
-                                self.saveAll()
                                 completion()
                             }
                         }
@@ -545,6 +501,8 @@ public final class Proton {
         var chainProvidersProcessed = 0
         
         var accounts = Set<Account>()
+        
+        if chainProviderCount == 0 { completion(nil); return }
         
         for chainProvider in self.chainProviders {
             
@@ -864,7 +822,6 @@ public final class Proton {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         
                             self.esr = nil
-                            self.saveAll()
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             
@@ -884,7 +841,6 @@ public final class Proton {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         
                             self.esr = nil
-                            self.saveAll()
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             
@@ -900,15 +856,12 @@ public final class Proton {
                 } else {
                     
                     self.esr = nil
-                    self.saveAll()
-                    
                     completion(nil)
                     
                 }
 
             } else {
                 self.esr = nil
-                self.saveAll()
                 completion(nil) // return error
             }
             

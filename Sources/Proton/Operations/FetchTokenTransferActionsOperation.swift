@@ -15,6 +15,7 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     var tokenContract: TokenContract
     var tokenBalance: TokenBalance
     let limt = 100
+    let rpcPath = "/v2/history/get_actions"
     
     init(account: Account, tokenContract: TokenContract, chainProvider: ChainProvider,
          tokenBalance: TokenBalance) {
@@ -27,7 +28,7 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     
     override func main() {
         
-        let path = "\(self.chainProvider.stateHistoryUrl)/v2/history/get_actions?transfer.symbol=\(self.tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
+        let path = "\(self.chainProvider.stateHistoryUrl)\(rpcPath)?transfer.symbol=\(self.tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
         
         WebServices.shared.getRequestJSON(withPath: path) { result in
             
@@ -75,7 +76,7 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
                 self.finish(retval: tokenTranfsers, error: nil)
                 
             case .failure(let error):
-                self.finish(retval: nil, error: WebServiceError.error("Error fetching token balances: \(error.localizedDescription)"))
+                self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nERROR => \(error.localizedDescription)"))
             }
             
         }

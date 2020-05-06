@@ -13,7 +13,7 @@ class FetchChainProvidersOperation: AbstractOperation {
     override func main() {
         
         guard let path = Proton.config?.chainProvidersUrl else {
-            fatalError("Must provider chainProvidersUrl in ProtonWalletManager config")
+            fatalError("⚛️ PROTON ERROR: Must provider chainProvidersUrl in Proton config")
         }
 
         WebServices.shared.getRequest(withPath: path) { (result: Result<[String: ChainProvider], Error>) in
@@ -26,7 +26,7 @@ class FetchChainProvidersOperation: AbstractOperation {
                 }
                 self.finish(retval: retval, error: nil)
             case .failure(let error):
-                self.finish(retval: nil, error: WebServiceError.error("Error fetching chain providers: \(error.localizedDescription)"))
+                self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching chainProviders config object\nERROR => \(error.localizedDescription)"))
             }
         }
         

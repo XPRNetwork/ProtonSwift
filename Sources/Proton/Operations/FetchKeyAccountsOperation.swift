@@ -12,6 +12,7 @@ class FetchKeyAccountsOperation: AbstractOperation {
     
     var publicKey: String
     var chainProvider: ChainProvider
+    let rpcPath = "/v2/state/get_key_accounts"
     
     init(publicKey: String, chainProvider: ChainProvider) {
         self.publicKey = publicKey
@@ -20,7 +21,7 @@ class FetchKeyAccountsOperation: AbstractOperation {
     
     override func main() {
         
-        let path = "\(chainProvider.stateHistoryUrl)/v2/state/get_key_accounts?public_key=\(self.publicKey)"
+        let path = "\(chainProvider.stateHistoryUrl)\(rpcPath)?public_key=\(self.publicKey)"
         
         WebServices.shared.getRequest(withPath: path) { (result: Result<[String: [String]], Error>) in
             
@@ -42,13 +43,11 @@ class FetchKeyAccountsOperation: AbstractOperation {
                 if accountNames.count > 0 {
                     self.finish(retval: accountNames, error: nil)
                 } else {
-                    self.finish(retval: nil, error: WebServiceError.error("No Accounts found"))
+                    self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nMESSAGE => No accounts found for key: \(self.publicKey)"))
                 }
                 
             case .failure(let error):
-                
-                self.finish(retval: nil, error: WebServiceError.error("Error fetching accounts: \(error.localizedDescription)"))
-                
+                self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nERROR => \(error.localizedDescription)"))
             }
             
         }

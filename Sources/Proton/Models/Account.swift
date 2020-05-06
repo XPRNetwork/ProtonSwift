@@ -133,10 +133,10 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         if let permission = self.permissions.first(where: { $0.permName.stringValue == forPermissionName }) {
             
             if let keyWeight = permission.requiredAuth.keys.first {
-                
-                if let privateKeyString = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
-                    return PrivateKey(privateKeyString)
-                }
+                // TODO: - KEYCHAIN
+//                if let privateKeyString = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
+//                    return PrivateKey(privateKeyString)
+//                }
                 
             }
             

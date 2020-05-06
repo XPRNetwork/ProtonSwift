@@ -22,6 +22,7 @@ class FetchAccountOperation: AbstractOperation {
     override func main() {
         
         guard let url = URL(string: chainProvider.chainUrl) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
         
@@ -31,10 +32,8 @@ class FetchAccountOperation: AbstractOperation {
         do {
             let res = try client.sendSync(req).get()
             self.finish(retval: res, error: nil)
-            
         } catch {
-            print("ERROR: \(error.localizedDescription)")
-            self.finish(retval: nil, error: error)
+            self.finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetAccount.path)\nERROR => \(error.localizedDescription)"))
         }
     }
     
