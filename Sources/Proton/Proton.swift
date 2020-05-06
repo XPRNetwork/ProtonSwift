@@ -40,6 +40,7 @@ public final class Proton {
     }
     
     public static let shared = Proton()
+    var storage: Persistence!
     
     public enum Notifications {
         public static let chainProvidersWillSet = Notification.Name("chainProvidersWillSet")
@@ -61,8 +62,7 @@ public final class Proton {
     /**
      Live updated array of chainProviders. You can observe changes via NotificaitonCenter: chainProvidersWillSet, chainProvidersDidSet
      */
-    @UserDefault("chainProviders", defaultValue: [])
-    public var chainProviders: [ChainProvider] {
+    public var chainProviders: [ChainProvider] = [] {
         willSet {
             NotificationCenter.default.post(name: Notifications.chainProvidersWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -75,8 +75,7 @@ public final class Proton {
     /**
      Live updated array of tokenContracts. You can observe changes via NotificaitonCenter: tokenContractsWillSet, tokenContractsDidSet
      */
-    @UserDefault("tokenContracts", defaultValue: [])
-    public var tokenContracts: [TokenContract] {
+    public var tokenContracts: [TokenContract] = [] {
         willSet {
             NotificationCenter.default.post(name: Notifications.tokenContractsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -89,8 +88,7 @@ public final class Proton {
     /**
      Live updated array of tokenBalances. You can observe changes via NotificaitonCenter: tokenBalancesWillSet, tokenBalancesDidSet
      */
-    @UserDefault("tokenBalances", defaultValue: [])
-    public var tokenBalances: [TokenBalance] {
+    public var tokenBalances: [TokenBalance] = [] {
         willSet {
             NotificationCenter.default.post(name: Notifications.tokenBalancesWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -103,8 +101,7 @@ public final class Proton {
     /**
      Live updated array of tokenTransferActions. You can observe changes via NotificaitonCenter: tokenTransferActionsWillSet, tokenTransferActionsDidSet
      */
-    @UserDefault("tokenTransferActions", defaultValue: [])
-    public var tokenTransferActions: [TokenTransferAction] {
+    public var tokenTransferActions: [TokenTransferAction] = [] {
         willSet {
             NotificationCenter.default.post(name: Notifications.tokenTransferActionsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -117,8 +114,7 @@ public final class Proton {
     /**
      Live updated array of esrSessions. You can observe changes via NotificaitonCenter: esrSessionsWillSet, esrSessionsDidSet
      */
-    @UserDefault("esrSessions", defaultValue: [])
-    public var esrSessions: [ESRSession] {
+    public var esrSessions: [ESRSession] = [] {
         willSet {
             NotificationCenter.default.post(name: Notifications.esrSessionsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -161,13 +157,43 @@ public final class Proton {
             fatalError("ERROR: You must call setup before accessing Proton.shared")
         }
         
+        self.storage = Persistence()
+        
+        self.loadAll()
+        
         print("🧑‍💻 LOAD COMPLETED")
         print("ACTIVE ACCOUNT => \(String(describing: self.activeAccount))")
         print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
-
+        
+    }
+    
+    /**
+     Loads all data objects from disk into memory
+     */
+    public func loadAll() {
+        
+        self.chainProviders = self.storage.getDefaultsItem([ChainProvider].self, forKey: "chainProviders") ?? []
+        self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
+        self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
+        self.tokenTransferActions = self.storage.getDefaultsItem([TokenTransferAction].self, forKey: "tokenTransferActions") ?? []
+        self.esrSessions = self.storage.getDefaultsItem([ESRSession].self, forKey: "esrSessions") ?? []
+        
+    }
+    
+    /**
+     Saves all current data objects that are in memory to disk
+     */
+    public func saveAll() {
+        
+        self.storage.setDefaultsItem(self.chainProviders, forKey: "chainProviders")
+        self.storage.setDefaultsItem(self.tokenContracts, forKey: "tokenContracts")
+        self.storage.setDefaultsItem(self.tokenBalances, forKey: "tokenBalances")
+        self.storage.setDefaultsItem(self.tokenTransferActions, forKey: "tokenTransferActions")
+        self.storage.setDefaultsItem(self.esrSessions, forKey: "esrSessions")
+        
     }
     
     /**
@@ -274,8 +300,6 @@ public final class Proton {
                                     }
                                 }
                                 
-                                self.tokenContracts = Array(self.tokenContracts) // Hack
-                                
                             }
                             
                         case .failure: break
@@ -368,6 +392,15 @@ public final class Proton {
                                             
                                             if tokenBalancesProcessed == tokenBalancesCount {
                                                 completion(.success(account))
+                                                self.saveAll()
+                                                
+                                                print("🧑‍💻 UPDATE COMPLETED")
+                                                print("ACCOUNT => \(String(describing: self.activeAccount))")
+                                                print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
+                                                print("TOKEN BALANCES => \(self.tokenBalances.count)")
+                                                print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
+                                                print("ESR SESSIONS => \(self.esrSessions.count)")
+                                                
                                             }
 
                                         }
@@ -737,7 +770,6 @@ public final class Proton {
                                                                          symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
                                 
                                 self.tokenContracts.append(unknownTokenContract)
-                                self.tokenContracts = Array(self.tokenContracts) // Hack. For some reason appending does not call didSet or willSet
                                 
                             }
                             
