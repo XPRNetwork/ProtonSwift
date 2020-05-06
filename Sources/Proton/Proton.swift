@@ -13,28 +13,7 @@ import AppKit
 #elseif os(iOS)
 import UIKit
 #endif
-
-public enum ProtonError: Error, LocalizedError {
-    
-    case error(String)
-    case chain(String)
-    case history(String)
-    case esr(String)
-
-    public var errorDescription: String {
-        switch self {
-        case let .error(message):
-            return "⚛️ PROTON ERROR\n======================\n\(message)\n======================\n"
-        case let .chain(message):
-            return "⚛️⛓️ PROTON CHAIN ERROR\n======================\n\(message)\n======================\n"
-        case let .history(message):
-            return "⚛️📜 PROTON HISTORY ERROR\n======================\n\(message)\n======================\n"
-        case let .esr(message):
-            return "⚛️✍️ PROTON SIGNING REQUEST ERROR\n======================\n\(message)\n======================\n"
-        }
-    }
-    
-}
+import KeychainAccess
 
 public final class Proton {
     
@@ -199,9 +178,9 @@ public final class Proton {
     
     /**
      Fetchs all required data objects from external data sources. This should be done at startup
-     - Parameter completion: Closure thats called when the function is complete
+     - Parameter completion: Closure returning Result<Bool, Error>.
      */
-    public func fetchRequirements(completion: @escaping () -> ()) {
+    public func fetchRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
         WebServices.shared.addSeq(FetchChainProvidersOperation()) { result in
             
@@ -222,7 +201,7 @@ public final class Proton {
                 }
                 
             case .failure(let error):
-                print("ERROR: \(error.localizedDescription)")
+                completion(.failure(error))
             }
             
             let chainProvidersCount = self.chainProviders.count
@@ -252,14 +231,13 @@ public final class Proton {
                                 
                             }
                             
-                        case .failure(let error):
-                            print("ERROR: \(error.localizedDescription)")
+                        case .failure: break
                         }
                         
                         chainProvidersProcessed += 1
                         
                         if chainProvidersProcessed == chainProvidersCount {
-                            completion()
+                            completion(.success(true))
                         }
                         
                     }
@@ -267,7 +245,7 @@ public final class Proton {
                 }
                 
             } else {
-                completion()
+                completion(.failure(ProtonError.error("MESSAGE => No chainproviders")))
             }
             
         }
@@ -277,23 +255,16 @@ public final class Proton {
     /**
      Fetchs and updates passed account. This includes, account names, avatars, balances, etc
      - Parameter account: Update an account
-     - Parameter completion: Closure thats called when the function is complete
+     - Parameter completion: Closure returning Result<Set<Account>, Error>
      */
-    public func update(account: Account, completion: @escaping () -> ()) {
+    public func update(account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         var account = account
         
-        self.fetchAccount(forAccount: account) { returnAccount in
+        self.fetchAccount(forAccount: account) { result in
             
-            account = returnAccount
-            
-            if let idx = self.accounts.firstIndex(of: account) {
-                self.accounts[idx] = account
-            } else {
-                self.accounts.append(account)
-            }
-            
-            self.fetchAccountUserInfo(forAccount: account) { returnAccount in
+            switch result {
+            case .success(let returnAccount):
                 
                 account = returnAccount
                 
@@ -303,101 +274,182 @@ public final class Proton {
                     self.accounts.append(account)
                 }
                 
-                self.fetchBalances(forAccount: account) { tokenBalances in
+                self.fetchAccountUserInfo(forAccount: account) { result in
                     
-                    for tokenBalance in tokenBalances {
-                        if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
-                            self.tokenBalances[idx] = tokenBalance
-                        } else {
-                            self.tokenBalances.append(tokenBalance)
-                        }
-                    }
+                    account = returnAccount
                     
-                    let tokenBalancesCount = self.tokenBalances.count
-                    var tokenBalancesProcessed = 0
-                    
-                    if tokenBalancesCount > 0 {
+                    switch result {
+                    case .success(let returnAccount):
                         
-                        for tokenBalance in self.tokenBalances {
+                        account = returnAccount
+                        
+                        if let idx = self.accounts.firstIndex(of: account) {
+                            self.accounts[idx] = account
+                        } else {
+                            self.accounts.append(account)
+                        }
+                        
+                        self.fetchBalances(forAccount: account) { result in
                             
-                            self.fetchTransferActions(forTokenBalance: tokenBalance) { transferActions in
+                            switch result {
+                            case .success(let tokenBalances):
                                 
-                                tokenBalancesProcessed += 1
-                                
-                                for transferAction in transferActions {
-                                    
-                                    if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
-                                        self.tokenTransferActions[idx] = transferAction
+                                for tokenBalance in tokenBalances {
+                                    if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
+                                        self.tokenBalances[idx] = tokenBalance
                                     } else {
-                                        self.tokenTransferActions.append(transferAction)
+                                        self.tokenBalances.append(tokenBalance)
+                                    }
+                                }
+                                
+                                let tokenBalancesCount = self.tokenBalances.count
+                                var tokenBalancesProcessed = 0
+                                
+                                if tokenBalancesCount > 0 {
+                                    
+                                    for tokenBalance in self.tokenBalances {
+                                        
+                                        self.fetchTransferActions(forTokenBalance: tokenBalance) { result in
+                                            
+                                            tokenBalancesProcessed += 1
+                                            
+                                            switch result {
+                                            case .success(let transferActions):
+                                                
+                                                for transferAction in transferActions {
+                                                    
+                                                    if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
+                                                        self.tokenTransferActions[idx] = transferAction
+                                                    } else {
+                                                        self.tokenTransferActions.append(transferAction)
+                                                    }
+                                                    
+                                                }
+
+                                            case .failure: break
+                                            }
+                                            
+                                            if tokenBalancesProcessed == tokenBalancesCount {
+                                                completion(.success(account))
+                                            }
+
+                                        }
+                                        
                                     }
                                     
+                                } else {
+                                    completion(.failure(ProtonError.error("MESSAGE => No TokenBalances found for account: \(account.name)")))
                                 }
                                 
-                                if tokenBalancesProcessed == tokenBalancesCount {
-                                    completion()
-                                }
-                                
+                            case .failure(let error):
+                                completion(.failure(error))
                             }
-                            
+
                         }
                         
-                    } else {
-                        completion()
+                    case .failure(let error):
+                        completion(.failure(error))
                     }
                     
                 }
                 
+            case .failure(let error):
+                completion(.failure(error))
             }
-            
+
         }
         
     }
     
     /**
-     Use this to add an account
+     Use this function to store the account and private key after finding the account you want to save via findAccounts
+     - Parameter account: Account object, normally retrieved via findAccounts
      - Parameter privateKey: Wif formated private key
-     - Parameter completion: Closure thats called when the function is complete
+     - Parameter completion: Closure returning Result<Account, Error>
      */
-    public func importAccount(with privateKey: String, completion: @escaping () -> ()) {
+    public func store(account: Account, forPrivateKey privateKey: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         do {
             
             let pk = try PrivateKey(stringValue: privateKey)
             let publicKey = try pk.getPublic()
             
-            self.fetchKeyAccounts(forPublicKey: publicKey.stringValue) { accounts in
+            if account.isKeyAssociated(publicKey: publicKey.stringValue) {
                 
-                if let accounts = accounts, accounts.count > 0 {
-                    
-                    // save private key
-//                    self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue)
-                    
-                                    // TODO: - KEYCHAIN
-                    
-                    let accountCount = accounts.count
-                    var accountsProcessed = 0
-                    
-                    for account in accounts {
-                        
-                        self.update(account: account) {
-                            accountsProcessed += 1
-                            if accountsProcessed == accountCount {
-                                completion()
-                            }
-                        }
-                        
-                    }
-                    
+                let keychain = Keychain(service: "proton-swift-ks")
+                                .synchronizable(false)
+                                .accessibility(.whenUnlocked, authenticationPolicy: .userPresence)
+                
+                try keychain.set(Data(privateKey.utf8), key: publicKey.stringValue)
+                
+                if let idx = self.accounts.firstIndex(of: account) {
+                    self.accounts[idx] = account
                 } else {
-                    completion()
+                    self.accounts.append(account)
                 }
                 
+                self.update(account: account) { result in
+                    switch result {
+                    case .success(let account):
+                        completion(.success(account))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
+                
+            } else {
+                completion(.failure(ProtonError.error("MESSAGE => Key not associated with Account")))
+            }
+
+        } catch {
+            completion(.failure(ProtonError.error(error.localizedDescription)))
+        }
+        
+    }
+    
+    /**
+     Use this function to obtain a list of Accounts which match a given private key. These accounts are not stored. If you want to store the Account and private key, you should then call store(account:)
+     - Parameter privateKey: Wif formated private key
+     - Parameter completion: Closure returning Result<Set<Account>, Error>
+     */
+    public func findAccounts(forPrivateKey privateKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
+        
+        do {
+            
+            let pk = try PrivateKey(stringValue: privateKey)
+            let publicKey = try pk.getPublic()
+            
+            findAccounts(forPublicKey: publicKey.stringValue) { result in
+                switch result {
+                case .success(let accounts):
+                    completion(.success(accounts))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
             }
             
         } catch {
-            print("ERROR: \(error.localizedDescription)")
-            completion()
+            completion(.failure(ProtonError.error("MESSAGE => Unable to parse Private Key")))
+        }
+        
+    }
+    
+    private func findAccounts(forPublicKey publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
+        
+        self.fetchKeyAccounts(forPublicKey: publicKey) { result in
+            
+            switch result {
+            case .success(let accounts):
+                
+                if accounts.count > 0 {
+                    completion(.success(accounts))
+                } else {
+                    completion(.failure(ProtonError.error("MESSAGE => No accounts found for publicKey: \(publicKey)")))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+
         }
         
     }
@@ -456,22 +508,22 @@ public final class Proton {
         
     }
     
-    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping (Set<TokenTransferAction>) -> ()) {
+    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ((Result<Set<TokenTransferAction>, Error>) -> Void)) {
         
         var retval = Set<TokenTransferAction>()
         
         guard let account = tokenBalance.account else {
-            completion(retval)
+            completion(.failure(ProtonError.error("MESSAGE => TokenBalance missing Account")))
             return
         }
         
         guard let chainProvider = account.chainProvider else {
-            completion(retval)
+            completion(.failure(ProtonError.error("MESSAGE => Account missing ChainProvider")))
             return
         }
         
         guard let tokenContract = tokenBalance.tokenContract else {
-            completion(retval)
+            completion(.failure(ProtonError.error("MESSAGE => TokenBalance missing TokenContract")))
             return
         }
         
@@ -484,25 +536,28 @@ public final class Proton {
                 if let transferActions = transferActions as? Set<TokenTransferAction> {
                     retval = transferActions
                 }
+                
+                completion(.success(retval))
 
             case .failure(let error):
-                print("ERROR: \(error.localizedDescription)")
+                completion(.failure(error))
             }
-                                                                        
-            completion(retval)
             
         }
         
     }
     
-    private func fetchKeyAccounts(forPublicKey publicKey: String, completion: @escaping (Set<Account>?) -> ()) {
+    private func fetchKeyAccounts(forPublicKey publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
         let chainProviderCount = self.chainProviders.count
         var chainProvidersProcessed = 0
         
         var accounts = Set<Account>()
         
-        if chainProviderCount == 0 { completion(nil); return }
+        if chainProviderCount == 0 {
+            completion(.failure(ProtonError.error("MESSAGE => No ChainProviders")))
+            return
+        }
         
         for chainProvider in self.chainProviders {
             
@@ -529,12 +584,15 @@ public final class Proton {
                         
                     }
                     
-                case .failure(let error):
-                    print("ERROR: \(error.localizedDescription)")
+                case .failure: break
                 }
                 
                 if chainProvidersProcessed == chainProviderCount {
-                    completion(accounts)
+                    if accounts.count > 0 {
+                        completion(.success(accounts))
+                    } else {
+                        completion(.failure(ProtonError.error("MESSAGE => No accounts found for \(publicKey)")))
+                    }
                 }
                 
             }
@@ -543,7 +601,7 @@ public final class Proton {
         
     }
     
-    private func fetchAccount(forAccount account: Account, completion: @escaping (Account) -> ()) {
+    private func fetchAccount(forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         var account = account
         
@@ -558,23 +616,21 @@ public final class Proton {
                         account.permissions = acc.permissions
                     }
                     
+                    completion(.success(account))
+                    
                 case .failure(let error):
-                    print("ERROR: \(error.localizedDescription)")
+                    completion(.failure(error))
                 }
-                
-                completion(account)
                 
             }
             
         } else {
-            
-            completion(account)
-            
+            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
         }
         
     }
     
-    private func fetchAccountUserInfo(forAccount account: Account, completion: @escaping (Account) -> ()) {
+    private func fetchAccountUserInfo(forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         var account = account
         
@@ -589,21 +645,21 @@ public final class Proton {
                         account = updatedAccount
                     }
                     
+                    completion(.success(account))
+                    
                 case .failure(let error):
-                    print("ERROR: \(error.localizedDescription)")
+                    completion(.failure(error))
                 }
-                
-                completion(account)
                 
             }
             
         } else {
-            completion(account)
+            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
         }
         
     }
     
-    private func fetchBalances(forAccount account: Account, completion: @escaping (Set<TokenBalance>) -> ()) {
+    private func fetchBalances(forAccount account: Account, completion: @escaping ((Result<Set<TokenBalance>, Error>) -> Void)) {
         
         var retval = Set<TokenBalance>()
         
@@ -636,19 +692,22 @@ public final class Proton {
                         
                     }
                     
+                    completion(.success(retval))
+                    
                 case .failure(let error):
-                    print("ERROR: \(error.localizedDescription)")
+                    completion(.failure(error))
                 }
-                
-                completion(retval)
                 
             }
             
+        } else {
+            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
         }
         
     }
     
     // MARK: - ESR Functions
+    // 🚧 UNDER CONSTRUCTION
     
     /**
      Use this to parse an esr signing request.
@@ -928,7 +987,7 @@ public final class Proton {
                                         
                                         guard let callback = self.esr!.resolved!.getCallback(using: [sig], blockNum: res.processed.blockNum) else { completion(nil); return }
                                         
-                                        self.update(account: signer) { }
+                                        self.update(account: signer) { _ in }
                                         
                                         if callback.background {
                                             
@@ -1056,4 +1115,26 @@ public final class Proton {
         }
         
     }
+}
+
+public enum ProtonError: Error, LocalizedError {
+    
+    case error(String)
+    case chain(String)
+    case history(String)
+    case esr(String)
+
+    public var errorDescription: String {
+        switch self {
+        case let .error(message):
+            return "⚛️ PROTON ERROR\n======================\n\(message)\n======================\n"
+        case let .chain(message):
+            return "⚛️⛓️ PROTON CHAIN ERROR\n======================\n\(message)\n======================\n"
+        case let .history(message):
+            return "⚛️📜 PROTON HISTORY ERROR\n======================\n\(message)\n======================\n"
+        case let .esr(message):
+            return "⚛️✍️ PROTON SIGNING REQUEST ERROR\n======================\n\(message)\n======================\n"
+        }
+    }
+    
 }

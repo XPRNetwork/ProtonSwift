@@ -146,4 +146,18 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
     }
     
+    public func isKeyAssociated(publicKey: String) -> Bool {
+        
+        for permission in self.permissions {
+            for key in permission.requiredAuth.keys {
+                if key.key.stringValue == publicKey {
+                    return true
+                }
+            }
+        }
+        
+        return false
+        
+    }
+    
 }
