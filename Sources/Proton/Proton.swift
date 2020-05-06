@@ -765,7 +765,7 @@ public final class Proton {
                                 
                                 let unknownTokenContract = TokenContract(chainId: tokenBalance.chainId, contract: tokenBalance.contract, issuer: "",
                                                                          resourceToken: false, systemToken: false, name: tokenBalance.amount.symbol.name,
-                                                                         description: "", iconUrl: "", supply: Asset(0.0, tokenBalance.amount.symbol),
+                                                                         desc: "", iconUrl: "", supply: Asset(0.0, tokenBalance.amount.symbol),
                                                                          maxSupply: Asset(0.0, tokenBalance.amount.symbol),
                                                                          symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
                                 

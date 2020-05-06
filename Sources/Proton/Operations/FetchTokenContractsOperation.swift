@@ -45,7 +45,7 @@ class FetchTokenContractsOperation: AbstractOperation {
                     
                     tokenContract.name = row.tname
                     tokenContract.url = row.url
-                    tokenContract.description = row.desc
+                    tokenContract.desc = row.desc
                     tokenContract.iconUrl = row.iconurl
                     tokenContract.blacklisted = row.blisted
                     
@@ -55,7 +55,7 @@ class FetchTokenContractsOperation: AbstractOperation {
                     
                     let tokenContract = TokenContract(chainId: self.chainProvider.chainId, contract: row.tcontract,
                                                       issuer: row.tcontract, resourceToken: false, systemToken: false,
-                                                      name: row.tname, description: row.desc, iconUrl: row.iconurl,
+                                                      name: row.tname, desc: row.desc, iconUrl: row.iconurl,
                                                       supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
                                                       symbol: row.symbol, url: row.url, blacklisted: row.blisted)
                     
