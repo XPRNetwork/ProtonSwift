@@ -468,7 +468,7 @@ public final class Proton {
         self.fetchKeyAccounts(forPublicKey: publicKey) { result in
             
             switch result {
-            case .success(let accounts):
+            case .success(var accounts):
                 
                 if accounts.count > 0 {
                     
@@ -480,14 +480,14 @@ public final class Proton {
                         self.fetchAccount(forAccount: account) { result in
                             switch result {
                             case .success(let acc):
-                                account = acc
+                                accounts.update(with: acc)
                             case .failure: break
                             }
                             
                             self.fetchAccountUserInfo(forAccount: account) { result in
                                 switch result {
                                 case .success(let acc):
-                                    account = acc
+                                    accounts.update(with: acc)
                                 case .failure: break
                                 }
                                 
