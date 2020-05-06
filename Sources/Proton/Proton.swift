@@ -1180,13 +1180,13 @@ public enum ProtonError: Error, LocalizedError {
 
     public var errorDescription: String {
         switch self {
-        case let .error(message):
+        case .error(let message):
             return "⚛️ PROTON ERROR\n======================\n\(message)\n======================\n"
-        case let .chain(message):
+        case .chain(let message):
             return "⚛️⛓️ PROTON CHAIN ERROR\n======================\n\(message)\n======================\n"
-        case let .history(message):
+        case .history(let message):
             return "⚛️📜 PROTON HISTORY ERROR\n======================\n\(message)\n======================\n"
-        case let .esr(message):
+        case .esr(let message):
             return "⚛️✍️ PROTON SIGNING REQUEST ERROR\n======================\n\(message)\n======================\n"
         }
     }
