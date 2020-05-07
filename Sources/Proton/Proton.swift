@@ -34,6 +34,7 @@ public class Proton {
      - Parameter config: The configuration object that includes urls for chainProviders
      - Returns: Initialized Proton singleton
      */
+    @discardableResult
     public static func initialize(_ config: Config) -> Proton {
         Proton.config = config
         return self.shared
