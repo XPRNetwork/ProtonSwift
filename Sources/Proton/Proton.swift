@@ -140,8 +140,7 @@ public final class Proton {
     /**
      Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet
      */
-    @UserDefault("activeAccount", defaultValue: nil)
-    public var activeAccount: Account? {
+    public var activeAccount: Account? = nil {
         willSet {
             NotificationCenter.default.post(name: Notifications.activeAccountWillSet, object: nil,
                                             userInfo: newValue != nil ? ["newValue": newValue!] : nil)
@@ -175,6 +174,7 @@ public final class Proton {
      */
     public func loadAll() {
         
+        self.activeAccount = self.storage.getDefaultsItem(Account.self, forKey: "activeAccount") ?? nil
         self.chainProviders = self.storage.getDefaultsItem([ChainProvider].self, forKey: "chainProviders") ?? []
         self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
         self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
@@ -188,6 +188,7 @@ public final class Proton {
      */
     public func saveAll() {
         
+        self.storage.setDefaultsItem(self.activeAccount, forKey: "activeAccount")
         self.storage.setDefaultsItem(self.chainProviders, forKey: "chainProviders")
         self.storage.setDefaultsItem(self.tokenContracts, forKey: "tokenContracts")
         self.storage.setDefaultsItem(self.tokenBalances, forKey: "tokenBalances")
