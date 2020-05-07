@@ -15,7 +15,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published private(set) var chainProviders: [ChainProvider] = [] {
+    @Published public private(set) var chainProviders: [ChainProvider] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -26,7 +26,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published private(set) var tokenContracts: [TokenContract] = [] {
+    @Published public private(set) var tokenContracts: [TokenContract] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -37,7 +37,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published private(set) var activeAccount: Account? = nil {
+    @Published public private(set) var activeAccount: Account? = nil {
         willSet {
             self.objectWillChange.send()
         }
@@ -48,7 +48,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published private(set) var tokenBalances: [TokenBalance] = [] {
+    @Published public private(set) var tokenBalances: [TokenBalance] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -59,7 +59,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published private(set) var tokenTransferActions: [TokenTransferAction] = [] {
+    @Published public private(set) var tokenTransferActions: [TokenTransferAction] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -70,7 +70,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published private(set) var esrSessions: [ESRSession] = [] {
+    @Published public private(set) var esrSessions: [ESRSession] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -81,7 +81,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published private(set) var esr: ESR? = nil {
+    @Published public private(set) var esr: ESR? = nil {
         willSet {
             self.objectWillChange.send()
         }
