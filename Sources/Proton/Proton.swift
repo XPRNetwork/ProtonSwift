@@ -57,6 +57,7 @@ public final class Proton {
         public static let esrDidSet = Notification.Name("esrDidSet")
         public static let activeAccountWillSet = Notification.Name("activeAccountWillSet")
         public static let activeAccountDidSet = Notification.Name("activeAccountDidSet")
+        public static let activeAccountDidUpdate = Notification.Name("activeAccountDidUpdate")
     }
     
     /**
@@ -392,11 +393,13 @@ public final class Proton {
                                             }
                                             
                                             if tokenBalancesProcessed == tokenBalancesCount {
+                                                
                                                 completion(.success(account))
                                                 self.saveAll()
+                                                NotificationCenter.default.post(name: Notifications.activeAccountDidUpdate, object: nil)
                                                 
                                                 print("🧑‍💻 UPDATE COMPLETED")
-                                                print("ACCOUNT => \(String(describing: self.activeAccount))")
+                                                print("ACCOUNT => \(String(describing: self.activeAccount?.name))")
                                                 print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
                                                 print("TOKEN BALANCES => \(self.tokenBalances.count)")
                                                 print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
