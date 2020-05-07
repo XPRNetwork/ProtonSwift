@@ -70,7 +70,16 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     }
     
     public var usdRate: Double {
-        return tokenContract?.usdRate ?? 0.25 // TODO:
+        return tokenContract?.usdRate ?? 0.02 // TODO:
+    }
+    
+    public func usdBalanceFormatted(adding: Double = 0.0) -> String {
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(for: self.amount.value * self.usdRate + adding) ?? "$0.00"
+        
     }
     
 }

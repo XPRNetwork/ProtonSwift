@@ -78,7 +78,7 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     }
     
     public var usdRate: Double {
-        return 0.25 // TODO:
+        return 0.02 // TODO:
     }
     
 }
