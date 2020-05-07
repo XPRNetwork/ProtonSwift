@@ -16,18 +16,15 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 
 The main and only class that you will need to interface with is `Proton` which encapsulates all of the needed functions.
 
-With `Config` we can customize url to chainProvider object as well as set the keychain indetifier string.
-
 ```swift
-let config = Proton.Config(keyChainIdentifier: "myapp",
-                           chainProvidersUrl: "https://e8245mepe3.execute-api.us-west-2.amazonaws.com/dev/chain-providers")
+let config = Proton.Config(chainProvidersUrl: "https://e8245mepe3.execute-api.us-west-2.amazonaws.com/dev/chain-providers")
 
-// Initialize Proton                           
-Proton.initialize(config)
-
-// Now Proton can be used from anywhere through the static shared property
-Proton.shared
+Proton.initialize(config).fetchRequirements { result in
+    Proton.shared.update { result in }
+}
 ```
+
+Theres also another class `ProtonObservable` which can be used in iOSv13+, but that can be left for another day.
 
 ## Installation
 
@@ -40,7 +37,7 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 
 ## Libraries Used
 [EOSIO](https://github.com/greymass/swift-eosio) - Greymass   
-[Valet](https://github.com/square/Valet) - Square   
+[KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) - kishikawakatsumi   
 
 ## Author
 
