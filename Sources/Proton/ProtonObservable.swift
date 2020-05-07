@@ -88,7 +88,7 @@ public final class ProtonObservable: ObservableObject {
     }
     
     
-    init() {
+    public init() {
         NotificationCenter.default.addObserver(self, selector: #selector(chainProvidersWillSet(_:)),
                                                name: Proton.Notifications.chainProvidersWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(tokenContractsWillSet(_:)),
