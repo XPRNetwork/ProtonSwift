@@ -15,7 +15,7 @@ import UIKit
 #endif
 import KeychainAccess
 
-public final class Proton {
+public class Proton {
     
     public struct Config {
         
