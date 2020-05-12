@@ -45,10 +45,9 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
         }
 
         var req = API.V2.Hyperion.GetActions<TransferActionData>(self.account.name)
-        //req.transferSymbol = self.tokenContract.symbol.stringValue
-        req.filter = "eosio.token:transfer"
-        req.transferSymbol = "XPR"
-        req.limit = 1
+        req.filter = "\(self.tokenContract.contract.stringValue):transfer"
+        req.transferSymbol = self.tokenContract.symbol.name
+        req.limit = UInt(self.limt)
 
         do {
 
