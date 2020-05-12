@@ -15,7 +15,7 @@ let package = Package(
             targets: ["Proton"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/greymass/swift-eosio.git", .branch("master")),
+        .package(url: "https://github.com/ismyhc/swift-eosio.git", .branch("feature/additional-hyperion-apis")),
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.0")
     ],
     targets: [

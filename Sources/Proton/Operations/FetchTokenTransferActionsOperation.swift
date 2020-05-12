@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EOSIO
 
 class FetchTokenTransferActionsOperation: AbstractOperation {
     
@@ -15,7 +16,6 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     var tokenContract: TokenContract
     var tokenBalance: TokenBalance
     let limt = 100
-    let rpcPath = "/v2/history/get_actions"
     
     init(account: Account, tokenContract: TokenContract, chainProvider: ChainProvider,
          tokenBalance: TokenBalance) {
@@ -28,62 +28,50 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     
     override func main() {
         
-        let path = "\(self.chainProvider.stateHistoryUrl)\(rpcPath)?transfer.symbol=\(self.tokenContract.symbol.name)&account=\(self.account.name.stringValue)&filter=\(self.tokenContract.contract.stringValue)%3Atransfer&limit=\(self.limt)"
-        
-        guard let url = URL(string: path) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for \(rpcPath)"))
+        guard let url = URL(string: chainProvider.stateHistoryUrl) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
+
+        let client = Client(address: url)
         
-        WebServices.shared.getRequestJSON(withURL: url) { result in
-            
-            switch result {
-            case .success(let res):
+//        struct TransferActionData: ABIDecodable {
+//            let from: Name
+//            let to: Name
+//            let amount: Double
+//            let symbol: String
+//            let memo: String
+//            let quantity: Asset
+//        }
+
+        var req = API.V2.Hyperion.GetActions<TransferActionABI>(Name("protonwallet"),
+                                                                 limit: UInt(limt), filter: "\(tokenContract.contract.stringValue):transfer")
+        req.transferSymbol = self.tokenContract.symbol.stringValue
+
+        do {
+
+            let res = try client.sendSync(req).get()
+
+            var tokenTranfsers = Set<TokenTransferAction>()
+
+            for action in res.actions {
+
+                let transferAction = TokenTransferAction(chainId: account.chainId, accountId: account.id,
+                                                         tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id,
+                                                         name: "transfer", contract: tokenContract.contract,
+                                                         trxId: String(action.trxId), date: action.timestamp.date,
+                                                         sent: self.account.name.stringValue == action.act.data.from.stringValue ? true : false,
+                                                         from: action.act.data.from,
+                                                         to: action.act.data.to, quantity: action.act.data.quantity, memo: action.act.data.memo)
                 
-                var tokenTranfsers = Set<TokenTransferAction>()
-                
-                if let res = res as? [String: Any], let actions = res["actions"] as? [[String: Any]], actions.count > 0 {
-                    
-                    let jsonDecoder = JSONDecoder()
-                    let jsonEncoder = JSONEncoder()
-                    
-                    for action in actions {
-                        
-                        if let act = action["act"] as? [String: Any], var data = act["data"] as? [String: Any] {
-                            
-                            data["amount"] = nil
-                            data["symbol"] = nil
-                            
-                            do {
-                                
-                                let jsonData = try jsonEncoder.encode(data, asType: "transfer", using: TransferActionABI.abi)
-                                let transferActionData = try jsonDecoder.decode(TransferActionABI.self, from: jsonData)
-                                
-                                if let transferAction = TokenTransferAction(account: self.account, tokenBalance: self.tokenBalance,
-                                                                            tokenContract: self.tokenContract, transferActionABI: transferActionData,
-                                                                            dictionary: action) {
-                                    
-                                    tokenTranfsers.update(with: transferAction)
-                                    
-                                }
-                                
-                            } catch {
-                                print("ERROR: Unable to decode action")
-                                continue
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-                self.finish(retval: tokenTranfsers, error: nil)
-                
-            case .failure(let error):
-                self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nERROR => \(error.localizedDescription)"))
+                tokenTranfsers.update(with: transferAction)
+
             }
-            
+
+            finish(retval: tokenTranfsers, error: nil)
+
+        } catch {
+            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V2.Hyperion.GetActions<TransferActionABI>.path)\nERROR => \(error.localizedDescription)"))
         }
         
     }

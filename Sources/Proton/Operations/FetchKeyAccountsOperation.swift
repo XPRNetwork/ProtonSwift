@@ -7,12 +7,12 @@
 //
 
 import Foundation
+import EOSIO
 
 class FetchKeyAccountsOperation: AbstractOperation {
     
     var publicKey: String
     var chainProvider: ChainProvider
-    let rpcPath = "/v2/state/get_key_accounts"
     
     init(publicKey: String, chainProvider: ChainProvider) {
         self.publicKey = publicKey
@@ -21,42 +21,45 @@ class FetchKeyAccountsOperation: AbstractOperation {
     
     override func main() {
         
-        let path = "\(chainProvider.stateHistoryUrl)\(rpcPath)?public_key=\(self.publicKey)"
-        
-        guard let url = URL(string: path) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for \(rpcPath)"))
+        guard let url = URL(string: chainProvider.stateHistoryUrl) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
         
-        WebServices.shared.getRequest(withURL: url) { (result: Result<[String: [String]], Error>) in
-            
+        guard let publicKey = PublicKey(publicKey) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to parse public key"))
+            return
+        }
+
+        let client = Client(address: url)
+        let req = API.V2.Hyperion.GetKeyAccounts(publicKey)
+
+        do {
+
+            let res = try client.sendSync(req).get()
+
             var accountNames = Set<String>()
-            
-            switch result {
-            case .success(let res):
-                
-                if let names = res["account_names"] {
-                    
-                    for name in names {
-                        if !name.contains(".") {
-                            accountNames.update(with: name)
-                        }
-                    }
-                    
+
+            for accountName in res.accountNames {
+
+                if !accountName.stringValue.contains(".") {
+                    accountNames.update(with: accountName.stringValue)
                 }
-                
-                if accountNames.count > 0 {
-                    self.finish(retval: accountNames, error: nil)
-                } else {
-                    self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nMESSAGE => No accounts found for key: \(self.publicKey)"))
-                }
-                
-            case .failure(let error):
-                self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nERROR => \(error.localizedDescription)"))
+
             }
             
+            if accountNames.count > 0 {
+                self.finish(retval: accountNames, error: nil)
+            } else {
+                self.finish(retval: nil, error: ProtonError.history("RPC => \(API.V2.Hyperion.GetTokens.path)\nMESSAGE => No accounts found for key: \(self.publicKey)"))
+            }
+
+            finish(retval: accountNames, error: nil)
+
+        } catch {
+            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V2.Hyperion.GetTokens.path)\nERROR => \(error.localizedDescription)"))
         }
-        
+
     }
     
 }

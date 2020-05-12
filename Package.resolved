@@ -21,10 +21,19 @@
       },
       {
         "package": "EOSIO",
-        "repositoryURL": "https://github.com/greymass/swift-eosio.git",
+        "repositoryURL": "https://github.com/ismyhc/swift-eosio.git",
+        "state": {
+          "branch": "feature/additional-hyperion-apis",
+          "revision": "1814272c1de56179d75e2c9e9db515448e6a0a73",
+          "version": null
+        }
+      },
+      {
+        "package": "QueryStringCoder",
+        "repositoryURL": "https://github.com/jnordberg/swift-query-string-coder.git",
         "state": {
           "branch": "master",
-          "revision": "d080edd2c012a685812c124f87cc080a4a8942d1",
+          "revision": "874a4e31d7c77f3fec56f893229f416e7604da4d",
           "version": null
         }
       }

@@ -40,7 +40,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-
+    
     public init?(account: Account, tokenBalance: TokenBalance,
                  tokenContract: TokenContract, transferActionABI: TransferActionABI,
                  dictionary: [String: Any]) {

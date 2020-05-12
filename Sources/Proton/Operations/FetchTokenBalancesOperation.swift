@@ -13,7 +13,6 @@ class FetchTokenBalancesOperation: AbstractOperation {
     
     var account: Account
     var chainProvider: ChainProvider
-    let rpcPath = "/v2/state/get_tokens"
     
     init(account: Account, chainProvider: ChainProvider) {
         self.account = account
@@ -22,47 +21,35 @@ class FetchTokenBalancesOperation: AbstractOperation {
     
     override func main() {
         
-        let path = "\(chainProvider.stateHistoryUrl)\(rpcPath)?account=\(self.account.name)"
-        
-        guard let url = URL(string: path) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url for \(rpcPath)"))
+        guard let url = URL(string: chainProvider.stateHistoryUrl) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
-        
-        WebServices.shared.getRequestJSON(withURL: url) { result in
+
+        let client = Client(address: url)
+        let req = API.V2.Hyperion.GetTokens(account.name)
+
+        do {
+
+            let res = try client.sendSync(req).get()
+
+            var tokenBalances = Set<TokenBalance>()
             
-            switch result {
-            case .success(let res):
+            for token in res.tokens {
                 
-                var tokenBalances = Set<TokenBalance>()
-                
-                if let res = res as? [String: Any], let tokens = res["tokens"] as? [[String: Any]] {
-                    
-                    for token in tokens {
-                        
-                        guard let symbol = token["symbol"] as? String else { return }
-                        guard let precision = token["precision"] as? UInt8 else { return }
-                        guard let amount = token["amount"] as? Double else { return }
-                        guard let contract = token["contract"] as? String else { return }
-                        
-                        if let tokenBalance = TokenBalance(accountId: self.account.id, contract: Name(contract),
-                                                           amount: amount, precision: precision, symbol: symbol) {
-                            
-                            tokenBalances.update(with: tokenBalance)
-                        }
-                        
-                    }
-                    
+                if let tokenBalance = TokenBalance(accountId: self.account.id, contract: token.contract,
+                                                   amount: token.amount, precision: token.precision, symbol: token.symbol) {
+                    tokenBalances.update(with: tokenBalance)
                 }
                 
-                self.finish(retval: tokenBalances, error: nil)
-                
-            case .failure(let error):
-                self.finish(retval: nil, error: ProtonError.history("RPC => \(self.rpcPath)\nERROR => \(error.localizedDescription)"))
             }
-            
+
+            finish(retval: tokenBalances, error: nil)
+
+        } catch {
+            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V2.Hyperion.GetTokens.path)\nERROR => \(error.localizedDescription)"))
         }
-        
+
     }
     
 }
