@@ -35,16 +35,16 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
 
         let client = Client(address: url)
         
-//        struct TransferActionData: ABIDecodable {
-//            let from: Name
-//            let to: Name
-//            let amount: Double
-//            let symbol: String
-//            let memo: String
-//            let quantity: Asset
-//        }
+        struct TransferActionData: ABIDecodable {
+            let from: Name
+            let to: Name
+            let amount: Double
+            let symbol: String
+            let memo: String
+            let quantity: Asset
+        }
 
-        var req = API.V2.Hyperion.GetActions<TransferActionABI>(self.account.name,
+        var req = API.V2.Hyperion.GetActions<TransferActionData>(self.account.name,
                                                                  limit: UInt(limt), filter: "\(tokenContract.contract.stringValue):transfer")
         req.transferSymbol = self.tokenContract.symbol.stringValue
 
@@ -55,6 +55,8 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
             var tokenTranfsers = Set<TokenTransferAction>()
 
             for action in res.actions {
+                
+                print(action.act.data.quantity)
 
                 let transferAction = TokenTransferAction(chainId: account.chainId, accountId: account.id,
                                                          tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id,
