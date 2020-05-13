@@ -32,8 +32,8 @@ class FetchContactInfoOperation: AbstractOperation {
         var req = API.V1.Chain.GetTableRows<UserInfoABI>(code: Name(stringValue: chainProvider.usersInfoTableCode),
                                                          table: Name(stringValue: "usersinfo"),
                                                          scope: chainProvider.usersInfoTableScope)
-        req.lowerBound = account.name.stringValue
-        req.upperBound = account.name.stringValue
+        req.lowerBound = contactName
+        req.upperBound = contactName
 
         do {
 
