@@ -70,6 +70,17 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
+    @Published public private(set) var contacts: [Contact] = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
+    
+    /**
+     Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+     Important: This is a copy of the source from Proton.shared. Modifications should
+     be made there.
+     */
     @Published public private(set) var esrSessions: [ESRSession] = [] {
         willSet {
             self.objectWillChange.send()
@@ -95,8 +106,10 @@ public final class ProtonObservable: ObservableObject {
                                                name: Proton.Notifications.tokenContractsWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(tokenBalancesWillSet(_:)),
                                                name: Proton.Notifications.tokenBalancesWillSet, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(tokenTransferActionsWillSet),
+        NotificationCenter.default.addObserver(self, selector: #selector(tokenTransferActionsWillSet(_:)),
                                                name: Proton.Notifications.tokenTransferActionsWillSet, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(contactsWillSet(_:)),
+                                               name: Proton.Notifications.contactsWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(esrSessionsWillSet(_:)),
                                                name: Proton.Notifications.esrSessionsWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(esrWillSet),
@@ -136,6 +149,13 @@ public final class ProtonObservable: ObservableObject {
             return
         }
         self.tokenTransferActions = newValue
+    }
+    
+    @objc func contactsWillSet(_ notification: Notification) {
+        guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? [Contact] else {
+            return
+        }
+        self.contacts = newValue
     }
     
     @objc func esrSessionsWillSet(_ notification: Notification) {

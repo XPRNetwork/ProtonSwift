@@ -9,14 +9,6 @@
 import EOSIO
 import Foundation
 
-protocol TokenContractProtocol {
-    var tokenContract: TokenContract? { get }
-}
-
-protocol TokenContractsProtocol {
-    var tokenContracts: [TokenContract] { get }
-}
-
 public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol {
     
     public var id: String { return "\(self.chainId):\(self.contract.stringValue):\(self.symbol.name)" }

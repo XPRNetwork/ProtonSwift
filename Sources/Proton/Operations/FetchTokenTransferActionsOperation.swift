@@ -56,8 +56,6 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
             var tokenTranfsers = Set<TokenTransferAction>()
 
             for action in res.actions {
-                
-                print(action.act.data.quantity)
 
                 let transferAction = TokenTransferAction(chainId: account.chainId, accountId: account.id,
                                                          tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id,

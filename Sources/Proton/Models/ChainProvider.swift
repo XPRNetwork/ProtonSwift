@@ -8,10 +8,6 @@
 
 import Foundation
 
-protocol ChainProviderProtocol {
-    var chainProvider: ChainProvider? { get }
-}
-
 public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProtocol {
     
     public var id: String { return chainId }

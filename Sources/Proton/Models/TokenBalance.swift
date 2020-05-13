@@ -9,14 +9,6 @@
 import EOSIO
 import Foundation
 
-protocol TokenBalancesProtocol {
-    var tokenBalances: [TokenBalance] { get }
-}
-
-protocol TokenBalanceProtocol {
-    var tokenBalance: TokenBalance? { get }
-}
-
 public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtocol, TokenTransferActionsProtocol, AccountProtocol {
     
     public var id: String { return "\(self.accountId):\(self.contract):\(self.amount.symbol.name)" }

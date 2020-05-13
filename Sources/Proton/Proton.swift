@@ -52,6 +52,8 @@ public class Proton {
         public static let tokenBalancesDidSet = Notification.Name("tokenBalancesDidSet")
         public static let tokenTransferActionsWillSet = Notification.Name("tokenTransferActionsWillSet")
         public static let tokenTransferActionsDidSet = Notification.Name("tokenTransferActionsDidSet")
+        public static let contactsWillSet = Notification.Name("contactsWillSet")
+        public static let contactsDidSet = Notification.Name("contactsDidSet")
         public static let esrSessionsWillSet = Notification.Name("esrSessionsWillSet")
         public static let esrSessionsDidSet = Notification.Name("esrSessionsDidSet")
         public static let esrWillSet = Notification.Name("esrWillSet")
@@ -110,6 +112,19 @@ public class Proton {
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.tokenTransferActionsDidSet, object: nil)
+        }
+    }
+    
+    /**
+     Live updated array of contacts. You can observe changes via NotificaitonCenter: contactsWillSet, contactsDidSet
+     */
+    public var contacts: [Contact] = [] {
+        willSet {
+            NotificationCenter.default.post(name: Notifications.contactsWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.contactsDidSet, object: nil)
         }
     }
     
@@ -394,18 +409,37 @@ public class Proton {
                                             }
                                             
                                             if tokenBalancesProcessed == tokenBalancesCount {
-                                                
-                                                completion(.success(account))
-                                                self.saveAll()
-                                                NotificationCenter.default.post(name: Notifications.activeAccountDidUpdate, object: nil)
-                                                
-                                                print("🧑‍💻 UPDATE COMPLETED")
-                                                print("ACCOUNT => \(String(describing: self.activeAccount?.name))")
-                                                print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
-                                                print("TOKEN BALANCES => \(self.tokenBalances.count)")
-                                                print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
-                                                print("ESR SESSIONS => \(self.esrSessions.count)")
-                                                
+
+                                                self.fetchContacts(forAccount: account) { result in
+                                                    
+                                                    switch result {
+                                                    case .success(let contacts):
+                                                        
+                                                        for contact in contacts {
+                                                            if let idx = self.contacts.firstIndex(of: contact) {
+                                                                self.contacts[idx] = contact
+                                                            } else {
+                                                                self.contacts.append(contact)
+                                                            }
+                                                        }
+                                                        
+                                                    case .failure: break
+                                                    }
+
+                                                    completion(.success(account))
+                                                    self.saveAll()
+                                                    NotificationCenter.default.post(name: Notifications.activeAccountDidUpdate, object: nil)
+                                                     
+                                                    print("🧑‍💻 UPDATE COMPLETED")
+                                                    print("ACCOUNT => \(String(describing: self.activeAccount?.name))")
+                                                    print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
+                                                    print("TOKEN BALANCES => \(self.tokenBalances.count)")
+                                                    print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
+                                                    print("CONTACTS => \(self.contacts.count)")
+                                                    print("ESR SESSIONS => \(self.esrSessions.count)")
+                                                    
+                                                }
+
                                             }
 
                                         }
@@ -796,6 +830,51 @@ public class Proton {
             completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
         }
         
+    }
+    
+    private func fetchContacts(forAccount account: Account, completion: @escaping ((Result<Set<Contact>, Error>) -> Void)) {
+        
+        var retval = Set<Contact>()
+
+        guard let chainProvider = account.chainProvider else {
+            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+            return
+        }
+
+        let contactNames: [String] = tokenTransferActions.map { transferAction in
+            return transferAction.other.stringValue
+        }.reduce([]) { $0.contains($1) ? $0 : $0 + [$1] }
+        
+        
+        if contactNames.count == 0 {
+            completion(.success(retval))
+            return
+        }
+        
+        var contactNamesProcessed = 0
+        
+        for contactName in contactNames {
+            
+            WebServices.shared.addMulti(FetchContactInfoOperation(account: account, contactName: contactName, chainProvider: chainProvider)) { result in
+                
+                switch result {
+                case .success(let contact):
+                    if let contact = contact as? Contact {
+                        retval.update(with: contact)
+                    }
+                case .failure: break
+                }
+                
+                contactNamesProcessed += 1
+                
+                if contactNamesProcessed == contactNames.count {
+                    completion(.success(retval))
+                }
+                
+            }
+            
+        }
+
     }
     
     // MARK: - ESR Functions
