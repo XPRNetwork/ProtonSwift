@@ -9,7 +9,7 @@
 import EOSIO
 import Foundation
 
-public struct TokenTransferAction: Codable, Identifiable, Hashable {
+public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProtocol {
 
     public var id: String { return "\(accountId):\(name):\(contract.stringValue):\(trxId)" }
 
@@ -77,6 +77,10 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable {
     
     public var other: Name {
         return self.sent ? self.to : self.from
+    }
+    
+    public var contact: Contact? {
+        return Proton.shared.contacts.first(where: { $0.chainId == self.chainId && $0.name == self.other })
     }
 
 }

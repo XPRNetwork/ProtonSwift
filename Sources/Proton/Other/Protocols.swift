@@ -19,6 +19,10 @@ protocol AccountProtocol {
     var account: Account? { get }
 }
 
+protocol ContactProtocol {
+    var contact: Contact? { get }
+}
+
 protocol ChainProviderProtocol {
     var chainProvider: ChainProvider? { get }
 }
