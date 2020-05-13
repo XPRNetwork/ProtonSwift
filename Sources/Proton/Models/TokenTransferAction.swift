@@ -76,7 +76,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     }
     
     public var other: Name {
-        return self.sent ? self.to : self.from
+        return self.sent ? self.from : self.to
     }
     
     public var contact: Contact? {
