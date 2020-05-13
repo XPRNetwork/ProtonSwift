@@ -23,7 +23,7 @@ protocol ChainProviderProtocol {
     var chainProvider: ChainProvider? { get }
 }
 
-protocol AvatarProtocol {
+public protocol AvatarProtocol {
     var defaultBase64Avatar: String { get }
     var base64Avatar: String { get set }
 }

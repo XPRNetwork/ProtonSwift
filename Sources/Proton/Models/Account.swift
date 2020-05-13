@@ -24,7 +24,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var fullName: String
     public var permissions: [API.V1.Chain.Permission]
     
-    var base64Avatar: String
+    public var base64Avatar: String
     
     public init(chainId: String, name: String, verified: Bool = false,
                 fullName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = []) {

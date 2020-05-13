@@ -24,7 +24,7 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     public var verified: Bool
     public var fullName: String
     
-    var base64Avatar: String
+    public var base64Avatar: String
     
     public init(chainId: String, name: String, verified: Bool = false,
                 fullName: String = "", base64Avatar: String = "") {
