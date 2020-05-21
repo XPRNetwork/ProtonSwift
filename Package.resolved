@@ -21,10 +21,10 @@
       },
       {
         "package": "EOSIO",
-        "repositoryURL": "https://github.com/ismyhc/swift-eosio.git",
+        "repositoryURL": "https://github.com/greymass/swift-eosio.git",
         "state": {
-          "branch": "feature/additional-hyperion-apis",
-          "revision": "1814272c1de56179d75e2c9e9db515448e6a0a73",
+          "branch": "feature/extendable-api",
+          "revision": "b979da6cc5f9b3c77aa1925ccec22de263a3021a",
           "version": null
         }
       },
