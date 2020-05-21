@@ -38,8 +38,3 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 ## Libraries Used
 [EOSIO](https://github.com/greymass/swift-eosio) - Greymass   
 [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) - kishikawakatsumi   
-
-## Author
-
-Jacob Davis  
-jacob@lynxwallet.io
