@@ -53,7 +53,7 @@ class WebServices: NSObject {
                   completion: ((Result<Any?, Error>) -> Void)?) {
         
         operation.completion = completion
-        operationQueueSeq.addOperation(operation)
+        operationQueueMulti.addOperation(operation)
         
     }
     
