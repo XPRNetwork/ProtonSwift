@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KeychainAccess
 
 class Persistence {
     
@@ -35,12 +36,9 @@ class Persistence {
     }
     
     func setDefaultsItem<T: Codable>(_ object: T, forKey key: String) {
-        
         guard let encodedData = try? self.encoder.encode(object) else {
             return
         }
-        
-        
         self.defaults.set(encodedData, forKey: key)
         self.defaults.synchronize()
     }
@@ -48,6 +46,61 @@ class Persistence {
     func deleteDefaultsItem(forKey key: String) {
         self.defaults.removeObject(forKey: key)
         self.defaults.synchronize()
+    }
+    
+    // MARK: - Keychain
+    
+    func setKeychainItem<T: Codable>(_ object: T, forKey key: String, service: String,
+                                     synchronizable: Bool = false,
+                                     accessibility: Accessibility = .whenUnlocked,
+                                     authenticationPolicy: AuthenticationPolicy = .userPresence,
+                                     completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        guard let encodedData = try? self.encoder.encode(object) else {
+            return
+        }
+        
+        let keychain = Keychain(service: service)
+                        .synchronizable(synchronizable)
+                        .accessibility(accessibility, authenticationPolicy: authenticationPolicy)
+        
+        do {
+            try keychain.set(encodedData, key: key)
+            completion(.success(true))
+        } catch {
+            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+        }
+
+    }
+    
+    func getKeychainItem<T: Codable>(_ object: T.Type, forKey key: String, service: String) -> T? {
+        
+        let keychain = Keychain(service: service)
+
+        guard let data = try? keychain.getData(key) else {
+            return nil
+        }
+        
+        guard let decodedObject = try? self.decoder.decode(object.self, from: data) else {
+            return nil
+        }
+        
+        return decodedObject
+
+    }
+    
+    func deleteKeychainItem<T: Codable>(_ object: T.Type, forKey key: String, service: String,
+                                        completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        let keychain = Keychain(service: service)
+        
+        do {
+            try keychain.remove(key)
+            completion(.success(true))
+        } catch {
+            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+        }
+
     }
     
 }

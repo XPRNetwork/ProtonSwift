@@ -23,8 +23,8 @@
         "package": "EOSIO",
         "repositoryURL": "https://github.com/greymass/swift-eosio.git",
         "state": {
-          "branch": "feature/extendable-api",
-          "revision": "b979da6cc5f9b3c77aa1925ccec22de263a3021a",
+          "branch": "master",
+          "revision": "c224fd7014d20158c23a541b5001a0ac35e4a1e9",
           "version": null
         }
       },

@@ -216,47 +216,17 @@ public class Proton {
     
     /**
      Sets the active account, fetchs and updates. This includes, account names, avatars, balances, etc
+      Use this for switching accounts when you know the private key has already been stored.
      - Parameter forAccountName: Proton account name not including @
      - Parameter chainId: chainId for the account
      - Parameter completion: Closure returning Result<Account, Error>
      */
-    public func setActiveAccount(forAccountName accountName: String, chainId: String,
-                                 completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func setAccount(forAccountName accountName: String, chainId: String,
+                           completion: @escaping ((Result<Account, Error>) -> Void)) {
         
-        self.setActiveAccount(Account(chainId: chainId, name: accountName)) { result in
+        self.setAccount(Account(chainId: chainId, name: accountName)) { result in
             switch result {
             case .success(let account):
-                completion(.success(account))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-        
-    }
-    
-    /**
-     Sets the active account, fetchs and updates. This includes, account names, avatars, balances, etc
-     - Parameter account: Account
-     - Parameter completion: Closure returning Result<Account, Error>
-     */
-    public func setActiveAccount(_ account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
-        
-        var account = account
-        
-        if let activeAccount = self.activeAccount, activeAccount == account {
-            account = activeAccount
-        } else {
-            self.activeAccount = account
-            self.tokenBalances.removeAll()
-            self.tokenTransferActions.removeAll()
-            self.esrSessions.removeAll() // TODO: Actually loop through call the remove session callbacks, etc
-            self.esr = nil
-        }
-
-        self.update { result in
-            switch result {
-            case .success(let account):
-                self.activeAccount = account
                 completion(.success(account))
             case .failure(let error):
                 completion(.failure(error))
@@ -345,14 +315,14 @@ public class Proton {
      Fetchs and updates the active account. This includes, account names, avatars, balances, etc
      - Parameter completion: Closure returning Result<Account, Error>
      */
-    public func update(completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func updateAccount(completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.activeAccount else {
             completion(.failure(ProtonError.error("MESSAGE => No active account")))
             return
         }
         
-        self.fetchAccount(forAccount: account) { result in
+        self.fetchAccount(account) { result in
             
             switch result {
             case .success(let returnAccount):
@@ -471,12 +441,12 @@ public class Proton {
     }
     
     /**
-     Use this function to store the account and private key after finding the account you want to save via findAccounts
-     - Parameter account: Account object, normally retrieved via findAccounts
+     Use this function to store the private key and set the account after finding the account you want to save via findAccounts
      - Parameter privateKey: Wif formated private key
+     - Parameter account: Account object, normally retrieved via findAccounts
      - Parameter completion: Closure returning Result<Account, Error>
      */
-    public func store(account: Account, forPrivateKey privateKey: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func storePrivateKey(privateKey: String, forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         do {
             
@@ -485,21 +455,24 @@ public class Proton {
             
             if account.isKeyAssociated(publicKey: publicKey.stringValue) {
                 
-                let keychain = Keychain(service: "proton-swift-ks")
-                                .synchronizable(false)
-                                .accessibility(.whenUnlocked, authenticationPolicy: .userPresence)
-                
-                try keychain.set(Data(privateKey.utf8), key: publicKey.stringValue)
-                
-                self.setActiveAccount(account) { result in
+                self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue, service: account.chainId) { result in
+                    
                     switch result {
-                    case .success(let account):
-                        completion(.success(account))
+                    case .success:
+                        self.setAccount(account) { result in
+                            switch result {
+                            case .success(let account):
+                                completion(.success(account))
+                            case .failure(let error):
+                                completion(.failure(error))
+                            }
+                        }
                     case .failure(let error):
                         completion(.failure(error))
                     }
+                    
                 }
-                
+
             } else {
                 completion(.failure(ProtonError.error("MESSAGE => Key not associated with Account")))
             }
@@ -511,7 +484,7 @@ public class Proton {
     }
     
     /**
-     Use this function to obtain a list of Accounts which match a given private key. These accounts are not stored. If you want to store the Account and private key, you should then call store(account:)
+     Use this function to obtain a list of Accounts which match a given private key. These accounts are not stored. If you want to store the Account and private key, you should then call storePrivateKey function
      - Parameter privateKey: Wif formated private key
      - Parameter completion: Closure returning Result<Set<Account>, Error>
      */
@@ -551,7 +524,7 @@ public class Proton {
                     
                     for var account in accounts {
                         
-                        self.fetchAccount(forAccount: account) { result in
+                        self.fetchAccount(account) { result in
                             
                             switch result {
                             case .success(let acc):
@@ -585,6 +558,37 @@ public class Proton {
                 completion(.failure(error))
             }
 
+        }
+        
+    }
+    
+    /**
+     Sets the account, fetchs and updates. This includes, account names, avatars, balances, etc
+     - Parameter account: Account
+     - Parameter completion: Closure returning Result<Account, Error>
+     */
+    private func setAccount(_ account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        var account = account
+        
+        if let activeAccount = self.activeAccount, activeAccount == account {
+            account = activeAccount
+        } else {
+            self.activeAccount = account
+            self.tokenBalances.removeAll()
+            self.tokenTransferActions.removeAll()
+            self.esrSessions.removeAll() // TODO: Actually loop through call the remove session callbacks, etc
+            self.esr = nil
+        }
+
+        self.updateAccount { result in
+            switch result {
+            case .success(let account):
+                self.activeAccount = account
+                completion(.success(account))
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
         
     }
@@ -727,7 +731,7 @@ public class Proton {
         
     }
     
-    private func fetchAccount(forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    private func fetchAccount(_ account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         var account = account
         
@@ -1162,7 +1166,7 @@ public class Proton {
                                         
                                         guard let callback = self.esr!.resolved!.getCallback(using: [sig], blockNum: res.processed.blockNum) else { completion(nil); return }
                                         
-                                        self.update { _ in }
+                                        self.updateAccount { _ in }
                                         
                                         if callback.background {
                                             
@@ -1298,6 +1302,7 @@ public enum ProtonError: Error, LocalizedError {
     case chain(String)
     case history(String)
     case esr(String)
+    case keychain(String)
 
     public var errorDescription: String? {
         switch self {
@@ -1309,6 +1314,8 @@ public enum ProtonError: Error, LocalizedError {
             return "⚛️📜 PROTON HISTORY ERROR\n======================\n\(message)\n======================\n"
         case .esr(let message):
             return "⚛️✍️ PROTON SIGNING REQUEST ERROR\n======================\n\(message)\n======================\n"
+        case .keychain(let message):
+            return "⚛️✍️ PROTON KEYCHAIN ERROR\n======================\n\(message)\n======================\n"
         }
     }
     

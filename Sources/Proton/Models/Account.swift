@@ -100,4 +100,18 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
     }
     
+    public func uniquePublicKeys() -> Set<PublicKey> {
+        
+        var retval = Set<PublicKey>()
+        
+        for permission in self.permissions {
+            for requiredAuth in permission.requiredAuth.keys {
+                retval.update(with: requiredAuth.key)
+            }
+        }
+        
+        return retval
+        
+    }
+    
 }
