@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Proton",
+    name: "ProtonSwift",
     platforms: [
         .macOS(.v10_15),
         .iOS(.v12)
