@@ -2,7 +2,7 @@
 DerivedData
 /.previous-build
 xcuserdata
-.DS_Store
+**/.DS_Store
 *~
 \#*
 .\#*
@@ -11,7 +11,7 @@ xcuserdata
 /default.profraw
 *.xcodeproj
 Utilities/Docker/*.tar.gz
-.swiftpm
+**/.swiftpm
 Package.resolved
 /build
 *.pyc
