@@ -1,5 +1,3 @@
-![Swift](https://github.com/needly/proton-swift/workflows/Swift/badge.svg?event=push)
-
 ## Description
 
 Proton is a drop in library to handle all things ProtonChain. This includes but is not limited to account creation and management. Signing and pushing transctions, etc.
