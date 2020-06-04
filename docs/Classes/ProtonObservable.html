@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ProtonObservable Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ProtonObservable" class="dashAnchor"></a>
+    <a title="ProtonObservable Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (71% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ProtonObservable Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Proton.html">Proton</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Proton/Config.html">– Config</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Proton/Notifications.html">– Notifications</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ProtonObservable.html">ProtonObservable</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/ProtonError.html">ProtonError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/AvatarProtocol.html">AvatarProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Account.html">Account</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ChainProvider.html">ChainProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Contact.html">Contact</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ESR.html">ESR</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ESRAction.html">ESRAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ESRAction/ActionType.html">– ActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ESRAction/BasicDisplay.html">– BasicDisplay</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ESRSession.html">ESRSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TokenBalance.html">TokenBalance</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TokenContract.html">TokenContract</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TokenTransferAction.html">TokenTransferAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TransferActionABI.html">TransferActionABI</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ProtonObservable</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@available</span><span class="p">(</span><span class="n">iOS</span> <span class="mi">13</span><span class="p">,</span> <span class="o">*</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ProtonObservable</span> <span class="p">:</span> <span class="kt">ObservableObject</span></code></pre>
+
+                </div>
+              </div>
+            <p>The ProtonObeservable class is helpful when you want to take advantage of iOS13+ Combine, etc functionality.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC14chainProvidersSayAA13ChainProviderVGvp"></a>
+                    <a name="//apple_ref/swift/Property/chainProviders" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC14chainProvidersSayAA13ChainProviderVGvp">chainProviders</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated set of chainProviders. Subscribe to this for your chainProviders
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">chainProviders</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/ChainProvider.html">ChainProvider</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC14tokenContractsSayAA13TokenContractVGvp"></a>
+                    <a name="//apple_ref/swift/Property/tokenContracts" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC14tokenContractsSayAA13TokenContractVGvp">tokenContracts</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated set of tokenContracts. Subscribe to this for your tokenContracts
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">tokenContracts</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenContract.html">TokenContract</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC13activeAccountAA0D0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/activeAccount" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC13activeAccountAA0D0VSgvp">activeAccount</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live active account. Subscribe to this for your account
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">activeAccount</span><span class="p">:</span> <span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC13tokenBalancesSayAA12TokenBalanceVGvp"></a>
+                    <a name="//apple_ref/swift/Property/tokenBalances" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC13tokenBalancesSayAA12TokenBalanceVGvp">tokenBalances</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated set of tokenBalances. Subscribe to this for your tokenBalances
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">tokenBalances</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenBalance.html">TokenBalance</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC20tokenTransferActionsSayAA05TokenD6ActionVGvp"></a>
+                    <a name="//apple_ref/swift/Property/tokenTransferActions" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC20tokenTransferActionsSayAA05TokenD6ActionVGvp">tokenTransferActions</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">tokenTransferActions</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenTransferAction.html">TokenTransferAction</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC8contactsSayAA7ContactVGvp"></a>
+                    <a name="//apple_ref/swift/Property/contacts" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC8contactsSayAA7ContactVGvp">contacts</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">contacts</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/Contact.html">Contact</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC11esrSessionsSayAA10ESRSessionVGvp"></a>
+                    <a name="//apple_ref/swift/Property/esrSessions" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC11esrSessionsSayAA10ESRSessionVGvp">esrSessions</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">esrSessions</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/ESRSession.html">ESRSession</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton0A10ObservableC3esrAA3ESRVSgvp"></a>
+                    <a name="//apple_ref/swift/Property/esr" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton0A10ObservableC3esrAA3ESRVSgvp">esr</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated esr signing request. This will be initialized when a signing request is made
+Important: This is a copy of the source from Proton.shared. Modifications should
+be made there.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">esr</span><span class="p">:</span> <span class="kt"><a href="../Structs/ESR.html">ESR</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-06-04)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

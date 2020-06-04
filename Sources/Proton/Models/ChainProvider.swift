@@ -8,22 +8,35 @@
 
 import Foundation
 
+/**
+ChainProvider the object that provides chain related configuration aspects of the Proton objects
+*/
 public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProtocol {
-    
+    /// Id is the chainId
     public var id: String { return chainId }
-    
+    /// The chainId associated with the ChainProvider
     public let chainId: String
+    /// The base url to the public Proton chain rpc provider
     public let chainUrl: String
+    /// The base url to the public Proton chain Hyperion history provider
     public let stateHistoryUrl: String
+    /// The url to the icon image for the Proton chain. (Mainnet/Testnet)
     public let iconUrl: String
+    /// The human readable name of the Proton chain. (Mainnet/Testnet)
     public let name: String
+    /// The chain table index code used for account info
     public let usersInfoTableCode: String
+    /// The chain table index scope used for account info
     public let usersInfoTableScope: String
+    /// The chain table index code used for registered tokens info
     public let tokensTableCode: String
+    /// The chain table index scope used for registered tokens info
     public let tokensTableScope: String
+    /// The system token symbol for the chain: XPR
     public let systemTokenSymbol: String
+    /// The system token contract for the chain: eosio.token
     public let systemTokenContract: String
-    
+    /// :nodoc:
     public init(chainId: String, chainUrl: String, stateHistoryUrl: String,
                 iconUrl: String, name: String, usersInfoTableCode: String,
                 usersInfoTableScope: String, tokensTableCode: String, tokensTableScope: String,
@@ -42,15 +55,15 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
         self.systemTokenContract = systemTokenContract
         
     }
-    
+    /// :nodoc:
     public static func == (lhs: ChainProvider, rhs: ChainProvider) -> Bool {
         lhs.id == rhs.id
     }
-    
+    /// :nodoc:
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-    
+    /// TokenContracts associated with this chainProvider
     public var tokenContracts: [TokenContract] {
         return Proton.shared.tokenContracts.filter { $0.chainId == self.chainId }
     }

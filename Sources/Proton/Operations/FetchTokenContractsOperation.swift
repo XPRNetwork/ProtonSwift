@@ -47,7 +47,7 @@ class FetchTokenContractsOperation: AbstractOperation {
                     tokenContract.url = row.url
                     tokenContract.desc = row.desc
                     tokenContract.iconUrl = row.iconurl
-                    tokenContract.blacklisted = row.blisted
+                    tokenContract.isBlacklisted = row.blisted
                     
                     self.tokenContracts[tokenContractIndex] = tokenContract
                     
@@ -57,7 +57,7 @@ class FetchTokenContractsOperation: AbstractOperation {
                                                       issuer: row.tcontract, resourceToken: false, systemToken: false,
                                                       name: row.tname, desc: row.desc, iconUrl: row.iconurl,
                                                       supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
-                                                      symbol: row.symbol, url: row.url, blacklisted: row.blisted)
+                                                      symbol: row.symbol, url: row.url, isBlacklisted: row.blisted)
                     
                     self.tokenContracts.append(tokenContract)
                     

@@ -9,17 +9,23 @@
 import EOSIO
 import Foundation
 
+/**
+ChainProvider the object that provides chain related configuration aspects of the Proton objects
+*/
 public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtocol, TokenTransferActionsProtocol, AccountProtocol {
-    
-    public var id: String { return "\(self.accountId):\(self.contract):\(self.amount.symbol.name)" }
-    
+    /// Id is the accoutId + ":" + contract.stringValue + ":" + symbol.
+    public var id: String { return "\(self.accountId):\(self.contract.stringValue):\(self.amount.symbol.name)" }
+    /// accountId is used to link Account. It is the chainId + ":" + name.stringValue.
     public let accountId: String
+    /// tokenContractId is used to link TokenContract. It is the chainId + ":" + contract.stringValue + ":" + symbol
     public let tokenContractId: String
+    /// The chainId associated with the TokenBalance
     public let chainId: String
+    /// The Name of the contract. You can get the string value via contract.stringValue
     public let contract: Name
-    
+    /// The Asset amount. See EOSIO type Asset for more info
     public var amount: Asset
-    
+    /// :nodoc:
     public init?(accountId: String, contract: Name, amount: Double, precision: UInt8, symbol: String) {
         
         do {
@@ -37,23 +43,23 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
         }
         
     }
-    
+    /// :nodoc:
     public static func == (lhs: TokenBalance, rhs: TokenBalance) -> Bool {
         lhs.id == rhs.id
     }
-    
+    /// :nodoc:
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
     }
-    
+    /// TokenContracts associated with this TokenBalance
     public var tokenContract: TokenContract? {
         return Proton.shared.tokenContracts.first(where: { $0.id == self.tokenContractId })
     }
-    
+    /// TokenTransferActions associated with this TokenBalance
     public var tokenTransferActions: [TokenTransferAction] {
         return Proton.shared.tokenTransferActions.filter { $0.accountId == self.accountId && $0.tokenBalanceId == self.id }
     }
-    
+    /// Account associated with this TokenBalance
     public var account: Account? {
         if let acc = Proton.shared.activeAccount, acc.id == self.accountId {
             return acc

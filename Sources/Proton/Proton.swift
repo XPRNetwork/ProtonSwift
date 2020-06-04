@@ -15,18 +15,34 @@ import UIKit
 #endif
 import KeychainAccess
 
+/**
+ The Proton class is the heart of the ProtonSwift SDK.
+ */
 public class Proton {
     
+    /**
+     The proton config object which is a required param for initialisation of Proton
+    */
     public struct Config {
         
+        /**
+         :nodoc:
+        */
         public var chainProvidersUrl: String
         
+        /**
+         Use this function as your starting point to initialize the singleton class Proton
+         - Parameter chainProvidersUrl: The url endpoint which providers a list of chainProviders
+         */
         public init(chainProvidersUrl: String) {
             self.chainProvidersUrl = chainProvidersUrl
         }
         
     }
     
+    /**
+     The proton config which gets set during initialisation
+    */
     public static var config: Config?
     
     /**
@@ -40,28 +56,80 @@ public class Proton {
         return self.shared
     }
     
+    /**
+     The shared instance of the Proton class.
+     Use this for accessing functionality after initialisation of Proton
+    */
     public static let shared = Proton()
+    
+    /**
+     Internal pointer to various storage structures
+    */
     var storage: Persistence!
     
+    /**
+     Private init
+     */
+    private init() {
+        
+        guard let _ = Proton.config else {
+            fatalError("ERROR: You must call setup before accessing Proton.shared")
+        }
+        
+        self.storage = Persistence()
+        
+        self.loadAll()
+        
+        print("🧑‍💻 LOAD COMPLETED")
+        print("ACTIVE ACCOUNT => \(String(describing: self.activeAccount))")
+        print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
+        print("TOKEN BALANCES => \(self.tokenBalances.count)")
+        print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
+        print("ESR SESSIONS => \(self.esrSessions.count)")
+        
+    }
+    
+    /**
+     Data object container notifcation names. Use these to subscribe to changes via NotificationCenter.default
+    */
     public enum Notifications {
+        /// Use this notification name to be notified right before chainProviders are updated.
         public static let chainProvidersWillSet = Notification.Name("chainProvidersWillSet")
+        /// Use this notification name to be notified after chainProviders are updated.
         public static let chainProvidersDidSet = Notification.Name("chainProvidersDidSet")
+        /// Use this notification name to be notified right before tokenContracts are updated.
         public static let tokenContractsWillSet = Notification.Name("tokenContractsWillSet")
+        /// Use this notification name to be notified after tokenContracts are updated.
         public static let tokenContractsDidSet = Notification.Name("tokenContractsDidSet")
+        /// Use this notification name to be notified right before tokenBalances are updated
         public static let tokenBalancesWillSet = Notification.Name("tokenBalancesWillSet")
+        /// Use this notification name to be notified after tokenBalances are updated.
         public static let tokenBalancesDidSet = Notification.Name("tokenBalancesDidSet")
+        /// Use this notification name to be notified right before tokenTransferActions are updated
         public static let tokenTransferActionsWillSet = Notification.Name("tokenTransferActionsWillSet")
+        /// Use this notification name to be notified after tokenTransferActions are updated.
         public static let tokenTransferActionsDidSet = Notification.Name("tokenTransferActionsDidSet")
+        /// Use this notification name to be notified right before contacts are updated
         public static let contactsWillSet = Notification.Name("contactsWillSet")
+        /// Use this notification name to be notified after contacts are updated.
         public static let contactsDidSet = Notification.Name("contactsDidSet")
+        /// Use this notification name to be notified right before esrSessions are updated
         public static let esrSessionsWillSet = Notification.Name("esrSessionsWillSet")
+        /// Use this notification name to be notified after esrSessions are updated.
         public static let esrSessionsDidSet = Notification.Name("esrSessionsDidSet")
+        /// Use this notification name to be notified right before the active esr is updated
         public static let esrWillSet = Notification.Name("esrWillSet")
+        /// Use this notification name to be notified after the active esr is updated.
         public static let esrDidSet = Notification.Name("esrDidSet")
+        /// Use this notification name to be notified right before the active acount is set
         public static let activeAccountWillSet = Notification.Name("activeAccountWillSet")
+        /// Use this notification name to be notified right after the active acount is set
         public static let activeAccountDidSet = Notification.Name("activeAccountDidSet")
+        /// Use this notification name to be notified right after the active acount is updated
         public static let activeAccountDidUpdate = Notification.Name("activeAccountDidUpdate")
     }
+    
+    // MARK: - Data Containers
     
     /**
      Live updated array of chainProviders. You can observe changes via NotificaitonCenter: chainProvidersWillSet, chainProvidersDidSet
@@ -167,24 +235,7 @@ public class Proton {
         }
     }
     
-    private init() {
-        
-        guard let _ = Proton.config else {
-            fatalError("ERROR: You must call setup before accessing Proton.shared")
-        }
-        
-        self.storage = Persistence()
-        
-        self.loadAll()
-        
-        print("🧑‍💻 LOAD COMPLETED")
-        print("ACTIVE ACCOUNT => \(String(describing: self.activeAccount))")
-        print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
-        print("TOKEN BALANCES => \(self.tokenBalances.count)")
-        print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
-        print("ESR SESSIONS => \(self.esrSessions.count)")
-        
-    }
+    // MARK: - Data Functions
     
     /**
      Loads all data objects from disk into memory
@@ -219,7 +270,7 @@ public class Proton {
       Use this for switching accounts when you know the private key has already been stored.
      - Parameter forAccountName: Proton account name not including @
      - Parameter chainId: chainId for the account
-     - Parameter completion: Closure returning Result<Account, Error>
+     - Parameter completion: Closure returning Result
      */
     public func setAccount(forAccountName accountName: String, chainId: String,
                            completion: @escaping ((Result<Account, Error>) -> Void)) {
@@ -237,7 +288,7 @@ public class Proton {
     
     /**
      Fetchs all required data objects from external data sources. This should be done at startup
-     - Parameter completion: Closure returning Result<Bool, Error>.
+     - Parameter completion: Closure returning Result
      */
     public func fetchRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
@@ -313,7 +364,7 @@ public class Proton {
     
     /**
      Fetchs and updates the active account. This includes, account names, avatars, balances, etc
-     - Parameter completion: Closure returning Result<Account, Error>
+     - Parameter completion: Closure returning Result
      */
     public func updateAccount(completion: @escaping ((Result<Account, Error>) -> Void)) {
         
@@ -443,8 +494,8 @@ public class Proton {
     /**
      Use this function to store the private key and set the account after finding the account you want to save via findAccounts
      - Parameter privateKey: Wif formated private key
-     - Parameter account: Account object, normally retrieved via findAccounts
-     - Parameter completion: Closure returning Result<Account, Error>
+     - Parameter forAccount: Account object, normally retrieved via findAccounts
+     - Parameter completion: Closure returning Result
      */
     public func storePrivateKey(privateKey: String, forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
@@ -485,8 +536,8 @@ public class Proton {
     
     /**
      Use this function to obtain a list of Accounts which match a given private key. These accounts are not stored. If you want to store the Account and private key, you should then call storePrivateKey function
-     - Parameter privateKey: Wif formated private key
-     - Parameter completion: Closure returning Result<Set<Account>, Error>
+     - Parameter forPrivateKey: Wif formated private key
+     - Parameter completion: Closure returning Result
      */
     public func findAccounts(forPrivateKey privateKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
@@ -510,6 +561,12 @@ public class Proton {
         
     }
     
+    /**
+     :nodoc:
+     Use this function to obtain a list of Accounts which match a given public key. These accounts are not stored. If you want to store the Account and private key, you should then call storePrivateKey function
+     - Parameter forPublicKey: Wif formated public key
+     - Parameter completion: Closure returning Result
+     */
     private func findAccounts(forPublicKey publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
         self.fetchKeyAccounts(forPublicKey: publicKey) { result in
@@ -563,9 +620,10 @@ public class Proton {
     }
     
     /**
-     Sets the account, fetchs and updates. This includes, account names, avatars, balances, etc
+     :nodoc:
+     Sets the active account, fetchs and updates. This includes, account names, avatars, balances, etc
      - Parameter account: Account
-     - Parameter completion: Closure returning Result<Account, Error>
+     - Parameter completion: Closure returning Result
      */
     private func setAccount(_ account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
@@ -593,60 +651,12 @@ public class Proton {
         
     }
     
-    private func fetchCurrencyStats(forTokenContracts tokenContracts: [TokenContract], completion: @escaping () -> ()) {
-        
-        let tokenContractCount = tokenContracts.count
-        var tokenContractsProcessed = 0
-        
-        if tokenContractCount > 0 {
-            
-            for tokenContract in tokenContracts {
-                
-                if let chainProvider = tokenContract.chainProvider {
-                    
-                    WebServices.shared.addMulti(FetchTokenContractCurrencyStat(tokenContract: tokenContract, chainProvider: chainProvider)) { result in
-                        
-                        switch result {
-                        case .success(let updatedTokenContract):
-                            
-                            if let updatedTokenContract = updatedTokenContract as? TokenContract {
-                                if let idx = self.tokenContracts.firstIndex(of: updatedTokenContract) {
-                                    self.tokenContracts[idx] = updatedTokenContract
-                                } else {
-                                    self.tokenContracts.append(updatedTokenContract)
-                                }
-                            }
-                            
-                        case .failure(let error):
-                            print("ERROR: \(error.localizedDescription)")
-                        }
-                        
-                        tokenContractsProcessed += 1
-                        
-                        if tokenContractsProcessed == tokenContractCount {
-                            completion()
-                        }
-                        
-                    }
-                    
-                } else {
-                    
-                    tokenContractsProcessed += 1
-                    
-                    if tokenContractsProcessed == tokenContractCount {
-                        completion()
-                    }
-                    
-                }
-                
-            }
-            
-        } else {
-            completion()
-        }
-        
-    }
-    
+    /**
+     :nodoc:
+     Fetches token balance for the active account
+     - Parameter forTokenBalance: TokenBalance
+     - Parameter completion: Closure returning Result
+     */
     private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ((Result<Set<TokenTransferAction>, Error>) -> Void)) {
         
         var retval = Set<TokenTransferAction>()
@@ -686,6 +696,12 @@ public class Proton {
         
     }
     
+    /**
+     :nodoc:
+     Fetches the accounts found for the publickey passed
+     - Parameter forPublicKey: Wif formated public key
+     - Parameter completion: Closure returning Result
+     */
     private func fetchKeyAccounts(forPublicKey publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
         let chainProviderCount = self.chainProviders.count
@@ -731,6 +747,12 @@ public class Proton {
         
     }
     
+    /**
+     :nodoc:
+     Fetches the account found for the publickey passed
+     - Parameter forPublicKey: Wif formated public key
+     - Parameter completion: Closure returning Result
+     */
     private func fetchAccount(_ account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         var account = account
@@ -760,6 +782,13 @@ public class Proton {
         
     }
     
+    /**
+     :nodoc:
+     Fetches the account info from chain table rows.
+     This includes stuff like avatar base64 string, name, etc
+     - Parameter forAccount: Account
+     - Parameter completion: Closure returning Result
+     */
     private func fetchAccountUserInfo(forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         var account = account
@@ -789,6 +818,12 @@ public class Proton {
         
     }
     
+    /**
+     :nodoc:
+     Fetches all balances for the active account.
+     - Parameter forAccount: Account
+     - Parameter completion: Closure returning Result
+     */
     private func fetchBalances(forAccount account: Account, completion: @escaping ((Result<Set<TokenBalance>, Error>) -> Void)) {
         
         var retval = Set<TokenBalance>()
@@ -810,7 +845,7 @@ public class Proton {
                                                                          resourceToken: false, systemToken: false, name: tokenBalance.amount.symbol.name,
                                                                          desc: "", iconUrl: "", supply: Asset(0.0, tokenBalance.amount.symbol),
                                                                          maxSupply: Asset(0.0, tokenBalance.amount.symbol),
-                                                                         symbol: tokenBalance.amount.symbol, url: "", blacklisted: true)
+                                                                         symbol: tokenBalance.amount.symbol, url: "", isBlacklisted: true)
                                 
                                 self.tokenContracts.append(unknownTokenContract)
                                 
@@ -836,6 +871,12 @@ public class Proton {
         
     }
     
+    /**
+     :nodoc:
+     Fetches all known accounts in which the active account has interated with via transfers, etc.
+     - Parameter forAccount: Account
+     - Parameter completion: Closure returning Result
+     */
     private func fetchContacts(forAccount account: Account, completion: @escaping ((Result<Set<Contact>, Error>) -> Void)) {
         
         var retval = Set<Contact>()
@@ -1048,59 +1089,48 @@ public class Proton {
         
         guard let esr = self.esr else { completion(nil); return }
         
-        Authentication.shared.authenticate { success, _, error in
+        if esr.signingRequest.isIdentity {
             
-            if success {
+            self.handleIdentityESR { url in
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 
-                if esr.signingRequest.isIdentity {
-                    
-                    self.handleIdentityESR { url in
-
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        
-                            self.esr = nil
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            
-                                print(self.esrSessions.count)
-                                completion(url)
-                                
-                            }
-                            
-                        }
-
-                    }
-                    
-                } else if esr.signingRequest.actions.count > 0 {
-
-                    self.handleActionsESR { url in
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        
-                            self.esr = nil
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            
-                                print(self.esrSessions.count)
-                                completion(url)
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                } else {
-                    
                     self.esr = nil
-                    completion(nil)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    
+                        print(self.esrSessions.count)
+                        completion(url)
+                        
+                    }
                     
                 }
 
-            } else {
-                self.esr = nil
-                completion(nil) // return error
             }
+            
+        } else if esr.signingRequest.actions.count > 0 {
+
+            self.handleActionsESR { url in
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                
+                    self.esr = nil
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    
+                        print(self.esrSessions.count)
+                        completion(url)
+                        
+                    }
+                    
+                }
+                
+            }
+            
+        } else {
+            
+            self.esr = nil
+            completion(nil)
             
         }
         

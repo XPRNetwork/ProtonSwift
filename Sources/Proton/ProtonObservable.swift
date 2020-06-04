@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+The ProtonObeservable class is helpful when you want to take advantage of iOS13+ Combine, etc functionality.
+*/
 @available(iOS 13, *)
 public final class ProtonObservable: ObservableObject {
     
@@ -98,7 +101,7 @@ public final class ProtonObservable: ObservableObject {
         }
     }
     
-    
+    /// :nodoc:
     public init() {
         NotificationCenter.default.addObserver(self, selector: #selector(chainProvidersWillSet(_:)),
                                                name: Proton.Notifications.chainProvidersWillSet, object: nil)
@@ -117,7 +120,6 @@ public final class ProtonObservable: ObservableObject {
         NotificationCenter.default.addObserver(self, selector: #selector(activeAccountWillSet),
                                                name: Proton.Notifications.activeAccountWillSet, object: nil)
     }
-    
     
     deinit {
         NotificationCenter.default.removeObserver(self)

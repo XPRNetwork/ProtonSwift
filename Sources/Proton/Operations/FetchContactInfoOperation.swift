@@ -43,7 +43,7 @@ class FetchContactInfoOperation: AbstractOperation {
 
             if let userInfo = res.rows.first {
                 contact.base64Avatar = userInfo.avatar
-                contact.fullName = userInfo.name
+                contact.nickName = userInfo.name
                 contact.verified = userInfo.verified
             }
 
