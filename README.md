@@ -12,10 +12,10 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 
 ## Usage
 
-The main and only class that you will need to interface with is `Proton` which encapsulates all of the needed functions.
+The main class that you will need to interface with is `Proton` which encapsulates most all of the needed functions.
 
 ```swift
-let config = Proton.Config(chainProvidersUrl: "https://e8245mepe3.execute-api.us-west-2.amazonaws.com/dev/chain-providers")
+let config = Proton.Config(baseUrl: "https://api.testnet.proton", apiKey: <YOUR_API_KEY>, apiSecret: <YOUR_API_SECRET>)
 
 Proton.initialize(config).fetchRequirements { result in
     Proton.shared.update { result in }

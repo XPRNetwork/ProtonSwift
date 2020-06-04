@@ -12,8 +12,8 @@ class FetchChainProvidersOperation: AbstractOperation {
     
     override func main() {
         
-        guard let path = Proton.config?.chainProvidersUrl else {
-            fatalError("⚛️ PROTON ERROR: Must provider chainProvidersUrl in Proton config")
+        guard let path = Proton.config?.baseUrl else {
+            fatalError("⚛️ PROTON ERROR: BaseUrl must be valid to fetch need configuration info")
         }
         
         guard let url = URL(string: path) else {
@@ -21,7 +21,7 @@ class FetchChainProvidersOperation: AbstractOperation {
             return
         }
 
-        WebServices.shared.getRequest(withURL: url) { (result: Result<[String: ChainProvider], Error>) in
+        WebOperations.shared.getRequest(withURL: url) { (result: Result<[String: ChainProvider], Error>) in
 
             switch result {
             case .success(let chainProviders):

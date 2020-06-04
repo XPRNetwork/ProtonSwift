@@ -25,17 +25,23 @@ public class Proton {
     */
     public struct Config {
         
-        /**
-         :nodoc:
-        */
-        public var chainProvidersUrl: String
+        /// The base url used for api requests to proton sdk api's
+        public var baseUrl: String
+        /// The api key given to you after requesting access
+        public var apiKey: String
+        /// The api secret given to you after requesting access
+        public var apiSecret: String
         
         /**
          Use this function as your starting point to initialize the singleton class Proton
-         - Parameter chainProvidersUrl: The url endpoint which providers a list of chainProviders
+         - Parameter baseUrl: The base url used for api requests to proton sdk api's
+         - Parameter apiKey: The api key given to you after requesting access
+         - Parameter apiSecret: The api secret given to you after requesting access
          */
-        public init(chainProvidersUrl: String) {
-            self.chainProvidersUrl = chainProvidersUrl
+        public init(baseUrl: String, apiKey: String, apiSecret: String) {
+            self.baseUrl = baseUrl
+            self.apiKey = apiKey
+            self.apiSecret = apiSecret
         }
         
     }
@@ -292,7 +298,7 @@ public class Proton {
      */
     public func fetchRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
-        WebServices.shared.addSeq(FetchChainProvidersOperation()) { result in
+        WebOperations.shared.addSeq(FetchChainProvidersOperation()) { result in
             
             switch result {
                 
@@ -323,7 +329,7 @@ public class Proton {
                     
                     let tokenContracts = chainProvider.tokenContracts
                     
-                    WebServices.shared.addMulti(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts)) { result in
+                    WebOperations.shared.addMulti(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts)) { result in
                         
                         switch result {
                             
@@ -676,7 +682,7 @@ public class Proton {
             return
         }
         
-        WebServices.shared.addMulti(FetchTokenTransferActionsOperation(account: account, tokenContract: tokenContract,
+        WebOperations.shared.addMulti(FetchTokenTransferActionsOperation(account: account, tokenContract: tokenContract,
                                                                        chainProvider: chainProvider, tokenBalance: tokenBalance)) { result in
             
             switch result {
@@ -716,7 +722,7 @@ public class Proton {
         
         for chainProvider in self.chainProviders {
             
-            WebServices.shared.addMulti(FetchKeyAccountsOperation(publicKey: publicKey,
+            WebOperations.shared.addMulti(FetchKeyAccountsOperation(publicKey: publicKey,
                                                                   chainProvider: chainProvider)) { result in
                 
                 chainProvidersProcessed += 1
@@ -759,7 +765,7 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebServices.shared.addMulti(FetchAccountOperation(accountName: account.name.stringValue, chainProvider: chainProvider)) { result in
+            WebOperations.shared.addMulti(FetchAccountOperation(accountName: account.name.stringValue, chainProvider: chainProvider)) { result in
                 
                 switch result {
                 case .success(let acc):
@@ -795,7 +801,7 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebServices.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
+            WebOperations.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
                 
                 switch result {
                 case .success(let updatedAccount):
@@ -830,7 +836,7 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebServices.shared.addMulti(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider)) { result in
+            WebOperations.shared.addMulti(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider)) { result in
                 
                 switch result {
                 case .success(let tokenBalances):
@@ -900,7 +906,7 @@ public class Proton {
         
         for contactName in contactNames {
             
-            WebServices.shared.addMulti(FetchContactInfoOperation(account: account, contactName: contactName, chainProvider: chainProvider)) { result in
+            WebOperations.shared.addMulti(FetchContactInfoOperation(account: account, contactName: contactName, chainProvider: chainProvider)) { result in
                 
                 switch result {
                 case .success(let contact):
@@ -945,7 +951,7 @@ public class Proton {
             
             var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
             
-            WebServices.shared.addSeq(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider)) { result in
+            WebOperations.shared.addSeq(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider)) { result in
                 
                 switch result {
                 case .success(let acc):
@@ -974,7 +980,7 @@ public class Proton {
                         
                         for abiAccount in abiAccounts {
                             
-                            WebServices.shared.addMulti(FetchRawAbiOperation(account: abiAccount, chainProvider: chainProvider)) { result in
+                            WebOperations.shared.addMulti(FetchRawAbiOperation(account: abiAccount, chainProvider: chainProvider)) { result in
                                 
                                 abiAccountsProcessed += 1
                                 
@@ -1144,7 +1150,7 @@ public class Proton {
     public func removeESRSession(forId: String) {
         
         guard let esrSession = self.esrSessions.first(where: { $0.id == forId }) else { return }
-        WebServices.shared.addMulti(PostRemoveSessionESROperation(esrSession: esrSession)) { _ in }
+        WebOperations.shared.addMulti(PostRemoveSessionESROperation(esrSession: esrSession)) { _ in }
         
     }
     
@@ -1167,7 +1173,7 @@ public class Proton {
         
         if abis.count == 0 { completion(nil); return }
         
-        WebServices.shared.addSeq(FetchChainInfoOperation(chainProvider: chainProvider)) { result in
+        WebOperations.shared.addSeq(FetchChainInfoOperation(chainProvider: chainProvider)) { result in
             
             switch result {
             case .success(let info):
@@ -1187,7 +1193,7 @@ public class Proton {
                         
                         if self.esr!.signingRequest.broadcast {
                             
-                            WebServices.shared.addSeq(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
+                            WebOperations.shared.addSeq(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
                                 
                                 switch result {
                                 case .success(let res):
@@ -1200,7 +1206,7 @@ public class Proton {
                                         
                                         if callback.background {
                                             
-                                            WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: res.processed.blockNum)) { result in
+                                            WebOperations.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: res.processed.blockNum)) { result in
                                                 
                                                 switch result {
                                                 case .success:
@@ -1281,7 +1287,7 @@ public class Proton {
             
             if callback.background {
                 
-                WebServices.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: nil)) { result in
+                WebOperations.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: nil)) { result in
                     
                     switch result {
                     case .success:

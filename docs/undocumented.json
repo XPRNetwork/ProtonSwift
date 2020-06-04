@@ -345,42 +345,42 @@
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1329,
+      "line": 1335,
       "symbol": "ProtonError",
       "symbol_kind": "source.lang.swift.decl.enum",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1331,
+      "line": 1337,
       "symbol": "ProtonError.error(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1332,
+      "line": 1338,
       "symbol": "ProtonError.chain(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1333,
+      "line": 1339,
       "symbol": "ProtonError.history(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1334,
+      "line": 1340,
       "symbol": "ProtonError.esr(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1335,
+      "line": 1341,
       "symbol": "ProtonError.keychain(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"

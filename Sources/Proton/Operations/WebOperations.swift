@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum WebServiceError: Error, LocalizedError {
+enum WebOperationError: Error, LocalizedError {
     case error(String)
     
     public var errorDescription: String? {
@@ -19,12 +19,12 @@ enum WebServiceError: Error, LocalizedError {
     }
 }
 
-class WebServices: NSObject {
+class WebOperations: NSObject {
     
     var operationQueueSeq: OperationQueue
     var operationQueueMulti: OperationQueue
     
-    static let shared = WebServices()
+    static let shared = WebOperations()
     
     private override init() {
         
@@ -69,6 +69,8 @@ class WebServices: NSObject {
     
     // MARK: - HTTP Base Requests
     
+    // TODO: Decided to use URLSession.shared or create custom sessions...
+    
     func getRequest(withURL url: URL, completion: ((Result<Data?, Error>) -> Void)?) {
         
         let session = URLSession.shared
@@ -77,28 +79,28 @@ class WebServices: NSObject {
             
             if let error = error {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebServiceError.error(error.localizedDescription)))
+                    completion?(.failure(WebOperationError.error(error.localizedDescription)))
                 }
                 return
             }
             
             guard let data = data else {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebServiceError.error("No data")))
+                    completion?(.failure(WebOperationError.error("No data")))
                 }
                 return
             }
             
             guard let response = response as? HTTPURLResponse else {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebServiceError.error("Response Error")))
+                    completion?(.failure(WebOperationError.error("Response Error")))
                 }
                 return
             }
             
             if !(200...299).contains(response.statusCode) {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebServiceError.error("Response Error Status code: \(response.statusCode)")))
+                    completion?(.failure(WebOperationError.error("Response Error Status code: \(response.statusCode)")))
                 }
                 return
             }
@@ -123,7 +125,7 @@ class WebServices: NSObject {
                 
                 guard let data = data else {
                     DispatchQueue.main.async {
-                        completion?(.failure(WebServiceError.error("No data")))
+                        completion?(.failure(WebOperationError.error("No data")))
                     }
                     return
                 }
@@ -160,7 +162,7 @@ class WebServices: NSObject {
                 
                 guard let data = data else {
                     DispatchQueue.main.async {
-                        completion?(.failure(WebServiceError.error("No data")))
+                        completion?(.failure(WebOperationError.error("No data")))
                     }
                     return
                 }
@@ -215,21 +217,21 @@ class WebServices: NSObject {
             
             guard let data = data else {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebServiceError.error("No data")))
+                    completion?(.failure(WebOperationError.error("No data")))
                 }
                 return
             }
             
             guard let response = response as? HTTPURLResponse else {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebServiceError.error("Response Error")))
+                    completion?(.failure(WebOperationError.error("Response Error")))
                 }
                 return
             }
             
             if !(200...299).contains(response.statusCode) {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebServiceError.error("Response Error Status code: \(response.statusCode)")))
+                    completion?(.failure(WebOperationError.error("Response Error Status code: \(response.statusCode)")))
                 }
                 return
             }
