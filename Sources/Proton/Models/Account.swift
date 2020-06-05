@@ -19,8 +19,8 @@ import UIKit
 Account is the Proton chain account object.
 */
 public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, TokenBalancesProtocol, AvatarProtocol {
-    /// Id is the chainId + ":" + name.stringValue. This is used as the primary key for storing the account
-    public var id: String { return "\(self.chainId):\(self.name.stringValue)" }
+    /// This is used as the primary key for storing the account
+    public var id: String { return self.name.stringValue }
     /// The chainId associated with the account
     public var chainId: String
     /// The Name of the account. You can get the string value via name.stringValue
@@ -55,7 +55,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     }
     /// ChainProvider associated with the Account
     public var chainProvider: ChainProvider? {
-        return Proton.shared.chainProviders.first(where: { $0.chainId == self.chainId })
+        return Proton.shared.chainProvider?.chainId == self.chainId ? Proton.shared.chainProvider : nil
     }
     /// TokenBalances associated with the Account
     public var tokenBalances: [TokenBalance] {

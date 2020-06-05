@@ -12,7 +12,7 @@ import Foundation
 The TokenTransferAction object provide information about a transfer action
 */
 public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProtocol {
-    /// id is the accountId + ":" + name + ":" + contract.stringValue + ":" + trxId
+    /// This is used as the primary key for storing the account
     public var id: String { return "\(accountId):\(name):\(contract.stringValue):\(trxId)" }
     /// The chainId associated with the TokenTransferAction
     public let chainId: String

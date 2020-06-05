@@ -27,9 +27,9 @@ class FetchTokenContractsOperation: AbstractOperation {
         }
         
         let client = Client(address: url)
-        let req = API.V1.Chain.GetTableRows<TokenContractABI>(code: Name(stringValue: self.chainProvider.tokensTableCode),
+        let req = API.V1.Chain.GetTableRows<TokenContractABI>(code: Name(stringValue: "token.proton"),
                                                               table: Name(stringValue: "tokens"),
-                                                              scope: self.chainProvider.tokensTableScope)
+                                                              scope: "token.proton")
         
         do {
             

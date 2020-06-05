@@ -11,7 +11,7 @@ import Foundation
 
 public struct ESRSession: Codable, Identifiable, Hashable {
 
-    public var id: String { return "\(signer.stringValue):\(requestor.name.stringValue):\(chainId)" }
+    public var id: String { return "\(signer.stringValue):\(requestor.name.stringValue)" }
 
     public var requestor: Account
     public let signer: Name

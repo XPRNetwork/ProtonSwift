@@ -37,7 +37,7 @@ class FetchTokenBalancesOperation: AbstractOperation {
             
             for token in res.tokens {
                 
-                if let tokenBalance = TokenBalance(accountId: self.account.id, contract: token.contract,
+                if let tokenBalance = TokenBalance(account: self.account, contract: token.contract,
                                                    amount: token.amount, precision: token.precision, symbol: token.symbol) {
                     tokenBalances.update(with: tokenBalance)
                 }

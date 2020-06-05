@@ -87,7 +87,7 @@ public class Proton {
         self.loadAll()
         
         print("🧑‍💻 LOAD COMPLETED")
-        print("ACTIVE ACCOUNT => \(String(describing: self.activeAccount))")
+        print("ACTIVE ACCOUNT => \(String(describing: self.account))")
         print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
@@ -100,9 +100,9 @@ public class Proton {
     */
     public enum Notifications {
         /// Use this notification name to be notified right before chainProviders are updated.
-        public static let chainProvidersWillSet = Notification.Name("chainProvidersWillSet")
+        public static let chainProviderWillSet = Notification.Name("chainProviderWillSet")
         /// Use this notification name to be notified after chainProviders are updated.
-        public static let chainProvidersDidSet = Notification.Name("chainProvidersDidSet")
+        public static let chainProviderDidSet = Notification.Name("chainProviderDidSet")
         /// Use this notification name to be notified right before tokenContracts are updated.
         public static let tokenContractsWillSet = Notification.Name("tokenContractsWillSet")
         /// Use this notification name to be notified after tokenContracts are updated.
@@ -128,28 +128,28 @@ public class Proton {
         /// Use this notification name to be notified after the active esr is updated.
         public static let esrDidSet = Notification.Name("esrDidSet")
         /// Use this notification name to be notified right before the active acount is set
-        public static let activeAccountWillSet = Notification.Name("activeAccountWillSet")
+        public static let accountWillSet = Notification.Name("accountWillSet")
         /// Use this notification name to be notified right after the active acount is set
-        public static let activeAccountDidSet = Notification.Name("activeAccountDidSet")
+        public static let accountDidSet = Notification.Name("accountDidSet")
         /// Use this notification name to be notified right after the active acount is updated
-        public static let activeAccountDidUpdate = Notification.Name("activeAccountDidUpdate")
+        public static let accountDidUpdate = Notification.Name("accountDidUpdate")
     }
     
     // MARK: - Data Containers
     
     /**
-     Live updated array of chainProviders. You can observe changes via NotificaitonCenter: chainProvidersWillSet, chainProvidersDidSet
+     Live updated chainProvider. You can observe changes via NotificaitonCenter: chainProviderWillSet, chainProviderDidSet
      */
-    public var chainProviders: [ChainProvider] = [] {
+    public var chainProvider: ChainProvider? = nil {
         willSet {
-            NotificationCenter.default.post(name: Notifications.chainProvidersWillSet, object: nil,
-                                            userInfo: ["newValue": newValue])
+            NotificationCenter.default.post(name: Notifications.chainProviderWillSet, object: nil,
+                                            userInfo: newValue != nil ? ["newValue": newValue!] : nil)
         }
         didSet {
-            NotificationCenter.default.post(name: Notifications.chainProvidersDidSet, object: nil)
+            NotificationCenter.default.post(name: Notifications.chainProviderDidSet, object: nil)
         }
     }
-    
+
     /**
      Live updated array of tokenContracts. You can observe changes via NotificaitonCenter: tokenContractsWillSet, tokenContractsDidSet
      */
@@ -231,13 +231,13 @@ public class Proton {
     /**
      Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet
      */
-    public var activeAccount: Account? = nil {
+    public var account: Account? = nil {
         willSet {
-            NotificationCenter.default.post(name: Notifications.activeAccountWillSet, object: nil,
+            NotificationCenter.default.post(name: Notifications.accountWillSet, object: nil,
                                             userInfo: newValue != nil ? ["newValue": newValue!] : nil)
         }
         didSet {
-            NotificationCenter.default.post(name: Notifications.activeAccountDidSet, object: nil)
+            NotificationCenter.default.post(name: Notifications.accountDidSet, object: nil)
         }
     }
     
@@ -248,8 +248,8 @@ public class Proton {
      */
     public func loadAll() {
         
-        self.activeAccount = self.storage.getDefaultsItem(Account.self, forKey: "activeAccount") ?? nil
-        self.chainProviders = self.storage.getDefaultsItem([ChainProvider].self, forKey: "chainProviders") ?? []
+        self.account = self.storage.getDefaultsItem(Account.self, forKey: "account") ?? nil
+        self.chainProvider = self.storage.getDefaultsItem(ChainProvider.self, forKey: "chainProvider") ?? nil
         self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
         self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
         self.tokenTransferActions = self.storage.getDefaultsItem([TokenTransferAction].self, forKey: "tokenTransferActions") ?? []
@@ -262,8 +262,8 @@ public class Proton {
      */
     public func saveAll() {
         
-        self.storage.setDefaultsItem(self.activeAccount, forKey: "activeAccount")
-        self.storage.setDefaultsItem(self.chainProviders, forKey: "chainProviders")
+        self.storage.setDefaultsItem(self.account, forKey: "account")
+        self.storage.setDefaultsItem(self.chainProvider, forKey: "chainProvider")
         self.storage.setDefaultsItem(self.tokenContracts, forKey: "tokenContracts")
         self.storage.setDefaultsItem(self.tokenBalances, forKey: "tokenBalances")
         self.storage.setDefaultsItem(self.tokenTransferActions, forKey: "tokenTransferActions")
@@ -302,34 +302,14 @@ public class Proton {
             
             switch result {
                 
-            case .success(let chainProviders):
+            case .success(let chainProvider):
                 
-                if let chainProviders = chainProviders as? Set<ChainProvider> {
-                    
-                    for chainProvider in chainProviders {
-                        if let idx = self.chainProviders.firstIndex(of: chainProvider) {
-                            self.chainProviders[idx] = chainProvider
-                        } else {
-                            self.chainProviders.append(chainProvider)
-                        }
-                    }
-                    
-                }
-                
-            case .failure(let error):
-                completion(.failure(error))
-            }
-            
-            let chainProvidersCount = self.chainProviders.count
-            var chainProvidersProcessed = 0
-            
-            if chainProvidersCount > 0 {
-                
-                for chainProvider in self.chainProviders {
+                if let chainProvider = chainProvider as? ChainProvider {
+                    self.chainProvider = chainProvider
                     
                     let tokenContracts = chainProvider.tokenContracts
                     
-                    WebOperations.shared.addMulti(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts)) { result in
+                    WebOperations.shared.addSeq(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts)) { result in
                         
                         switch result {
                             
@@ -350,18 +330,14 @@ public class Proton {
                         case .failure: break
                         }
                         
-                        chainProvidersProcessed += 1
-                        
-                        if chainProvidersProcessed == chainProvidersCount {
-                            completion(.success(true))
-                        }
+                        completion(.success(true))
                         
                     }
                     
                 }
                 
-            } else {
-                completion(.failure(ProtonError.error("MESSAGE => No chainproviders")))
+            case .failure(let error):
+                completion(.failure(error))
             }
             
         }
@@ -374,7 +350,7 @@ public class Proton {
      */
     public func updateAccount(completion: @escaping ((Result<Account, Error>) -> Void)) {
         
-        guard var account = self.activeAccount else {
+        guard var account = self.account else {
             completion(.failure(ProtonError.error("MESSAGE => No active account")))
             return
         }
@@ -455,10 +431,10 @@ public class Proton {
 
                                                     completion(.success(account))
                                                     self.saveAll()
-                                                    NotificationCenter.default.post(name: Notifications.activeAccountDidUpdate, object: nil)
+                                                    NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                                      
                                                     print("🧑‍💻 UPDATE COMPLETED")
-                                                    print("ACCOUNT => \(String(describing: self.activeAccount?.name))")
+                                                    print("ACCOUNT => \(String(describing: self.account?.name))")
                                                     print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
                                                     print("TOKEN BALANCES => \(self.tokenBalances.count)")
                                                     print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
@@ -512,7 +488,7 @@ public class Proton {
             
             if account.isKeyAssociated(publicKey: publicKey.stringValue) {
                 
-                self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue, service: account.chainId) { result in
+                self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue) { result in
                     
                     switch result {
                     case .success:
@@ -635,10 +611,10 @@ public class Proton {
         
         var account = account
         
-        if let activeAccount = self.activeAccount, activeAccount == account {
+        if let activeAccount = self.account, activeAccount == account {
             account = activeAccount
         } else {
-            self.activeAccount = account
+            self.account = account
             self.tokenBalances.removeAll()
             self.tokenTransferActions.removeAll()
             self.esrSessions.removeAll() // TODO: Actually loop through call the remove session callbacks, etc
@@ -648,7 +624,7 @@ public class Proton {
         self.updateAccount { result in
             switch result {
             case .success(let account):
-                self.activeAccount = account
+                self.account = account
                 completion(.success(account))
             case .failure(let error):
                 completion(.failure(error))
@@ -710,43 +686,32 @@ public class Proton {
      */
     private func fetchKeyAccounts(forPublicKey publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
-        let chainProviderCount = self.chainProviders.count
-        var chainProvidersProcessed = 0
-        
-        var accounts = Set<Account>()
-        
-        if chainProviderCount == 0 {
-            completion(.failure(ProtonError.error("MESSAGE => No ChainProviders")))
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(ProtonError.error("MESSAGE => Missing ChainProvider")))
             return
         }
         
-        for chainProvider in self.chainProviders {
+        WebOperations.shared.addSeq(FetchKeyAccountsOperation(publicKey: publicKey,
+                                                              chainProvider: chainProvider)) { result in
             
-            WebOperations.shared.addMulti(FetchKeyAccountsOperation(publicKey: publicKey,
-                                                                  chainProvider: chainProvider)) { result in
+            var accounts = Set<Account>()
+                                                                
+            switch result {
+            case .success(let accountNames):
                 
-                chainProvidersProcessed += 1
-                
-                switch result {
-                case .success(let accountNames):
-                    
-                    if let accountNames = accountNames as? Set<String>, accountNames.count > 0 {
-                        for accountName in accountNames {
-                            accounts.update(with: Account(chainId: chainProvider.chainId, name: accountName))
-                        }
-                    }
-                    
-                case .failure: break
-                }
-                
-                if chainProvidersProcessed == chainProviderCount {
-                    if accounts.count > 0 {
-                        completion(.success(accounts))
-                    } else {
-                        completion(.failure(ProtonError.error("MESSAGE => No accounts found for \(publicKey)")))
+                if let accountNames = accountNames as? Set<String>, accountNames.count > 0 {
+                    for accountName in accountNames {
+                        accounts.update(with: Account(chainId: chainProvider.chainId, name: accountName))
                     }
                 }
                 
+            case .failure: break
+            }
+            
+            if accounts.count > 0 {
+                completion(.success(accounts))
+            } else {
+                completion(.failure(ProtonError.error("MESSAGE => No accounts found for \(publicKey)")))
             }
             
         }
@@ -946,7 +911,7 @@ public class Proton {
             
             guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
             guard let sid = signingRequest.getInfo("sid", as: String.self) else { completion(nil); return }
-            guard let account = self.activeAccount, account.chainId == String(chainId) else { completion(nil); return }
+            guard let account = self.account, account.chainId == String(chainId) else { completion(nil); return }
             guard let chainProvider = account.chainProvider else { completion(nil); return }
             
             var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)

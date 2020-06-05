@@ -24,33 +24,20 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     public let iconUrl: String
     /// The human readable name of the Proton chain. (Mainnet/Testnet)
     public let name: String
-    /// The chain table index code used for account info
-    public let usersInfoTableCode: String
-    /// The chain table index scope used for account info
-    public let usersInfoTableScope: String
-    /// The chain table index code used for registered tokens info
-    public let tokensTableCode: String
-    /// The chain table index scope used for registered tokens info
-    public let tokensTableScope: String
     /// The system token symbol for the chain: XPR
     public let systemTokenSymbol: String
     /// The system token contract for the chain: eosio.token
     public let systemTokenContract: String
     /// :nodoc:
     public init(chainId: String, chainUrl: String, stateHistoryUrl: String,
-                iconUrl: String, name: String, usersInfoTableCode: String,
-                usersInfoTableScope: String, tokensTableCode: String, tokensTableScope: String,
-                systemTokenSymbol: String, systemTokenContract: String) {
+                iconUrl: String, name: String, systemTokenSymbol: String,
+                systemTokenContract: String) {
         
         self.chainId = chainId
         self.chainUrl = chainUrl
         self.stateHistoryUrl = stateHistoryUrl
         self.iconUrl = iconUrl
         self.name = name
-        self.usersInfoTableCode = usersInfoTableCode
-        self.usersInfoTableScope = usersInfoTableScope
-        self.tokensTableCode = tokensTableCode
-        self.tokensTableScope = tokensTableScope
         self.systemTokenSymbol = systemTokenSymbol
         self.systemTokenContract = systemTokenContract
         

@@ -13,11 +13,11 @@ import Foundation
 ChainProvider the object that provides chain related configuration aspects of the Proton objects
 */
 public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtocol, TokenTransferActionsProtocol, AccountProtocol {
-    /// Id is the accoutId + ":" + contract.stringValue + ":" + symbol.
+    /// This is used as the primary key for storing the account
     public var id: String { return "\(self.accountId):\(self.contract.stringValue):\(self.amount.symbol.name)" }
-    /// accountId is used to link Account. It is the chainId + ":" + name.stringValue.
+    /// accountId is used to link Account
     public let accountId: String
-    /// tokenContractId is used to link TokenContract. It is the chainId + ":" + contract.stringValue + ":" + symbol
+    /// tokenContractId is used to link TokenContract.
     public let tokenContractId: String
     /// The chainId associated with the TokenBalance
     public let chainId: String
@@ -26,16 +26,16 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     /// The Asset amount. See EOSIO type Asset for more info
     public var amount: Asset
     /// :nodoc:
-    public init?(accountId: String, contract: Name, amount: Double, precision: UInt8, symbol: String) {
+    public init?(account: Account, contract: Name, amount: Double, precision: UInt8, symbol: String) {
         
         do {
             
             let assetSymbol = try Asset.Symbol(precision, symbol)
-            self.accountId = accountId
-            self.chainId = accountId.components(separatedBy: ":").first ?? ""
+            self.accountId = account.id
+            self.chainId = account.chainId
             self.contract = contract
             self.amount = Asset(amount, assetSymbol)
-            self.tokenContractId = "\(self.chainId):\(contract):\(self.amount.symbol.name)"
+            self.tokenContractId = "\(contract.stringValue):\(self.amount.symbol.name)"
             
         } catch {
             print("ERROR: \(error.localizedDescription)")
@@ -61,7 +61,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     }
     /// Account associated with this TokenBalance
     public var account: Account? {
-        if let acc = Proton.shared.activeAccount, acc.id == self.accountId {
+        if let acc = Proton.shared.account, acc.id == self.accountId {
             return acc
         }
         return nil

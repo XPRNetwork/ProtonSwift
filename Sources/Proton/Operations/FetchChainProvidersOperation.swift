@@ -16,20 +16,16 @@ class FetchChainProvidersOperation: AbstractOperation {
             fatalError("⚛️ PROTON ERROR: BaseUrl must be valid to fetch need configuration info")
         }
         
-        guard let url = URL(string: path) else {
+        guard let url = URL(string: "\(path)/info") else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url chainProviders endpoint"))
             return
         }
 
-        WebOperations.shared.getRequest(withURL: url) { (result: Result<[String: ChainProvider], Error>) in
+        WebOperations.shared.getRequest(withURL: url) { (result: Result<ChainProvider, Error>) in
 
             switch result {
-            case .success(let chainProviders):
-                var retval = Set<ChainProvider>()
-                for chainProvider in chainProviders {
-                    retval.update(with: chainProvider.value)
-                }
-                self.finish(retval: retval, error: nil)
+            case .success(let chainProvider):
+                self.finish(retval: chainProvider, error: nil)
             case .failure(let error):
                 self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching chainProviders config object\nERROR => \(error.localizedDescription)"))
             }

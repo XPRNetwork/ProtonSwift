@@ -18,7 +18,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published public private(set) var chainProviders: [ChainProvider] = [] {
+    @Published public private(set) var chainProvider: ChainProvider? = nil {
         willSet {
             self.objectWillChange.send()
         }
@@ -103,8 +103,8 @@ public final class ProtonObservable: ObservableObject {
     
     /// :nodoc:
     public init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(chainProvidersWillSet(_:)),
-                                               name: Proton.Notifications.chainProvidersWillSet, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(chainProviderWillSet(_:)),
+                                               name: Proton.Notifications.chainProviderWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(tokenContractsWillSet(_:)),
                                                name: Proton.Notifications.tokenContractsWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(tokenBalancesWillSet(_:)),
@@ -117,19 +117,19 @@ public final class ProtonObservable: ObservableObject {
                                                name: Proton.Notifications.esrSessionsWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(esrWillSet),
                                                name: Proton.Notifications.esrWillSet, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(activeAccountWillSet),
-                                               name: Proton.Notifications.activeAccountWillSet, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(accountWillSet),
+                                               name: Proton.Notifications.accountWillSet, object: nil)
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
-    @objc func chainProvidersWillSet(_ notification: Notification) {
-        guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? [ChainProvider] else {
+    @objc func chainProviderWillSet(_ notification: Notification) {
+        guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? ChainProvider else {
             return
         }
-        self.chainProviders = newValue
+        self.chainProvider = newValue
     }
     
     @objc func tokenContractsWillSet(_ notification: Notification) {
@@ -174,7 +174,7 @@ public final class ProtonObservable: ObservableObject {
         self.esr = newValue
     }
     
-    @objc func activeAccountWillSet(_ notification: Notification) {
+    @objc func accountWillSet(_ notification: Notification) {
         guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? Account else {
             return
         }

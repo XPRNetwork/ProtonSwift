@@ -12,8 +12,8 @@ import Foundation
 The TokenContract object provides chain information about a token contract from the Proton chain
 */
 public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol {
-    /// id is the chainId + ":" + contract.stringValue + ":" + symbol
-    public var id: String { return "\(self.chainId):\(self.contract.stringValue):\(self.symbol.name)" }
+    /// This is used as the primary key for storing the account
+    public var id: String { return "\(self.contract.stringValue):\(self.symbol.name)" }
     /// The chainId associated with the TokenBalance
     public let chainId: String
     /// The Name of the contract. You can get the string value via contract.stringValue
@@ -70,7 +70,7 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     }
     /// ChainProvider associated with the Account
     public var chainProvider: ChainProvider? {
-        return Proton.shared.chainProviders.first(where: { $0.chainId == self.chainId })
+        return Proton.shared.chainProvider?.chainId == self.chainId ? Proton.shared.chainProvider : nil
     }
     /// :nodoc:
     public static var testObject: TokenContract {

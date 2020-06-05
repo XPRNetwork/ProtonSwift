@@ -17,7 +17,7 @@ The main class that you will need to interface with is `Proton` which encapsulat
 ```swift
 import ProtonSwift
 
-let config = Proton.Config(baseUrl: "https://api.testnet.proton", apiKey: <YOUR_API_KEY>, apiSecret: <YOUR_API_SECRET>)
+let config = Proton.Config(baseUrl: "https://uukcbb22rk.execute-api.us-west-2.amazonaws.com/default", apiKey: <YOUR_API_KEY>, apiSecret: <YOUR_API_SECRET>)
 
 Proton.initialize(config).fetchRequirements { result in
     Proton.shared.update { result in }

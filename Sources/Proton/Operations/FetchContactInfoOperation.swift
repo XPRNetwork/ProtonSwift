@@ -29,9 +29,9 @@ class FetchContactInfoOperation: AbstractOperation {
         }
 
         let client = Client(address: url)
-        var req = API.V1.Chain.GetTableRows<UserInfoABI>(code: Name(stringValue: chainProvider.usersInfoTableCode),
+        var req = API.V1.Chain.GetTableRows<UserInfoABI>(code: Name(stringValue: "eosio.proton"),
                                                          table: Name(stringValue: "usersinfo"),
-                                                         scope: chainProvider.usersInfoTableScope)
+                                                         scope: "eosio.proton")
         req.lowerBound = contactName
         req.upperBound = contactName
 

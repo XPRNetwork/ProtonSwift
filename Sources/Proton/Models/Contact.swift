@@ -20,8 +20,8 @@ import UIKit
 A Contact is a lightweight Account object which represents an Account that the activeAccount has interacted with via trasnfers, etc
 */
 public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, AvatarProtocol {
-    /// Id is the chainId + ":" + name.stringValue. This is used as the primary key for storing the contact
-    public var id: String { return "\(self.chainId):\(self.name.stringValue)" }
+    /// This is used as the primary key for storing the contact
+    public var id: String { return self.name.stringValue }
     /// The chainId associated with the account
     public var chainId: String
     /// The Name of the account. You can get the string value via name.stringValue
@@ -53,7 +53,7 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     }
     /// ChainProvider associated with the Account
     public var chainProvider: ChainProvider? {
-        return Proton.shared.chainProviders.first(where: { $0.chainId == self.chainId })
+        return Proton.shared.chainProvider?.chainId == self.chainId ? Proton.shared.chainProvider : nil
     }
 
 }
