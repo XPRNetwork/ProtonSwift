@@ -298,7 +298,7 @@ public class Proton {
      */
     public func fetchRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
-        WebOperations.shared.addSeq(FetchChainProvidersOperation()) { result in
+        WebOperations.shared.addSeq(FetchChainProviderOperation()) { result in
             
             switch result {
                 

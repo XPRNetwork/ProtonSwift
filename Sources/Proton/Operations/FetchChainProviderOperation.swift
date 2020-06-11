@@ -1,5 +1,5 @@
 //
-//  FetchChainProvidersOperation.swift
+//  FetchChainProviderOperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 3/18/20.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class FetchChainProvidersOperation: AbstractOperation {
+class FetchChainProviderOperation: AbstractOperation {
     
     override func main() {
         
@@ -16,7 +16,7 @@ class FetchChainProvidersOperation: AbstractOperation {
             fatalError("⚛️ PROTON ERROR: BaseUrl must be valid to fetch need configuration info")
         }
         
-        guard let url = URL(string: "\(path)/info") else {
+        guard let url = URL(string: "\(path)/v1/chain/info") else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url chainProviders endpoint"))
             return
         }
