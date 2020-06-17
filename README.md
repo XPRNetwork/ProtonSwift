@@ -15,9 +15,9 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 The main class that you will need to interface with is `Proton` which encapsulates most all of the needed functions.
 
 ```swift
-import ProtonSwift
+import Proton
 
-let config = Proton.Config(baseUrl: "https://uukcbb22rk.execute-api.us-west-2.amazonaws.com/default", apiKey: <YOUR_API_KEY>, apiSecret: <YOUR_API_SECRET>)
+let config = Proton.Config(baseUrl: "https://api-dev.protonchain.com")
 
 Proton.initialize(config).fetchRequirements { result in
     Proton.shared.update { result in }

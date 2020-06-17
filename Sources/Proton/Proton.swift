@@ -27,10 +27,10 @@ public class Proton {
         
         /// The base url used for api requests to proton sdk api's
         public var baseUrl: String
-        /// The api key given to you after requesting access
-        public var apiKey: String
-        /// The api secret given to you after requesting access
-        public var apiSecret: String
+        /// The api key given to you after requesting access for create account
+        public var apiKey: String?
+        /// The api secret given to you after requesting access for create account
+        public var apiSecret: String?
         
         /**
          Use this function as your starting point to initialize the singleton class Proton
@@ -38,7 +38,8 @@ public class Proton {
          - Parameter apiKey: The api key given to you after requesting access
          - Parameter apiSecret: The api secret given to you after requesting access
          */
-        public init(baseUrl: String, apiKey: String, apiSecret: String) {
+        public init(baseUrl: String, apiKey: String? = nil,
+                    apiSecret: String? = nil) {
             self.baseUrl = baseUrl
             self.apiKey = apiKey
             self.apiSecret = apiSecret
