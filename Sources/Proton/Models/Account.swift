@@ -94,6 +94,19 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
     }
     /**
+     Check if the Account has private key stored within keychain for the passed permission
+     - Parameter forPermissionName: Key permission name. ex: active
+     - Returns: Bool
+     */
+    public func hasStoredPrivateKey(forPermissionName permissionName: String) -> Bool {
+        if let permission = self.permissions.first(where: { $0.permName.stringValue == permissionName }) {
+            if let keyWeight = permission.requiredAuth.keys.first {
+                return Proton.shared.storage.keychainContains(key: keyWeight.key.stringValue)
+            }
+        }
+        return false
+    }
+    /**
      Check if the publickey is associated with the Account
      - Parameter publicKey: Wif formated public key
      - Returns: Bool

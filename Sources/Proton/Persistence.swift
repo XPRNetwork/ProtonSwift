@@ -106,4 +106,13 @@ class Persistence {
 
     }
     
+    func keychainContains(key: String, service: String = pkService) -> Bool {
+        let keychain = Keychain(service: service)
+        do {
+            return try keychain.contains(key)
+        } catch {
+            return false
+        }
+    }
+    
 }
