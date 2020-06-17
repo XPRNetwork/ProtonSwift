@@ -40,10 +40,13 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     public var url: String
     /// Is the token blacklisted. This is a value set by the blockproducers
     public var isBlacklisted: Bool
+    ///
+    public var rates: [String: Double]
     /// :nodoc:
     public init(chainId: String, contract: Name, issuer: Name, resourceToken: Bool,
                   systemToken: Bool, name: String, desc: String, iconUrl: String,
-                  supply: Asset, maxSupply: Asset, symbol: Asset.Symbol, url: String, isBlacklisted: Bool) {
+                  supply: Asset, maxSupply: Asset, symbol: Asset.Symbol, url: String, isBlacklisted: Bool,
+                  rates: [String: Double] = ["USD": 0.0]) {
         
         self.chainId = chainId
         self.contract = contract
@@ -58,6 +61,7 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
         self.symbol = symbol
         self.url = url
         self.isBlacklisted = isBlacklisted
+        self.rates = rates
         
     }
     /// :nodoc:
@@ -82,8 +86,11 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
                              symbol: try! Asset.Symbol(4, "XPR"), url: "https://protonchain.com", isBlacklisted: false)
     }
     
-    public var usdRate: Double {
-        return 0.02 // TODO:
+    public func getRate(forCurrencyCode currencyCode: String = "USD") -> Double {
+        if let rate = self.rates[currencyCode] {
+            return rate
+        }
+        return 0.0
     }
     
 }

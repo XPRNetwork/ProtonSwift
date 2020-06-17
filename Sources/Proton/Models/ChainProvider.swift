@@ -19,7 +19,7 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     /// The base url to the public Proton chain rpc provider
     public let chainUrl: String
     /// The base url to the public Proton chain Hyperion history provider
-    public let stateHistoryUrl: String
+    public let hyperionHistoryUrl: String
     /// The url to the icon image for the Proton chain. (Mainnet/Testnet)
     public let iconUrl: String
     /// The human readable name of the Proton chain. (Mainnet/Testnet)
@@ -28,18 +28,31 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     public let systemTokenSymbol: String
     /// The system token contract for the chain: eosio.token
     public let systemTokenContract: String
+    /// Whether or not the chainProvider is for testnet
+    public let isTestnet: Bool
+    /// The api url for updating the account avatar
+    public let updateAccountAvatarUrl: String
+    /// The api url for updating the account name
+    public let updateAccountNameUrl: String
+    /// The api url for fetching exhange rates
+    public let exchangeRateUrl: String
     /// :nodoc:
-    public init(chainId: String, chainUrl: String, stateHistoryUrl: String,
+    public init(chainId: String, chainUrl: String, hyperionHistoryUrl: String,
                 iconUrl: String, name: String, systemTokenSymbol: String,
-                systemTokenContract: String) {
+                systemTokenContract: String, isTestnet: Bool, updateAccountAvatarUrl: String,
+                updateAccountNameUrl: String, exchangeRateUrl: String) {
         
         self.chainId = chainId
         self.chainUrl = chainUrl
-        self.stateHistoryUrl = stateHistoryUrl
+        self.hyperionHistoryUrl = hyperionHistoryUrl
         self.iconUrl = iconUrl
         self.name = name
         self.systemTokenSymbol = systemTokenSymbol
         self.systemTokenContract = systemTokenContract
+        self.isTestnet = isTestnet
+        self.updateAccountAvatarUrl = updateAccountAvatarUrl
+        self.updateAccountNameUrl = updateAccountNameUrl
+        self.exchangeRateUrl = exchangeRateUrl
         
     }
     /// :nodoc:

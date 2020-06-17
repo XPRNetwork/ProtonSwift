@@ -28,7 +28,7 @@ class FetchTokenTransferActionsOperation: AbstractOperation {
     
     override func main() {
         
-        guard let url = URL(string: chainProvider.stateHistoryUrl) else {
+        guard let url = URL(string: chainProvider.hyperionHistoryUrl) else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }

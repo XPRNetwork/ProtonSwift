@@ -317,8 +317,9 @@ public class Proton {
                             
                             if let tokenContracts = tokenContracts as? [TokenContract] {
                                 
-                                for tokenContract in tokenContracts {
+                                for var tokenContract in tokenContracts {
                                     if let idx = self.tokenContracts.firstIndex(of: tokenContract) {
+                                        tokenContract.rates = self.tokenContracts[idx].rates
                                         self.tokenContracts[idx] = tokenContract
                                     } else {
                                         self.tokenContracts.append(tokenContract)
@@ -329,6 +330,8 @@ public class Proton {
                             
                         case .failure: break
                         }
+                        
+                        self.updateExchangeRates { _ in }
                         
                         completion(.success(true))
                         
@@ -345,6 +348,47 @@ public class Proton {
     }
     
     /**
+     Updates all TokenContract data objects with latest exchange rates from external data sources.
+     - Parameter completion: Closure returning Result
+     */
+    public func updateExchangeRates(completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(ProtonError.error("MESSAGE => Missing ChainProvider")))
+            return
+        }
+        
+        WebOperations.shared.addMulti(FetchExchangeRatesOperation(chainProvider: chainProvider)) { result in
+            
+            switch result {
+                
+            case .success(let tokens):
+                
+                if let tokens = tokens as? [[String: Any]] {
+                    
+                    for token in tokens {
+                        
+                        guard let contract = token["contract"] as? String else { return }
+                        guard let symbol = token["symbol"] as? String else { return }
+                        guard let rates = token["rates"] as? [String: Double] else { return }
+                        if let idx = self.tokenContracts.firstIndex(where: { $0.id == "\(contract):\(symbol)" }) {
+                            self.tokenContracts[idx].rates = rates
+                        }
+                        
+                    }
+                    
+                }
+                
+            case .failure: break
+            }
+            
+            completion(.success(true))
+            
+        }
+        
+    }
+    
+    /**
      Fetchs and updates the active account. This includes, account names, avatars, balances, etc
      - Parameter completion: Closure returning Result
      */
@@ -354,6 +398,8 @@ public class Proton {
             completion(.failure(ProtonError.error("MESSAGE => No active account")))
             return
         }
+        
+        self.updateExchangeRates { _ in }
         
         self.fetchAccount(account) { result in
             
@@ -976,7 +1022,7 @@ public class Proton {
                                                         let formatter = NumberFormatter()  // TODO: make this more effiecent
                                                         formatter.numberStyle = .currency
                                                         formatter.locale = Locale(identifier: "en_US")
-                                                        let extra = formatter.string(for: transferActionABI.quantity.value * tokenContract.usdRate) ?? "$0.00"
+                                                        let extra = formatter.string(for: transferActionABI.quantity.value * tokenContract.getRate(forCurrencyCode: "USD")) ?? "$0.00"
                                                         
                                                         
                                                         let basicDisplay = ESRAction.BasicDisplay(actiontype: .transfer, name: tokenContract.name,

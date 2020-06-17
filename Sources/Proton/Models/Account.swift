@@ -62,17 +62,17 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return Proton.shared.tokenBalances.filter { $0.accountId == self.id }
     }
 
-    public func totalUSDBalanceFormatted(adding: Double = 0.0) -> String {
+    public func totalBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         
         let tokenBalances = self.tokenBalances
         let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
-            value + (tokenBalance.amount.value * tokenBalance.usdRate)
+            value + (tokenBalance.amount.value * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
         }
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = Locale(identifier: "en_US")
-        return formatter.string(for: amount + adding) ?? "$0.00"
+        formatter.locale = locale
+        return formatter.string(for: amount) ?? "$0.00"
         
     }
 
