@@ -7,6 +7,7 @@
 //
 
 import EOSIO
+import secp256k1
 import Foundation
 #if os(macOS)
 import AppKit
@@ -27,22 +28,13 @@ public class Proton {
         
         /// The base url used for api requests to proton sdk api's
         public var baseUrl: String
-        /// The api key given to you after requesting access for create account
-        public var apiKey: String?
-        /// The api secret given to you after requesting access for create account
-        public var apiSecret: String?
         
         /**
          Use this function as your starting point to initialize the singleton class Proton
          - Parameter baseUrl: The base url used for api requests to proton sdk api's
-         - Parameter apiKey: The api key given to you after requesting access
-         - Parameter apiSecret: The api secret given to you after requesting access
          */
-        public init(baseUrl: String, apiKey: String? = nil,
-                    apiSecret: String? = nil) {
+        public init(baseUrl: String) {
             self.baseUrl = baseUrl
-            self.apiKey = apiKey
-            self.apiSecret = apiSecret
         }
         
     }
@@ -588,6 +580,19 @@ public class Proton {
             completion(.failure(ProtonError.error("MESSAGE => Unable to parse Private Key")))
         }
         
+    }
+    
+    /**
+     Use this function generate a k1 PrivateKey object. See PrivateKey inside of EOSIO for more details
+     */
+    public func generatePrivateKey() -> PrivateKey? {
+        var bytes = [UInt8](repeating: 0, count: 33)
+        let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        guard status == errSecSuccess else {
+            fatalError("Unable to create secure random data")
+        }
+        bytes[0] = 0x80
+        return try? PrivateKey(fromK1Data: Data(bytes))
     }
     
     /**
