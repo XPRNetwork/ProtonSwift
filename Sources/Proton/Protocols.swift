@@ -1,8 +1,9 @@
 //
-//  File.swift
+//  Protocols.swift
+//  Proton
 //  
-//
-//  Created by Jacob Davis on 5/13/20.
+//  Created by Jacob Davis on 4/20/20.
+//  Copyright © 2020 Metallicus, Inc. All rights reserved.
 //
 
 #if os(macOS)

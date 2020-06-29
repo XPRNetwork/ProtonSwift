@@ -2,8 +2,8 @@
 //  TokenContract.swift
 //  Proton
 //
-//  Created by Jacob Davis on 3/18/20.
-//  Copyright © 2020 Needly, Inc. All rights reserved.
+//  Created by Jacob Davis on 4/20/20.
+//  Copyright © 2020 Metallicus, Inc. All rights reserved.
 //
 
 import EOSIO
