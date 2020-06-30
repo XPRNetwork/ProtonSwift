@@ -25,9 +25,11 @@ Proton.initialize(config).fetchRequirements { result in
 }
 ```
 
-Theres also another class `ProtonObservable` which can be used in iOSv13+, but that can be left for another day.
+There is also another class `ProtonObservable` which can be used in iOSv13+
 
 ## Installation
+
+### SPM
 
 **Proton** is available through [Swift Package Manager](https://swift.org/package-manager/).
 Add Proton as a dependency to your Package.swift. For more information, please see the [Swift Package Manager documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
@@ -35,6 +37,10 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 ```swift
 .package(url: "https://github.com/needly/proton-swift.git", .branch("master"))
 ```
+
+### Cocoapods
+
+Coming soon...
 
 ## Libraries Used
 [EOSIO](https://github.com/greymass/swift-eosio) - Greymass   
