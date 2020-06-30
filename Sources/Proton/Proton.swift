@@ -945,8 +945,7 @@ public class Proton {
 
     }
     
-    // MARK: - ESR Functions
-    // 🚧 UNDER CONSTRUCTION
+    // MARK: - ESR Functions 🚧 UNDER CONSTRUCTION
     
     /**
      🚧 UNDER CONSTRUCTION
@@ -1350,42 +1349,6 @@ public class Proton {
     
 }
 
-public extension String {
-    /// Returns whether or not the string has valid account name characters
-    func hasAllValidPublicAccountCreationNameCharacters() -> Bool {
-        let fullCharacterSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz12345").inverted as CharacterSet
-        if self.rangeOfCharacter(from: fullCharacterSet) == nil {
-            return true
-        }
-        return false
-    }
-    /// Returns whether or not the string is a valid account name when creating an account
-    func isValidPublicAccountCreationName() -> Bool {
-        let fullCharacterSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz12345").inverted as CharacterSet
-        if self.rangeOfCharacter(from: fullCharacterSet) == nil {
-            return false
-        }
-        if self.count < 4 || self.count > 12 {
-            return false
-        }
-        return true
-    }
-    /// Returns whether or not the string is a valid account name
-    func isValidAccountName() -> Bool {
-        let fullCharacterSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz12345.").inverted as CharacterSet
-        if self.rangeOfCharacter(from: fullCharacterSet) == nil {
-            return false
-        }
-        if self.count < 3 || self.count > 12 {
-            return false
-        }
-        if self.prefix(1) == "." || self.suffix(1) == "." {
-            return false
-        }
-        return true
-    }
-    
-}
 
 public enum ProtonError: Error, LocalizedError {
     

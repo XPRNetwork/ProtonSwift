@@ -4,134 +4,128 @@
     <title>  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <script src="js/jquery.min.js" defer></script>
     <script src="js/jazzy.js" defer></script>
     
-    <script src="js/lunr.min.js" defer></script>
-    <script src="js/typeahead.jquery.js" defer></script>
-    <script src="js/jazzy.search.js" defer></script>
   </head>
   <body>
-
-
     <a title="  Reference"></a>
-
-    <header class="header">
-      <p class="header-col header-col--primary">
-        <a class="header-link" href="index.html">
-           Docs
-        </a>
-         (71% documented)
-      </p>
-    
-      <p class="header-col--secondary">
-        <form role="search" action="search.json">
-          <input type="text" placeholder="Search documentation" data-typeahead>
-        </form>
-      </p>
-    
-    
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html"> Docs</a> (72% documented)</p>
+      </div>
     </header>
-
-    <p class="breadcrumbs">
-      <a class="breadcrumb" href="index.html"> Reference</a>
-      <img class="carat" src="img/carat.png" />
-        Reference
-    </p>
-
     <div class="content-wrapper">
-      <nav class="navigation">
+      <p id="breadcrumbs">
+        <a href="index.html"> Reference</a>
+        <img id="carat" src="img/carat.png" />
+          Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Classes.html">Classes</a>
+            <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/Proton.html">Proton</a>
+                <a href="Classes/Proton.html">Proton</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/Proton/Config.html">– Config</a>
+                <a href="Classes/Proton/Config.html">– Config</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/Proton/Notifications.html">– Notifications</a>
+                <a href="Classes/Proton/Notifications.html">– Notifications</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/ProtonObservable.html">ProtonObservable</a>
+                <a href="Classes/ProtonObservable.html">ProtonObservable</a>
               </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Enums.html">Enumerations</a>
+            <a href="Enums.html">Enumerations</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Enums/ProtonError.html">ProtonError</a>
+                <a href="Enums/ProtonError.html">ProtonError</a>
               </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Protocols.html">Protocols</a>
+            <a href="Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/AvatarProtocol.html">AvatarProtocol</a>
+                <a href="Extensions/Date.html">Date</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/String.html">String</a>
               </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Structs.html">Structures</a>
+            <a href="Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/Account.html">Account</a>
+                <a href="Protocols/AvatarProtocol.html">AvatarProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/Account.html">Account</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/ChainProvider.html">ChainProvider</a>
+                <a href="Structs/ChainProvider.html">ChainProvider</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/Contact.html">Contact</a>
+                <a href="Structs/Contact.html">Contact</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/ESR.html">ESR</a>
+                <a href="Structs/ESR.html">ESR</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/ESRAction.html">ESRAction</a>
+                <a href="Structs/ESRAction.html">ESRAction</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/ESRAction/ActionType.html">– ActionType</a>
+                <a href="Structs/ESRAction/ActionType.html">– ActionType</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/ESRAction/BasicDisplay.html">– BasicDisplay</a>
+                <a href="Structs/ESRAction/BasicDisplay.html">– BasicDisplay</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/ESRSession.html">ESRSession</a>
+                <a href="Structs/ESRSession.html">ESRSession</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/TokenBalance.html">TokenBalance</a>
+                <a href="Structs/TokenBalance.html">TokenBalance</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/TokenContract.html">TokenContract</a>
+                <a href="Structs/TokenContract.html">TokenContract</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/TokenTransferAction.html">TokenTransferAction</a>
+                <a href="Structs/TokenTransferAction.html">TokenTransferAction</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/TransferActionABI.html">TransferActionABI</a>
+                <a href="Structs/TransferActionABI.html">TransferActionABI</a>
               </li>
             </ul>
           </li>
         </ul>
       </nav>
       <article class="main-content">
-
-        <section class="section">
-          <div class="section-content top-matter">
+        <section>
+          <section class="section">
             
             <h2 id='description' class='heading'>Description</h2>
 
-<p>Proton is a drop in library to handle all things ProtonChain. This includes but is not limited to account creation and management. Signing and pushing transctions, etc.</p>
+<p>Proton is a drop in library to handle all things ProtonChain. This includes but is not limited to accout management and storage, signing and pushing transctions, etc.</p>
 
 <ul>
 <li>[x] Swift 5</li>
 <li>[x] iOS v12+</li>
 <li>[x] macOS v10_15+</li>
+<li>[x] Mac Catalyst</li>
 <li>[x] Persist and manage Proton Accounts</li>
 <li>[x] Persist and manage private keys via keychain</li>
 <li>[x] Signing transactions</li>
@@ -140,7 +134,9 @@
 <h2 id='usage' class='heading'>Usage</h2>
 
 <p>The main class that you will need to interface with is <code><a href="Classes/Proton.html">Proton</a></code> which encapsulates most all of the needed functions.</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">Proton</span><span class="o">.</span><span class="kt">Config</span><span class="p">(</span><span class="nv">baseUrl</span><span class="p">:</span> <span class="s">"https://api.testnet.proton"</span><span class="p">,</span> <span class="nv">apiKey</span><span class="p">:</span> <span class="o">&lt;</span><span class="kt">YOUR_API_KEY</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">apiSecret</span><span class="p">:</span> <span class="o">&lt;</span><span class="kt">YOUR_API_SECRET</span><span class="o">&gt;</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">Proton</span>
+
+<span class="k">let</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">Proton</span><span class="o">.</span><span class="kt">Config</span><span class="p">(</span><span class="nv">baseUrl</span><span class="p">:</span> <span class="s">"https://api-dev.protonchain.com"</span><span class="p">)</span>
 
 <span class="kt">Proton</span><span class="o">.</span><span class="nf">initialize</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">fetchRequirements</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
     <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">update</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span> <span class="p">}</span>
@@ -159,16 +155,14 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 <p><a href="https://github.com/greymass/swift-eosio">EOSIO</a> - Greymass<br>
 <a href="https://github.com/kishikawakatsumi/KeychainAccess">KeychainAccess</a> - kishikawakatsumi   </p>
 
-          </div>
+          </section>
         </section>
-
-
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-06-30)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
       </article>
     </div>
-    <section class="footer">
-      <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-06-04)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
-    </section>
   </body>
 </div>
 </html>

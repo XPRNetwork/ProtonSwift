@@ -76,15 +76,6 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     public var chainProvider: ChainProvider? {
         return Proton.shared.chainProvider?.chainId == self.chainId ? Proton.shared.chainProvider : nil
     }
-    /// :nodoc:
-    public static var testObject: TokenContract {
-        return TokenContract(chainId: "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd",
-                             contract: Name("eosio.token"), issuer: Name("eosio.token"), resourceToken: false,
-                             systemToken: true, name: "Proton", desc: "The proton token",
-                             iconUrl: "https://static.protonchain.com/images/eosio-tokenXPR-testnet.png",
-                             supply: try! Asset(stringValue: "179641154.1139 XPR"), maxSupply: try! Asset(stringValue: "10000000000.0000 XPR"),
-                             symbol: try! Asset.Symbol(4, "XPR"), url: "https://protonchain.com", isBlacklisted: false)
-    }
     
     public func getRate(forCurrencyCode currencyCode: String = "USD") -> Double {
         if let rate = self.rates[currencyCode] {
