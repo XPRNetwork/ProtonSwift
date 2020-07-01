@@ -543,6 +543,8 @@ public class Proton {
             
             let signature = try privateKey.sign(signingData)
             
+            print(signature.stringValue)
+            
             WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, nickName: nickName)) { result in
                 
                 switch result {
