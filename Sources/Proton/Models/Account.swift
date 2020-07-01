@@ -77,21 +77,14 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     }
 
     public func privateKey(forPermissionName: String) -> PrivateKey? {
-        
         if let permission = self.permissions.first(where: { $0.permName.stringValue == forPermissionName }) {
-            
             if let keyWeight = permission.requiredAuth.keys.first {
-                // TODO: - KEYCHAIN
-//                if let privateKeyString = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
-//                    return PrivateKey(privateKeyString)
-//                }
-                
+                if let privateKey = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
+                    return try? PrivateKey(stringValue: privateKey)
+                }
             }
-            
         }
-        
         return nil
-        
     }
     /**
      Check if the Account has private key stored within keychain for the passed permission

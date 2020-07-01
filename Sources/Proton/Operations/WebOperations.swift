@@ -246,4 +246,64 @@ class WebOperations: NSObject {
         
     }
     
+    func putRequestData(withURL url: URL, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
+        
+        let session = URLSession.shared
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        if let parameters = parameters, !parameters.isEmpty {
+            do {
+                let body = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                request.httpBody = body
+            } catch {
+                DispatchQueue.main.async {
+                    completion?(.failure(error))
+                }
+            }
+        }
+        
+        let task = session.dataTask(with: request) { data, response, error in
+            
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion?(.failure(error))
+                }
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion?(.failure(WebOperationError.error("No data")))
+                }
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                DispatchQueue.main.async {
+                    completion?(.failure(WebOperationError.error("Response Error")))
+                }
+                return
+            }
+            
+            if !(200...299).contains(response.statusCode) {
+                DispatchQueue.main.async {
+                    completion?(.failure(WebOperationError.error("Response Error Status code: \(response.statusCode)")))
+                }
+                return
+            }
+            
+            DispatchQueue.main.async {
+                completion?(.success(data))
+            }
+            
+        }
+        
+        task.resume()
+        
+    }
+    
 }

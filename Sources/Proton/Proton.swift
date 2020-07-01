@@ -513,6 +513,65 @@ public class Proton {
     }
     
     /**
+     Changes the account's nick name on chain
+     - Parameter nickName: New nick name string
+     - Parameter completion: Closure returning Result
+     */
+    public func changeAccountNickName(nickName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        guard var account = self.account else {
+            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            return
+        }
+        
+        guard let chainProvider = self.account?.chainProvider else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
+            return
+        }
+        
+        guard let privateKey = account.privateKey(forPermissionName: "active") else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
+            return
+        }
+        
+        guard let signingData = account.name.stringValue.data(using: .utf8) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+            return
+        }
+        
+        do {
+            
+            let signature = try privateKey.sign(signingData)
+            
+            WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, nickName: nickName)) { result in
+                
+                switch result {
+                case .success:
+                    
+                    self.fetchAccountUserInfo(forAccount: account) { result in
+                        switch result {
+                        case .success(let returnAccount):
+                            account = returnAccount
+                            completion(.success(account))
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
+                    }
+
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+                
+            }
+            
+        } catch {
+            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+            return
+        }
+        
+    }
+    
+    /**
      Use this function to store the private key and set the account after finding the account you want to save via findAccounts
      - Parameter privateKey: Wif formated private key
      - Parameter forAccount: Account object, normally retrieved via findAccounts
