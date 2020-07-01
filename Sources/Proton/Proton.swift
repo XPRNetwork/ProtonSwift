@@ -539,8 +539,6 @@ public class Proton {
             return
         }
         
-        Data(
-        
         do {
             
             let signature = try privateKey.sign(signingData)
