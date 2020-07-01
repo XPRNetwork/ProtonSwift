@@ -538,7 +538,7 @@ public class Proton {
             completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
             return
         }
-        
+
         do {
             
             let signature = try privateKey.sign(signingData)

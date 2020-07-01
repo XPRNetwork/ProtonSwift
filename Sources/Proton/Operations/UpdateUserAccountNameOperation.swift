@@ -28,11 +28,11 @@ class UpdateUserAccountNameOperation: AbstractOperation {
         
         DispatchQueue.main.sync {
             parameters = ["account": account.name.stringValue, "signature": signature, "name": nickName]
-            path = "\(chainProvider.updateAccountAvatarUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
+            path = "\(chainProvider.updateAccountNameUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
         }
         
         guard let url = URL(string: path) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form URL for updateAccountAvatarUrl"))
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form URL for updateAccountNameUrl"))
             return
         }
         
