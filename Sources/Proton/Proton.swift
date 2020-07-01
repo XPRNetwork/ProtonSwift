@@ -514,10 +514,10 @@ public class Proton {
     
     /**
      Changes the account's nick name on chain
-     - Parameter nickName: New nick name string
+     - Parameter userDefinedName: New user defined name
      - Parameter completion: Closure returning Result
      */
-    public func changeAccountNickName(nickName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func changeAccountNickName(userDefinedName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("MESSAGE => No active account")))
@@ -543,9 +543,7 @@ public class Proton {
             
             let signature = try privateKey.sign(signingData)
             
-            print(signature.stringValue)
-            
-            WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, nickName: nickName)) { result in
+            WebOperations.shared.addSeq(ChangeUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
                 
                 switch result {
                 case .success:

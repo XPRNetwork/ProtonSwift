@@ -1,24 +1,25 @@
 //
-//  File.swift
-//  
+//  ChangeUserAccountNameOperation.swift
+//  Proton
 //
-//  Created by Jacob Davis on 7/1/20.
+//  Created by Jacob Davis on 4/20/20.
+//  Copyright © 2020 Metallicus, Inc. All rights reserved.
 //
 
 import Foundation
 
-class UpdateUserAccountNameOperation: AbstractOperation {
+class ChangeUserAccountNameOperation: AbstractOperation {
     
     var account: Account
     var chainProvider: ChainProvider
     var signature: String
-    var nickName: String
+    var userDefinedName: String
     
-    init(account: Account, chainProvider: ChainProvider, signature: String, nickName: String) {
+    init(account: Account, chainProvider: ChainProvider, signature: String, userDefinedName: String) {
         self.account = account
         self.signature = signature
         self.chainProvider = chainProvider
-        self.nickName = nickName
+        self.userDefinedName = userDefinedName
     }
     
     override func main() {
@@ -27,7 +28,7 @@ class UpdateUserAccountNameOperation: AbstractOperation {
         var path = ""
         
         DispatchQueue.main.sync {
-            parameters = ["account": account.name.stringValue, "signature": signature, "name": nickName]
+            parameters = ["account": account.name.stringValue, "signature": signature, "name": userDefinedName]
             path = "\(chainProvider.updateAccountNameUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
         }
         

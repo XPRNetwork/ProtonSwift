@@ -27,20 +27,20 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var name: Name
     /// Is the account KYC verified
     public var verified: Bool
-    /// The user modified name
-    public var nickName: String
+    /// The user defined name
+    public var userDefinedName: String
     /// The current key permissions for the account
     public var permissions: [API.V1.Chain.Permission]
     /// The user modified Avatar string
     public var base64Avatar: String
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
-                nickName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = []) {
+                userDefinedName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = []) {
         
         self.chainId = chainId
         self.name = Name(name)
         self.verified = verified
-        self.nickName = nickName
+        self.userDefinedName = userDefinedName
         self.base64Avatar = base64Avatar
         self.permissions = permissions
         

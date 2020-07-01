@@ -39,7 +39,7 @@ class FetchUserAccountInfoOperation: AbstractOperation {
 
             if let userInfo = res.rows.first {
                 account.base64Avatar = userInfo.avatar
-                account.nickName = userInfo.name
+                account.userDefinedName = userInfo.name
                 account.verified = userInfo.verified
             }
 
