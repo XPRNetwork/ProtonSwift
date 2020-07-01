@@ -534,16 +534,14 @@ public class Proton {
             return
         }
         
-        print(privateKey.stringValue)
-        
-//        guard let signingData = Data(base58CheckEncoded: account.name.stringValue) else {
-//            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
-//            return
-//        }
+        guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+            return
+        }
         
         do {
             
-            let signature = try privateKey.sign(Checksum256(stringLiteral: account.name.stringValue))
+            let signature = try privateKey.sign(signingData)
             
             print(signature.stringValue)
             
