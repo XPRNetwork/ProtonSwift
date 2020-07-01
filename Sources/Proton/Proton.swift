@@ -534,10 +534,12 @@ public class Proton {
             return
         }
         
-        guard let signingData = account.name.stringValue.data(using: .utf8) else {
+        guard let signingData = Data(base58CheckEncoded: account.name.stringValue) else {
             completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
             return
         }
+        
+        Data(
         
         do {
             
