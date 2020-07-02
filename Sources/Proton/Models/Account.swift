@@ -56,17 +56,11 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             return nil
         }
         
-        guard let nameData = dictionary["name"] as? Data else {
+        guard let name = dictionary["name"] as? String else {
             return nil
         }
         
-        let decoder = JSONDecoder()
-        
-        guard let name = try? decoder.decode(Name.self, from: nameData) else {
-            return nil
-        }
-        
-        return Account(chainId: chainId, name: name.stringValue, verified: dictionary["verified"] as? Bool ?? false, userDefinedName: dictionary["userDefinedName"] as? String ?? "", base64Avatar: dictionary["base64Avatar"] as? String ?? "", permissions: dictionary["permissions"] as? [API.V1.Chain.Permission] ?? [])
+        return Account(chainId: chainId, name: name, verified: dictionary["verified"] as? Bool ?? false, userDefinedName: dictionary["userDefinedName"] as? String ?? "", base64Avatar: dictionary["base64Avatar"] as? String ?? "", permissions: dictionary["permissions"] as? [API.V1.Chain.Permission] ?? [])
         
     }
     /// :nodoc:
