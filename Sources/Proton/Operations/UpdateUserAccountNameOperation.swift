@@ -33,7 +33,7 @@ class UpdateUserAccountNameOperation: AbstractOperation {
         
         DispatchQueue.main.sync {
             parameters = ["signature": signature, "name": userDefinedName]
-            path = "\(baseUrl)\(chainProvider.updateAccountNameUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
+            path = "\(baseUrl)\(chainProvider.updateAccountNamePath.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
         }
         
         guard let url = URL(string: path) else {

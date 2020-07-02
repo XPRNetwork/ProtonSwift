@@ -31,16 +31,16 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     /// Whether or not the chainProvider is for testnet
     public let isTestnet: Bool
     /// The api url for updating the account avatar
-    public let updateAccountAvatarUrl: String
+    public let updateAccountAvatarPath: String
     /// The api url for updating the account name
-    public let updateAccountNameUrl: String
+    public let updateAccountNamePath: String
     /// The api url for fetching exhange rates
-    public let exchangeRateUrl: String
+    public let exchangeRatePath: String
     /// :nodoc:
     public init(chainId: String, chainUrl: String, hyperionHistoryUrl: String,
                 iconUrl: String, name: String, systemTokenSymbol: String,
-                systemTokenContract: String, isTestnet: Bool, updateAccountAvatarUrl: String,
-                updateAccountNameUrl: String, exchangeRateUrl: String) {
+                systemTokenContract: String, isTestnet: Bool, updateAccountAvatarPath: String,
+                updateAccountNamePath: String, exchangeRatePath: String) {
         
         self.chainId = chainId
         self.chainUrl = chainUrl
@@ -50,9 +50,9 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
         self.systemTokenSymbol = systemTokenSymbol
         self.systemTokenContract = systemTokenContract
         self.isTestnet = isTestnet
-        self.updateAccountAvatarUrl = updateAccountAvatarUrl
-        self.updateAccountNameUrl = updateAccountNameUrl
-        self.exchangeRateUrl = exchangeRateUrl
+        self.updateAccountAvatarPath = updateAccountAvatarPath
+        self.updateAccountNamePath = updateAccountNamePath
+        self.exchangeRatePath = exchangeRatePath
         
     }
     /// :nodoc:
