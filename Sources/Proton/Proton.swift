@@ -519,7 +519,7 @@ public class Proton {
      - Parameter userDefinedName: New user defined name
      - Parameter completion: Closure returning Result
      */
-    public func changeAccountNickName(userDefinedName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func updateAccountUserDefinedName(userDefinedName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("MESSAGE => No active account")))
@@ -545,7 +545,7 @@ public class Proton {
             
             let signature = try privateKey.sign(signingData)
             
-            WebOperations.shared.addSeq(ChangeUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
+            WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
                 
                 switch result {
                 case .success:
@@ -554,6 +554,69 @@ public class Proton {
                         switch result {
                         case .success(let returnAccount):
                             account = returnAccount
+                            self.account = account
+                            NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
+                            completion(.success(account))
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
+                    }
+
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+                
+            }
+            
+        } catch {
+            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+            return
+        }
+        
+    }
+    
+    /**
+     Changes the account's avatar on chain
+     - Parameter image: AvatarImage which is platform dependent alias. UIImage for iOS, NSImage for macOS
+     - Parameter completion: Closure returning Result
+     */
+    public func updateAccountAvatar(image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        guard var account = self.account else {
+            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            return
+        }
+        
+        guard let chainProvider = self.account?.chainProvider else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
+            return
+        }
+        
+        guard let privateKey = account.privateKey(forPermissionName: "active") else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
+            return
+        }
+        
+        guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+            return
+        }
+
+        do {
+            
+            let signature = try privateKey.sign(signingData)
+            
+            WebOperations.shared.addSeq(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image)) { result in
+                
+                switch result {
+                case .success:
+                    
+                    self.fetchAccountUserInfo(forAccount: account) { result in
+                        switch result {
+                        case .success(let returnAccount):
+                            account = returnAccount
+                            self.account = account
+                            NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                             completion(.success(account))
                         case .failure(let error):
                             completion(.failure(error))

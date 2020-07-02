@@ -1,5 +1,5 @@
 //
-//  ChangeUserAccountNameOperation.swift
+//  UpdateUserAccountNameOperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 4/20/20.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ChangeUserAccountNameOperation: AbstractOperation {
+class UpdateUserAccountNameOperation: AbstractOperation {
     
     var account: Account
     var chainProvider: ChainProvider
@@ -32,7 +32,7 @@ class ChangeUserAccountNameOperation: AbstractOperation {
         }
         
         DispatchQueue.main.sync {
-            parameters = ["account": account.name.stringValue, "signature": signature, "name": userDefinedName]
+            parameters = ["signature": signature, "name": userDefinedName]
             path = "\(baseUrl)\(chainProvider.updateAccountNameUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
         }
         
