@@ -26,6 +26,11 @@ public class Proton {
     */
     public struct Config {
         
+        public enum Environment: String {
+            case testnet = "https://api-dev.protonchain.com"
+            case mainnet = "https://api.protonchain.com"
+        }
+        
         /// The base url used for api requests to proton sdk api's
         public var baseUrl: String
         
@@ -33,8 +38,16 @@ public class Proton {
          Use this function as your starting point to initialize the singleton class Proton
          - Parameter baseUrl: The base url used for api requests to proton sdk api's
          */
-        public init(baseUrl: String) {
+        public init(baseUrl: String = Environment.testnet.rawValue) {
             self.baseUrl = baseUrl
+        }
+        
+        /**
+         Use this function as your starting point to initialize the singleton class Proton
+         - Parameter environment: The environment used for api requests to proton sdk api's
+         */
+        public init(environment: Environment = Environment.testnet) {
+            self.baseUrl = environment.rawValue
         }
         
     }
