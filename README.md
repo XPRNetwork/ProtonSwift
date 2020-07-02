@@ -18,7 +18,7 @@ The main class that you will need to interface with is `Proton` which encapsulat
 ```swift
 import Proton
 
-Proton.initialize(Proton.Config()).fetchRequirements { result in
+Proton.initialize(Proton.Config(environment: .testnet)).fetchRequirements { result in
     Proton.shared.update { result in }
 }
 ```
