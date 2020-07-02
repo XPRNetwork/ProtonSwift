@@ -56,7 +56,13 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             return nil
         }
         
-        guard let name = dictionary["name"] as? Name else {
+        guard let nameData = dictionary["name"] as? Data else {
+            return nil
+        }
+        
+        let decoder = JSONDecoder()
+        
+        guard let name = try? decoder.decode(Name.self, from: nameData) else {
             return nil
         }
         
