@@ -17,6 +17,8 @@ import UIKit
 public typealias AvatarImage = UIImage
 #endif
 
+import func AVFoundation.AVMakeRect
+
 class UpdateUserAccountAvatarOperation: AbstractOperation {
     
     var account: Account
@@ -33,10 +35,51 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
     
     override func main() {
         
+        #if os(macOS)
+        
+        let width = image.size.width
+        let height = image.size.height
+        
+        #else
+        
+        let width = image.size.width * image.scale
+        let height = image.size.height * image.scale
+        
+        #endif
+
+        if width > 600 || height > 600 {
+            
+            guard let resizedImage = resizedImage(image: image) else {
+                self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR RESIZING IMAGE"))
+                return
+            }
+            
+            image = resizedImage
+            
+        }
+        
+        #if os(macOS)
+        
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR CONVERTING IMAGE TO DATA"))
+            return
+        }
+        
+        let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
+        guard let imageData = bitmapRep.representation(using: NSBitmapImageRep.FileType.jpeg, properties: [:]) else {
+            self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR CONVERTING IMAGE TO DATA"))
+            return
+        }
+        
+        #else
+        
         guard let imageData = self.image.jpegData(compressionQuality: 1) else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR CONVERTING IMAGE TO DATA"))
             return
         }
+        
+        #endif
+        
         
         var path = ""
         
@@ -107,6 +150,23 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
 
         task.resume()
         
+    }
+    
+    func resizedImage(image: AvatarImage, for size: CGSize = CGSize(width: 600, height: 600)) -> AvatarImage? {
+        #if os(macOS)
+        let destSize = NSMakeSize(size.width, size.height)
+        let newImage = NSImage(size: destSize)
+        newImage.lockFocus()
+        image.draw(in: NSMakeRect(0, 0, destSize.width, destSize.height), from: NSMakeRect(0, 0, image.size.width, image.size.height), operation: NSCompositingOperation.sourceOver, fraction: CGFloat(1))
+        newImage.unlockFocus()
+        newImage.size = destSize
+        return newImage
+        #else
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { (context) in
+            image.draw(in: AVMakeRect(aspectRatio: image.size, insideRect: CGRect(origin: .zero, size: size)))
+        }
+        #endif
     }
     
     func convertFileData(fieldName: String, fileName: String, mimeType: String, fileData: Data, using boundary: String) -> Data {
