@@ -46,6 +46,24 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
     }
     /// :nodoc:
+    static func create(dictionary: [String: Any]?) -> Account? {
+        
+        guard let dictionary = dictionary else {
+            return nil
+        }
+        
+        guard let chainId = dictionary["chainId"] as? String else {
+            return nil
+        }
+        
+        guard let name = dictionary["name"] as? Name else {
+            return nil
+        }
+        
+        return Account(chainId: chainId, name: name.stringValue, verified: dictionary["verified"] as? Bool ?? false, userDefinedName: dictionary["userDefinedName"] as? String ?? "", base64Avatar: dictionary["base64Avatar"] as? String ?? "", permissions: dictionary["permissions"] as? [API.V1.Chain.Permission] ?? [])
+        
+    }
+    /// :nodoc:
     public static func == (lhs: Account, rhs: Account) -> Bool {
         lhs.id == rhs.id
     }

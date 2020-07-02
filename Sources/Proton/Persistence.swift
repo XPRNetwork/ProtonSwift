@@ -25,6 +25,15 @@ class Persistence {
     
     // MARK: - User Defaults
     
+    func getDefaultsItem(forKey key: String) -> [String: Any]? {
+        
+        guard let data = self.defaults.object(forKey: Persistence.defaultsPrefix+key) as? Data else {
+            return nil
+        }
+        
+        return try? JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+    }
+    
     func getDefaultsItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {
         
         guard let data = self.defaults.object(forKey: Persistence.defaultsPrefix+key) as? Data else {

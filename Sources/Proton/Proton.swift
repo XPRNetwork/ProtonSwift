@@ -65,7 +65,7 @@ public class Proton {
      Internal pointer to various storage structures
     */
     var storage: Persistence!
-    
+
     /**
      Private init
      */
@@ -240,8 +240,8 @@ public class Proton {
      Loads all data objects from disk into memory
      */
     public func loadAll() {
-        
-        self.account = self.storage.getDefaultsItem(Account.self, forKey: "account") ?? nil
+
+        self.account = Account.create(dictionary: self.storage.getDefaultsItem(forKey: "account"))
         self.chainProvider = self.storage.getDefaultsItem(ChainProvider.self, forKey: "chainProvider") ?? nil
         self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
         self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
