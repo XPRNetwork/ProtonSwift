@@ -90,7 +90,7 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
         }
         
         DispatchQueue.main.sync {
-            path = "\(baseUrl)\(chainProvider.updateAccountNameUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
+            path = "\(baseUrl)\(chainProvider.updateAccountAvatarUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
         }
         
         guard let url = URL(string: path) else {
