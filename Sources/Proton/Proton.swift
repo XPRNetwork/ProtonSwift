@@ -400,15 +400,17 @@ public class Proton {
             case .success(let returnAccount):
                 
                 account = returnAccount
+                self.account = account
+                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                 
                 self.fetchAccountUserInfo(forAccount: account) { result in
-                    
-                    account = returnAccount
                     
                     switch result {
                     case .success(let returnAccount):
                         
                         account = returnAccount
+                        self.account = account
+                        NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                         
                         self.fetchBalances(forAccount: account) { result in
                             
