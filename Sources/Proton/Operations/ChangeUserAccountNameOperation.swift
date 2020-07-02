@@ -27,9 +27,13 @@ class ChangeUserAccountNameOperation: AbstractOperation {
         var parameters: [String: Any] = [:]
         var path = ""
         
+        guard let baseUrl = Proton.config?.baseUrl else {
+            fatalError("⚛️ PROTON ERROR: BaseUrl must be valid")
+        }
+        
         DispatchQueue.main.sync {
             parameters = ["account": account.name.stringValue, "signature": signature, "name": userDefinedName]
-            path = "\(chainProvider.updateAccountNameUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
+            path = "\(baseUrl)\(chainProvider.updateAccountNameUrl.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
         }
         
         guard let url = URL(string: path) else {

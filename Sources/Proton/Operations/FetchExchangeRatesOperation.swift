@@ -18,7 +18,11 @@ class FetchExchangeRatesOperation: AbstractOperation {
     
     override func main() {
         
-        guard let url = URL(string: chainProvider.exchangeRateUrl) else {
+        guard let baseUrl = Proton.config?.baseUrl else {
+            fatalError("⚛️ PROTON ERROR: BaseUrl must be valid")
+        }
+        
+        guard let url = URL(string: baseUrl+chainProvider.exchangeRateUrl) else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url exchangeRateUrl endpoint"))
             return
         }

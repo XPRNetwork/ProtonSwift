@@ -12,11 +12,11 @@ class FetchChainProviderOperation: AbstractOperation {
     
     override func main() {
         
-        guard let path = Proton.config?.baseUrl else {
-            fatalError("⚛️ PROTON ERROR: BaseUrl must be valid to fetch need configuration info")
+        guard let baseUrl = Proton.config?.baseUrl else {
+            fatalError("⚛️ PROTON ERROR: BaseUrl must be valid")
         }
         
-        guard let url = URL(string: "\(path)/v1/chain/info") else {
+        guard let url = URL(string: "\(baseUrl)/v1/chain/info") else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url chainProviders endpoint"))
             return
         }
