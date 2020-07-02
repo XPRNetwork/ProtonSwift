@@ -21,7 +21,7 @@ class FetchChainProviderOperation: AbstractOperation {
             return
         }
 
-        WebOperations.shared.getRequest(withURL: url) { (result: Result<ChainProvider, Error>) in
+        WebOperations.shared.request(url: url) { (result: Result<ChainProvider, Error>) in
 
             switch result {
             case .success(let chainProvider):
@@ -29,6 +29,7 @@ class FetchChainProviderOperation: AbstractOperation {
             case .failure(let error):
                 self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching chainProviders config object\nERROR => \(error.localizedDescription)"))
             }
+            
         }
         
     }

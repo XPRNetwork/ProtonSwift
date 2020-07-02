@@ -23,7 +23,7 @@ class FetchExchangeRatesOperation: AbstractOperation {
             return
         }
 
-        WebOperations.shared.getRequestJSON(withURL: url) { (result: Result<Any?, Error>) in
+        WebOperations.shared.request(url: url) { (result: Result<Any?, Error>) in
 
             switch result {
             case .success(let rates):

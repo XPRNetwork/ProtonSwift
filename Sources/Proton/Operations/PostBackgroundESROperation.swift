@@ -46,7 +46,7 @@ class PostBackgroundESROperation: AbstractOperation {
                 return
             }
             
-            WebOperations.shared.postRequestData(withURL: url, parameters: parameters) { result in
+            WebOperations.shared.request(method: WebOperations.RequestMethod.post, url: url, parameters: parameters) { result in
                 
                 switch result {
                 case .success:

@@ -37,7 +37,7 @@ class ChangeUserAccountNameOperation: AbstractOperation {
             return
         }
         
-        WebOperations.shared.putRequestData(withURL: url, parameters: parameters) { result in
+        WebOperations.shared.request(method: WebOperations.RequestMethod.put, url: url, parameters: parameters) { result in
             switch result {
             case .success:
                 self.finish(retval: nil, error: nil)

@@ -24,6 +24,17 @@ class WebOperations: NSObject {
     var operationQueueSeq: OperationQueue
     var operationQueueMulti: OperationQueue
     
+    enum RequestMethod: String {
+        case get = "GET"
+        case post = "POST"
+        case put = "PUT"
+    }
+    
+    enum ContentType: String {
+        case applicationJson = "application/json"
+        case none = ""
+    }
+    
     static let shared = WebOperations()
     
     private override init() {
@@ -71,102 +82,121 @@ class WebOperations: NSObject {
     
     // TODO: Decided to use URLSession.shared or create custom sessions...
     
-    func getRequest(withURL url: URL, completion: ((Result<Data?, Error>) -> Void)?) {
+    func request(method: RequestMethod = .get, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
         
         let session = URLSession.shared
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
         
-        let task = session.dataTask(with: url) { data, response, error in
-            
+        if contentType == .applicationJson {
+            request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
+            request.addValue(contentType.rawValue, forHTTPHeaderField: "Accept")
+        }
+
+        if let parameters = parameters, !parameters.isEmpty {
+            do {
+                let body = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                request.httpBody = body
+            } catch {
+                DispatchQueue.main.async {
+                    completion?(.failure(error))
+                }
+            }
+        }
+
+        let task = session.dataTask(with: request) { data, response, error in
+
             if let error = error {
                 DispatchQueue.main.async {
-                    completion?(.failure(WebOperationError.error(error.localizedDescription)))
+                    completion?(.failure(error))
                 }
                 return
             }
-            
+
             guard let data = data else {
                 DispatchQueue.main.async {
                     completion?(.failure(WebOperationError.error("No data")))
                 }
                 return
             }
-            
+
             guard let response = response as? HTTPURLResponse else {
                 DispatchQueue.main.async {
                     completion?(.failure(WebOperationError.error("Response Error")))
                 }
                 return
             }
-            
+
             if !(200...299).contains(response.statusCode) {
                 DispatchQueue.main.async {
                     completion?(.failure(WebOperationError.error("Response Error Status code: \(response.statusCode)")))
                 }
                 return
             }
-            
+
             DispatchQueue.main.async {
                 completion?(.success(data))
             }
-            
+
         }
-        
+
         task.resume()
         
     }
-    
-    func getRequestJSON(withURL url: URL, completion: ((Result<Any?, Error>) -> Void)?) {
-        
-        getRequest(withURL: url) { result in
-            
+
+    func request<T: Any>(method: RequestMethod = .get, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<T?, Error>) -> Void)?) {
+
+        request(method: method, contentType: contentType, url: url, parameters: parameters) { result in
+
             switch result {
-                
+
             case .success(let data):
-                
+
                 guard let data = data else {
                     DispatchQueue.main.async {
                         completion?(.failure(WebOperationError.error("No data")))
                     }
                     return
                 }
-                
+
                 do {
                     let json = try JSONSerialization.jsonObject(with: data, options: [])
                     DispatchQueue.main.async {
-                        completion?(.success(json))
+                        completion?(.success(json as? T))
                     }
                 } catch {
                     DispatchQueue.main.async {
                         completion?(.failure(error))
                     }
                 }
-                
+
             case .failure(let error):
                 DispatchQueue.main.async {
                     completion?(.failure(error))
                 }
-                
+
             }
-            
+
         }
-        
+
     }
     
-    func getRequest<T: Codable>(withURL url: URL, completion: ((Result<T, Error>) -> Void)?) {
-        
-        getRequest(withURL: url) { result in
-            
+    func request<T: Codable>(method: RequestMethod = .get, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<T, Error>) -> Void)?) {
+
+        request(method: method, contentType: contentType, url: url, parameters: parameters) { result in
+
             switch result {
-                
+
             case .success(let data):
-                
+
                 guard let data = data else {
                     DispatchQueue.main.async {
                         completion?(.failure(WebOperationError.error("No data")))
                     }
                     return
                 }
-                
+
                 do {
                     let res = try JSONDecoder().decode(T.self, from: data)
                     DispatchQueue.main.async {
@@ -175,135 +205,15 @@ class WebOperations: NSObject {
                 } catch {
                     completion?(.failure(error))
                 }
-                
+
             case .failure(let error):
                 DispatchQueue.main.async {
                     completion?(.failure(error))
                 }
             }
-            
+
         }
-        
-    }
-    
-    func postRequestData(withURL url: URL, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
-        
-        let session = URLSession.shared
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        if let parameters = parameters, !parameters.isEmpty {
-            do {
-                let body = try JSONSerialization.data(withJSONObject: parameters, options: [])
-                request.httpBody = body
-            } catch {
-                DispatchQueue.main.async {
-                    completion?(.failure(error))
-                }
-            }
-        }
-        
-        let task = session.dataTask(with: request) { data, response, error in
-            
-            if let error = error {
-                DispatchQueue.main.async {
-                    completion?(.failure(error))
-                }
-                return
-            }
-            
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion?(.failure(WebOperationError.error("No data")))
-                }
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                DispatchQueue.main.async {
-                    completion?(.failure(WebOperationError.error("Response Error")))
-                }
-                return
-            }
-            
-            if !(200...299).contains(response.statusCode) {
-                DispatchQueue.main.async {
-                    completion?(.failure(WebOperationError.error("Response Error Status code: \(response.statusCode)")))
-                }
-                return
-            }
-            
-            DispatchQueue.main.async {
-                completion?(.success(data))
-            }
-            
-        }
-        
-        task.resume()
-        
-    }
-    
-    func putRequestData(withURL url: URL, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
-        
-        let session = URLSession.shared
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "PUT"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        if let parameters = parameters, !parameters.isEmpty {
-            do {
-                let body = try JSONSerialization.data(withJSONObject: parameters, options: [])
-                request.httpBody = body
-            } catch {
-                DispatchQueue.main.async {
-                    completion?(.failure(error))
-                }
-            }
-        }
-        
-        let task = session.dataTask(with: request) { data, response, error in
-            
-            if let error = error {
-                DispatchQueue.main.async {
-                    completion?(.failure(error))
-                }
-                return
-            }
-            
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion?(.failure(WebOperationError.error("No data")))
-                }
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                DispatchQueue.main.async {
-                    completion?(.failure(WebOperationError.error("Response Error")))
-                }
-                return
-            }
-            
-            if !(200...299).contains(response.statusCode) {
-                DispatchQueue.main.async {
-                    completion?(.failure(WebOperationError.error("Response Error Status code: \(response.statusCode)")))
-                }
-                return
-            }
-            
-            DispatchQueue.main.async {
-                completion?(.success(data))
-            }
-            
-        }
-        
-        task.resume()
-        
+
     }
     
 }
