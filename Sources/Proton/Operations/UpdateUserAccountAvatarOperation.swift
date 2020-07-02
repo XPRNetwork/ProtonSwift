@@ -58,6 +58,8 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
             
         }
         
+        print(image.size.width * image.scale)
+        print(image.size.height * image.scale)
         #if os(macOS)
         
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
@@ -127,8 +129,16 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
                 return
             }
 
-            guard let _ = data else {
+            guard let data = data else {
                 self.finish(retval: nil, error: WebOperationError.error("No data"))
+                return
+            }
+            
+            do {
+                let json = try JSONSerialization.jsonObject(with: data, options: [])
+                print(json)
+            } catch {
+                self.finish(retval: nil, error: WebOperationError.error("Response Error"))
                 return
             }
 
