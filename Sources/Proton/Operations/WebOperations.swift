@@ -30,6 +30,12 @@ class WebOperations: NSObject {
         case put = "PUT"
     }
     
+    enum Auth: String {
+        case basic = "Basic"
+        case bearer = "Bearer"
+        case none = "none"
+    }
+    
     enum ContentType: String {
         case applicationJson = "application/json"
         case none = ""
@@ -82,13 +88,17 @@ class WebOperations: NSObject {
     
     // TODO: Decided to use URLSession.shared or create custom sessions...
     
-    func request(method: RequestMethod = .get, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
+    func request(method: RequestMethod = .get, auth: Auth = .none, authValue: String? = nil, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<Data?, Error>) -> Void)?) {
         
         let session = URLSession.shared
 
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         
+        if let authValue = authValue, auth != .none {
+            request.addValue("\(auth.rawValue) \(authValue)", forHTTPHeaderField: "Authorization")
+        }
+
         if contentType == .applicationJson {
             request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
             request.addValue(contentType.rawValue, forHTTPHeaderField: "Accept")
@@ -145,9 +155,9 @@ class WebOperations: NSObject {
         
     }
 
-    func request<T: Any>(method: RequestMethod = .get, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<T?, Error>) -> Void)?) {
+    func request<T: Any>(method: RequestMethod = .get, auth: Auth = .none, authValue: String? = nil, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<T?, Error>) -> Void)?) {
 
-        request(method: method, contentType: contentType, url: url, parameters: parameters) { result in
+        request(method: method, auth: auth, authValue: authValue, contentType: contentType, url: url, parameters: parameters) { result in
 
             switch result {
 
@@ -182,9 +192,9 @@ class WebOperations: NSObject {
 
     }
     
-    func request<T: Codable>(method: RequestMethod = .get, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<T, Error>) -> Void)?) {
+    func request<T: Codable>(method: RequestMethod = .get, auth: Auth = .none, authValue: String? = nil, contentType: ContentType = .applicationJson, url: URL, parameters: [String: Any]? = nil, completion: ((Result<T, Error>) -> Void)?) {
 
-        request(method: method, contentType: contentType, url: url, parameters: parameters) { result in
+        request(method: method, auth: auth, authValue: authValue, contentType: contentType, url: url, parameters: parameters) { result in
 
             switch result {
 

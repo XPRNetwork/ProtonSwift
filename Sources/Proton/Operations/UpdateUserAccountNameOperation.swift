@@ -32,7 +32,7 @@ class UpdateUserAccountNameOperation: AbstractOperation {
         }
         
         DispatchQueue.main.sync {
-            parameters = ["signature": signature, "name": userDefinedName]
+            parameters = ["name": userDefinedName]
             path = "\(baseUrl)\(chainProvider.updateAccountNamePath.replacingOccurrences(of: "{{account}}", with: account.name.stringValue))"
         }
         
@@ -41,7 +41,7 @@ class UpdateUserAccountNameOperation: AbstractOperation {
             return
         }
         
-        WebOperations.shared.request(method: WebOperations.RequestMethod.put, url: url, parameters: parameters) { result in
+        WebOperations.shared.request(method: WebOperations.RequestMethod.put, auth: WebOperations.Auth.bearer, authValue: signature, url: url, parameters: parameters) { result in
             switch result {
             case .success:
                 self.finish(retval: nil, error: nil)

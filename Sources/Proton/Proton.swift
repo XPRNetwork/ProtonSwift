@@ -719,6 +719,31 @@ public class Proton {
         
     }
     
+//    /**
+//     Fetchs and updates the active account. This includes, account names, avatars, balances, etc
+//     - Parameter completion: Closure returning Result
+//     */
+//    public func transfer(to: Name, quantity: Double, tokenContract: TokenContract, memo: String?, completion: @escaping ((Result<TokenTransferAction, Error>) -> Void)) {
+//        
+//        guard var account = self.account else {
+//            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+//            return
+//        }
+//        
+//        guard let tokenBalance = self.tokenBalances.first(where: { $0.tokenContractId == tokenContract.id }) else {
+//            completion(.failure(ProtonError.error("MESSAGE => Account has no token balance for \(tokenContract.name)")))
+//            return
+//        }
+//        
+//        if quantity > tokenBalance.amount.value {
+//            completion(.failure(ProtonError.error("MESSAGE => Account balance insufficient")))
+//            return
+//        }
+//        
+//        
+//        
+//    }
+    
     /**
      Use this function generate a k1 PrivateKey object. See PrivateKey inside of EOSIO for more details
      */

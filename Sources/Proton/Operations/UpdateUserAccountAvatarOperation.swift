@@ -102,16 +102,13 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
 
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
+        request.addValue("Bearer \(signature)", forHTTPHeaderField: "Authorization")
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         let httpBody = NSMutableData()
         
         if let nameFieldData = convertFormField(named: "account", value: account.name.stringValue, using: boundary).data(using: .utf8) {
             httpBody.append(nameFieldData)
-        }
-        
-        if let signatureFieldData = convertFormField(named: "signature", value: signature, using: boundary).data(using: .utf8) {
-            httpBody.append(signatureFieldData)
         }
         
         httpBody.append(convertFileData(fieldName: "img", fileName: "img.jpeg", mimeType: "image/jpeg", fileData: imageData, using: boundary))
