@@ -3,7 +3,7 @@
 //  Proton
 //
 //  Created by Jacob Davis on 4/20/20.
-//  Copyright © 2020 Metallicus, Inc. All rights reserved.
+//  Copyright (c) 2020 Proton Chain LLC, Delaware
 //
 
 #if os(macOS)
