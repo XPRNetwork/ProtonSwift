@@ -44,9 +44,7 @@ Coming soon...
 [EOSIO](https://github.com/greymass/swift-eosio) - Greymass   
 [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) - kishikawakatsumi   
 
-## License
-
-MIT License
+## MIT License
 
 Copyright (c) 2020 Proton Chain LLC, Delaware
 
