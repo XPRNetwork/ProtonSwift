@@ -720,13 +720,22 @@ public class Proton {
     }
     
     /**
-     Fetchs and updates the active account. This includes, account names, avatars, balances, etc
+     Creates a transfer, signs and pushes that transfer to the chain
+     - Parameter to: The account to be transfered to
+     - Parameter quantity: The amount to be transfered
+     - Parameter tokenContract: The TokenContract that's being transfered
+     - Parameter memo: The memo for the transfer
      - Parameter completion: Closure returning Result
      */
-    public func transfer(to: Name, quantity: Double, tokenContract: TokenContract, memo: String?, completion: @escaping ((Result<TokenTransferAction, Error>) -> Void)) {
+    public func transfer(to: Name, quantity: Double, tokenContract: TokenContract, memo: String = "", completion: @escaping ((Result<TokenTransferAction, Error>) -> Void)) {
         
-        guard var account = self.account else {
+        guard let account = self.account else {
             completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            return
+        }
+        
+        guard let chainProvider = account.chainProvider else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
             return
         }
         
@@ -740,7 +749,56 @@ public class Proton {
             return
         }
         
+        guard let privateKey = account.privateKey(forPermissionName: "active") else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to retrive active private key")))
+            return
+        }
         
+        let transfer = TransferActionABI(from: account.name, to: to, quantity: Asset(quantity, tokenContract.symbol), memo: memo)
+        
+        guard let action = try? Action(account: tokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to create action")))
+            return
+        }
+        
+        WebOperations.shared.addSeq(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey)) { result in
+            
+            switch result {
+            case .success(let signedTransaction):
+                
+                if let signedTransaction = signedTransaction as? SignedTransaction {
+                    
+                    WebOperations.shared.addSeq(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
+                        
+                        switch result {
+                        case .success(let response):
+                            
+                            if let response = response as? API.V1.Chain.PushTransaction.Response {
+                                
+                                let tokenTransferAction = TokenTransferAction(chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
+                                
+                                self.tokenTransferActions.append(tokenTransferAction)
+                                
+                                completion(.success(tokenTransferAction))
+                                
+                            } else {
+                                completion(.failure(ProtonError.error("MESSAGE => Unable to push transaction")))
+                            }
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
+                        
+                    }
+                    
+                } else {
+                    completion(.failure(ProtonError.error("MESSAGE => Unable to sign transaction")))
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
+            
+        }
         
     }
     
