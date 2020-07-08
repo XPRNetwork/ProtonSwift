@@ -53,9 +53,14 @@ public class Proton {
     }
     
     /**
-     Proton typealias of the EOSIO.Name struct
+     Proton typealias of the EOSIO.Name
     */
     public typealias Name = EOSIO.Name
+    
+    /**
+     Proton typealias of the EOSIO.PrivateKey
+    */
+    public typealias PrivateKey = EOSIO.PrivateKey
     
     /**
      The proton config which gets set during initialisation

@@ -19,6 +19,7 @@ public typealias AvatarImage = UIImage
 
 import func AVFoundation.AVMakeRect
 
+// :nodoc:
 class UpdateUserAccountAvatarOperation: AbstractOperation {
     
     var account: Account
@@ -58,8 +59,6 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
             
         }
         
-        print(image.size.width * image.scale)
-        print(image.size.height * image.scale)
         #if os(macOS)
         
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {

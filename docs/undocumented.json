@@ -51,70 +51,70 @@
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
-      "line": 65,
+      "line": 83,
       "symbol": "Account.totalBalanceFormatted(forLocale:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
-      "line": 79,
+      "line": 97,
       "symbol": "Account.privateKey(forPermissionName:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 11,
+      "line": 12,
       "symbol": "ESR",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 13,
+      "line": 14,
       "symbol": "ESR.requestor",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 14,
+      "line": 15,
       "symbol": "ESR.signer",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 15,
+      "line": 16,
       "symbol": "ESR.signingRequest",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 16,
+      "line": 17,
       "symbol": "ESR.sid",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 17,
+      "line": 18,
       "symbol": "ESR.resolved",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 18,
+      "line": 19,
       "symbol": "ESR.actions",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ESR.swift",
-      "line": 20,
+      "line": 21,
       "symbol": "ESR.basicTransfer",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -295,6 +295,13 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Operations/UpdateUserAccountAvatarOperation.swift",
+      "line": 13,
+      "symbol": "AvatarImage",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
       "line": 31,
       "symbol": "AvatarProtocol",
@@ -345,42 +352,63 @@
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1353,
+      "line": 29,
+      "symbol": "Proton.Config.Environment",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 30,
+      "symbol": "Proton.Config.Environment.testnet",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 31,
+      "symbol": "Proton.Config.Environment.mainnet",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 1583,
       "symbol": "ProtonError",
       "symbol_kind": "source.lang.swift.decl.enum",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1355,
+      "line": 1585,
       "symbol": "ProtonError.error(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1356,
+      "line": 1586,
       "symbol": "ProtonError.chain(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1357,
+      "line": 1587,
       "symbol": "ProtonError.history(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1358,
+      "line": 1588,
       "symbol": "ProtonError.esr(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
-      "line": 1359,
+      "line": 1589,
       "symbol": "ProtonError.keychain(_:)",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
