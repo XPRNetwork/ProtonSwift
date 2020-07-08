@@ -53,6 +53,11 @@ public class Proton {
     }
     
     /**
+     Proton typealias of the EOSIO.Name struct
+    */
+    public typealias Name = EOSIO.Name
+    
+    /**
      The proton config which gets set during initialisation
     */
     public static var config: Config?
