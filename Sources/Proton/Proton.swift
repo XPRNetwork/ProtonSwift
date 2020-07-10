@@ -538,7 +538,7 @@ public class Proton {
     }
     
     /**
-     Changes the account's nick name on chain
+     Changes the account's userdefined name on chain
      - Parameter userDefinedName: New user defined name
      - Parameter completion: Closure returning Result
      */
@@ -554,46 +554,38 @@ public class Proton {
             return
         }
         
-        guard let privateKey = account.privateKey(forPermissionName: "active") else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
-            return
-        }
-        
-        guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
-            return
-        }
-
-        do {
+        signforAccountUpdate { result in
             
-            let signature = try privateKey.sign(signingData)
-            
-            WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
+            switch result {
+            case .success(let signature):
                 
-                switch result {
-                case .success:
+                WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
                     
-                    self.fetchAccountUserInfo(forAccount: account) { result in
-                        switch result {
-                        case .success(let returnAccount):
-                            account = returnAccount
-                            self.account = account
-                            NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
-                            completion(.success(account))
-                        case .failure(let error):
-                            completion(.failure(error))
+                    switch result {
+                    case .success:
+                        
+                        self.fetchAccountUserInfo(forAccount: account) { result in
+                            switch result {
+                            case .success(let returnAccount):
+                                account = returnAccount
+                                self.account = account
+                                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
+                                completion(.success(account))
+                            case .failure(let error):
+                                completion(.failure(error))
+                            }
                         }
-                    }
 
-                case .failure(let error):
-                    completion(.failure(error))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
                 }
                 
+            case .failure(let error):
+                completion(.failure(error))
             }
             
-        } catch {
-            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
-            return
         }
         
     }
@@ -610,51 +602,107 @@ public class Proton {
             return
         }
         
+        guard let chainProvider = account.chainProvider else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
+            return
+        }
+        
+        signforAccountUpdate { result in
+            
+            switch result {
+            case .success(let signature):
+                
+                WebOperations.shared.addSeq(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image)) { result in
+                    
+                    switch result {
+                    case .success:
+                        
+                        self.fetchAccountUserInfo(forAccount: account) { result in
+                            switch result {
+                            case .success(let returnAccount):
+                                account = returnAccount
+                                self.account = account
+                                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
+                                completion(.success(account))
+                            case .failure(let error):
+                                completion(.failure(error))
+                            }
+                        }
+
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
+            
+        }
+        
+    }
+    
+    /**
+     Changes the account's userdefined name and avatar on chain
+     - Parameter userDefinedName: New user defined name
+     - Parameter completion: Closure returning Result
+     */
+    public func updateAccountUserDefinedNameAndAvatar(userDefinedName: String, image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        guard var account = self.account else {
+            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            return
+        }
+        
         guard let chainProvider = self.account?.chainProvider else {
             completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
             return
         }
         
-        guard let privateKey = account.privateKey(forPermissionName: "active") else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
-            return
-        }
-        
-        guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
-            return
-        }
-
-        do {
+        signforAccountUpdate { result in
             
-            let signature = try privateKey.sign(signingData)
-            
-            WebOperations.shared.addSeq(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image)) { result in
+            switch result {
+            case .success(let signature):
                 
-                switch result {
-                case .success:
+                WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
                     
-                    self.fetchAccountUserInfo(forAccount: account) { result in
-                        switch result {
-                        case .success(let returnAccount):
-                            account = returnAccount
-                            self.account = account
-                            NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
-                            completion(.success(account))
-                        case .failure(let error):
-                            completion(.failure(error))
-                        }
-                    }
+                    switch result {
+                    case .success:
+                        
+                        WebOperations.shared.addSeq(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image)) { result in
+                            
+                            switch result {
+                            case .success:
+                                
+                                self.fetchAccountUserInfo(forAccount: account) { result in
+                                    switch result {
+                                    case .success(let returnAccount):
+                                        account = returnAccount
+                                        self.account = account
+                                        NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
+                                        completion(.success(account))
+                                    case .failure(let error):
+                                        completion(.failure(error))
+                                    }
+                                }
 
-                case .failure(let error):
-                    completion(.failure(error))
+                            case .failure(let error):
+                                completion(.failure(error))
+                            }
+                            
+                        }
+
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
                 }
                 
+            case .failure(let error):
+                completion(.failure(error))
             }
             
-        } catch {
-            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
-            return
         }
         
     }
@@ -823,6 +871,38 @@ public class Proton {
         }
         bytes[0] = 0x80
         return try? PrivateKey(fromK1Data: Data(bytes))
+    }
+    
+    /**
+     :nodoc:
+    Creates signature for updating avatar and userdefined name
+     - Parameter completion: Closure returning Result
+     */
+    private func signforAccountUpdate(completion: @escaping ((Result<Signature, Error>) -> Void)) {
+        
+        guard let account = self.account else {
+            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            return
+        }
+        
+        guard let privateKey = account.privateKey(forPermissionName: "active") else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
+            return
+        }
+        
+        guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+            return
+        }
+        
+        do {
+            let signature = try privateKey.sign(signingData)
+            completion(.success(signature))
+            return
+        } catch {
+            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+            return
+        }
     }
     
     /**
