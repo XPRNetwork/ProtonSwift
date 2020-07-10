@@ -79,6 +79,10 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var tokenBalances: [TokenBalance] {
         return Proton.shared.tokenBalances.filter { $0.accountId == self.id }
     }
+    /// Name formated with leading @
+    public var nameWithAmpersand: String {
+        return "@\(name.stringValue)"
+    }
 
     public func totalBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         

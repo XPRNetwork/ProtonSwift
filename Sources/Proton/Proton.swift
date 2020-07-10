@@ -103,7 +103,7 @@ public class Proton {
         self.loadAll()
         
         print("🧑‍💻 LOAD COMPLETED")
-        print("ACTIVE ACCOUNT => \(String(describing: self.account))")
+        print("ACTIVE ACCOUNT => \(String(describing: self.account?.name.stringValue))")
         print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
@@ -1351,7 +1351,6 @@ public class Proton {
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     
-                        print(self.esrSessions.count)
                         completion(url)
                         
                     }
@@ -1369,8 +1368,7 @@ public class Proton {
                     self.esr = nil
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    
-                        print(self.esrSessions.count)
+
                         completion(url)
                         
                     }
@@ -1471,7 +1469,6 @@ public class Proton {
                                             
                                             var newPath = callback.url
                                             newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
-                                            print(newPath)
                                             
                                             completion(URL(string: newPath))
                                             
@@ -1558,7 +1555,6 @@ public class Proton {
                 
                 var newPath = callback.url
                 newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
-                print(newPath)
                 
                 if let idx = self.esrSessions.firstIndex(of: session) {
                     self.esrSessions[idx] = session

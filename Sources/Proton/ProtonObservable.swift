@@ -41,7 +41,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published public private(set) var activeAccount: Account? = nil {
+    @Published public private(set) var account: Account? = nil {
         willSet {
             self.objectWillChange.send()
         }
@@ -179,7 +179,7 @@ public final class ProtonObservable: ObservableObject {
         guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? Account else {
             return
         }
-        self.activeAccount = newValue
+        self.account = newValue
     }
 
 }

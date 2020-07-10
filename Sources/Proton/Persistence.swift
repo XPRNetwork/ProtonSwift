@@ -16,7 +16,7 @@ class Persistence {
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
     
-    static let pkService = "proton.swfit"
+    static let pkService = "proton.swift"
     static let defaultsPrefix = "proton.swift"
     
     init() {
