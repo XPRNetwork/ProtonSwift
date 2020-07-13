@@ -15,9 +15,6 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 - [x] Signing transactions
 - [ ] Handle ESR Signing requests ( In progress )
 
-## Functional Reference
-
-[Reference](https://protonprotocol.github.io/ProtonSwift)
 
 ## Usage
 
@@ -31,7 +28,9 @@ Proton.initialize(Proton.Config(environment: .testnet)).fetchRequirements { resu
 }
 ```
 
-There is also another class `ProtonObservable` which can be used in iOSv13+
+There is also another class `ProtonObservable` which can be used in iOSv13+ which takes advantage of the new Combine framework. This pairs nicely with SwiftUI.
+
+[Functional Reference](https://protonprotocol.github.io/ProtonSwift)
 
 ## Installation
 
