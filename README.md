@@ -1,3 +1,7 @@
+# Proton Swift Wallet SDK ( BETA v0.5.0 )
+
+Important: This library is currently under heavy development. Please be aware that all functionality is subject to change at anytime.
+
 ## Description
 
 Proton is a drop in library to handle all things ProtonChain. This includes but is not limited to accout management and storage, signing and pushing transctions, etc.
