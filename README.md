@@ -37,7 +37,7 @@ There is also another class `ProtonObservable` which can be used in iOSv13+
 Add Proton as a dependency to your Package.swift. For more information, please see the [Swift Package Manager documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
 
 ```swift
-.package(url: "https://github.com/needly/proton-swift.git", .branch("master"))
+.package(url: "https://github.com/ProtonProtocol/ProtonSwift.git", .branch("master"))
 ```
 
 ### Cocoapods
