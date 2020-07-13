@@ -20,7 +20,7 @@
         }
       },
       {
-        "package": "EOSIO",
+        "package": "swift-eosio",
         "repositoryURL": "https://github.com/greymass/swift-eosio.git",
         "state": {
           "branch": "master",
