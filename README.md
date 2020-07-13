@@ -15,6 +15,10 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 - [x] Signing transactions
 - [ ] Handle ESR Signing requests ( In progress )
 
+## Functional Reference
+
+[Reference](https://protonprotocol.github.io/ProtonSwift)
+
 ## Usage
 
 The main class that you will need to interface with is `Proton` which encapsulates most all of the needed functions.
