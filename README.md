@@ -1,6 +1,6 @@
 # Proton Swift Wallet SDK ( BETA v0.5.0 )
 
-**Important:** *This library is currently under heavy development. Please be aware that all functionality is subject to change at anytime.*
+**Important:** *This library is currently under heavy development. Please be aware that all functionality is subject to change at anytime. Documention and examples are also being worked on and will be added over time as well.*
 
 ## Description
 
