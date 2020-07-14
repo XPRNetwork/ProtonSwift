@@ -16,6 +16,9 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 - [ ] Handle ESR Signing requests ( In progress ) 🚧
 
 
+##Functional Reference
+[https://protonprotocol.github.io/ProtonSwift](https://protonprotocol.github.io/ProtonSwift)
+
 ## Usage
 
 The main class that you will need to interface with is `Proton` which encapsulates most all of the needed functions. Firstly you import `Proton`. Initialize `Proton` by passing a `Proton.Config` struct. You'll want to also call `Proton.shared.fetchRequirements` function at startup so that all needed requirements for the library will be present before moving forward.
