@@ -136,7 +136,7 @@
         <section>
           <section class="section">
             
-            <h1 id='proton-swift-wallet-sdk-beta-v0-5-0' class='heading'>Proton Swift Wallet SDK ( BETA v0.5.0 )</h1>
+            <h1 id='proton-swift-wallet-sdk-beta-v0-5-0' class='heading'>Proton Swift Wallet SDK ( BETA v0.5.0 ) 🚧</h1>
 
 <p><strong>Important:</strong> <em>This library is currently under heavy development. Please be aware that all functionality is subject to change at anytime. Documention and examples are also being worked on and will be added over time as well.</em></p>
 <h2 id='description' class='heading'>Description</h2>
@@ -151,11 +151,11 @@
 <li>[x] Persist and manage Proton Accounts</li>
 <li>[x] Persist and manage private keys via keychain</li>
 <li>[x] Signing transactions</li>
-<li>[ ] Handle ESR Signing requests ( In progress )</li>
+<li>[ ] Handle ESR Signing requests ( In progress ) 🚧</li>
 </ul>
 <h2 id='usage' class='heading'>Usage</h2>
 
-<p>The main class that you will need to interface with is <code><a href="Classes/Proton.html">Proton</a></code> which encapsulates most all of the needed functions.</p>
+<p>The main class that you will need to interface with is <code><a href="Classes/Proton.html">Proton</a></code> which encapsulates most all of the needed functions. Firstly you import <code><a href="Classes/Proton.html">Proton</a></code>. Initialize <code><a href="Classes/Proton.html">Proton</a></code> by passing a <code><a href="Classes/Proton/Config.html">Proton.Config</a></code> struct. You&rsquo;ll want to also call <code>Proton.shared.fetchRequirements</code> function at startup so that all needed requirements for the library will be present before moving forward.</p>
 <pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">Proton</span>
 
 <span class="kt">Proton</span><span class="o">.</span><span class="nf">initialize</span><span class="p">(</span><span class="kt">Proton</span><span class="o">.</span><span class="kt">Config</span><span class="p">(</span><span class="nv">environment</span><span class="p">:</span> <span class="o">.</span><span class="n">testnet</span><span class="p">))</span><span class="o">.</span><span class="n">fetchRequirements</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
@@ -163,9 +163,135 @@
 <span class="p">}</span>
 </code></pre>
 
+<p>There are currently 2 environment enum values that can be used which live on the <code><a href="Classes/Proton/Config.html">Proton.Config</a></code> object.</p>
+<pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">Environment</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">testnet</span> <span class="o">=</span> <span class="s">"https://api-dev.protonchain.com"</span>
+    <span class="k">case</span> <span class="n">mainnet</span> <span class="o">=</span> <span class="s">"https://api.protonchain.com"</span>
+<span class="p">}</span>
+</code></pre>
+
+<blockquote>
 <p>There is also another class <code><a href="Classes/ProtonObservable.html">ProtonObservable</a></code> which can be used in iOSv13+ which takes advantage of the new Combine framework. This pairs nicely with SwiftUI.</p>
+</blockquote>
+
+<p>As seen above, most of the function closures provided by the library will return swift&rsquo;s <code>Result</code> type. </p>
+<h3 id='find-and-import-an-account' class='heading'>Find and Import an account</h3>
+
+<p>When importing and account using a private key, its important to note that sometimes a private key may have more than 1 account associated with it. For that reason we will call the <code>findAccounts</code> function to get an unattached list of <code><a href="Structs/Account.html">Account</a></code> structs associated with the public key that was extracted from the private key wif.</p>
+<pre class="highlight swift"><code><span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">findAccounts</span><span class="p">(</span><span class="nv">forPrivateKey</span><span class="p">:</span> <span class="s">"&lt;wif_formatted_private_key_here&gt;"</span><span class="p">)</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+
+    <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">accounts</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="k">let</span> <span class="nv">account</span> <span class="o">=</span> <span class="n">accounts</span><span class="o">.</span><span class="n">first</span> <span class="p">{</span>
+
+            <span class="c1">// store private key in keychain &amp; set active account on Proton library</span>
+            <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">storePrivateKey</span><span class="p">(</span><span class="nv">privateKey</span><span class="p">:</span> <span class="s">"&lt;wif_formatted_private_key_here&gt;"</span><span class="p">,</span> 
+                                          <span class="nv">forAccount</span><span class="p">:</span> <span class="n">account</span><span class="p">)</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+
+                <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nv">success</span><span class="p">:</span> <span class="k">break</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+        <span class="p">}</span>
+
+    <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<blockquote>
+<p>The <code><a href="Classes/Proton.html">Proton</a></code> library only stores one <code><a href="Structs/Account.html">Account</a></code> struct at a time. Using the <code>storePrivateKey</code> or <code>setAccount</code> functions will overwrite the the current active <code><a href="Structs/Account.html">Account</a></code> if there is already one. It will however NOT remove the private key from the keychain. That operation will have to be done seperately. </p>
+</blockquote>
+
+<p>Now that you have an active <code><a href="Structs/Account.html">Account</a></code> stored, you can access it at <code>Proton.shared.account</code></p>
+<h3 id='update-active-account' class='heading'>Update active account</h3>
+
+<p>You can easily fetch the latest actions and other updates about your active account by simply calling <code>Proton.shared.updateAccount</code></p>
+<pre class="highlight swift"><code><span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">update</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span> <span class="p">}</span>
+</code></pre>
+
+<blockquote>
+<p>This will fetch the lates <code><a href="Structs/TokenTransferAction.html">TokenTransferAction</a></code> items, <code><a href="Structs/Account.html">Account</a></code> info, etc. It will automatically update these on the shared <code><a href="Classes/Proton.html">Proton</a></code> singleton.</p>
+</blockquote>
+<h3 id='transfer-token' class='heading'>Transfer token</h3>
+
+<p>Transfering a token is a fairly simple process. You&rsquo;ll the need to grab the <code><a href="Structs/TokenContract.html">TokenContract</a></code> struct of the token you will be transfering. This can be fetched from <code>Proton.shared.tokenContracts</code>.</p>
+<pre class="highlight swift"><code><span class="k">guard</span> <span class="k">let</span> <span class="nv">xprTokenContract</span> <span class="o">=</span> <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">tokenContracts</span><span class="o">.</span><span class="nf">first</span><span class="p">(</span><span class="nv">where</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">stringValue</span> <span class="o">==</span> <span class="s">"eosio.token"</span> <span class="o">&amp;&amp;</span> <span class="nv">$0</span><span class="o">.</span><span class="n">symbol</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">"XPR"</span> <span class="p">})</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">transfer</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt">Proton</span><span class="o">.</span><span class="kt">Name</span><span class="p">(</span><span class="s">"blah"</span><span class="p">),</span> <span class="nv">quantity</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">tokenContract</span><span class="p">:</span> <span class="n">xprTokenContract</span><span class="p">,</span> <span class="nv">memo</span><span class="p">:</span> <span class="s">"My first transfer"</span><span class="p">)</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+    <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">transferTokenAction</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<blockquote>
+<p>Its important to note that this function will require the user to authenticate via FaceId, TouchId, or phone passcode fallback. This is because that private key is stored in the keychain using the user presense flag. Also make sure you have added the following to your Info.plist file.</p>
+<pre class="highlight xml"><code><span class="nt">&lt;key&gt;</span>NSFaceIDUsageDescription<span class="nt">&lt;/key&gt;</span>
+<span class="nt">&lt;string&gt;</span>$(PRODUCT_NAME) Authentication with TouchId or FaceID<span class="nt">&lt;/string&gt;</span>
+</code></pre>
+</blockquote>
+<h3 id='get-privatekey-from-keychain' class='heading'>Get PrivateKey from keychain</h3>
+
+<p>You can fetch the private key stored for an <code><a href="Structs/Account.html">Account</a></code> by calling the member function <code>privateKey(forPermissionName: String)</code>. You will mostly be dealing with active permission keys.</p>
+<pre class="highlight swift"><code><span class="k">guard</span> <span class="k">let</span> <span class="nv">account</span> <span class="o">=</span> <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">account</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="k">guard</span> <span class="k">let</span> <span class="nv">privateKey</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="nf">privateKey</span><span class="p">(</span><span class="nv">forPermissionName</span><span class="p">:</span> <span class="s">"active"</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+</code></pre>
+<h3 id='other-functions-to-note' class='heading'>Other functions to note</h3>
+<pre class="highlight swift"><code><span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">loadAll</span><span class="p">()</span>
+</code></pre>
+
+<blockquote>
+<p>Used to load all saved data objects from disk. This is called during the <code><a href="Classes/Proton.html">Proton</a></code> init phase. You may however want to call this for instance when your app goes comes back from the background.</p>
+</blockquote>
+<pre class="highlight swift"><code><span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">saveAll</span><span class="p">()</span>
+</code></pre>
+
+<blockquote>
+<p>Used to save all data objects to disk that are currently in memory on the <code><a href="Classes/Proton.html#/s:6ProtonAAC6sharedABvpZ">Proton.shared</a></code> singleton. This is called at the completion of <code>Proton.shared.updateAccount</code>. You may however want to call this for instance when your app goes in the background.</p>
+</blockquote>
+<pre class="highlight plaintext"><code>Proton.shared.generatePrivateKey()
+</code></pre>
+
+<blockquote>
+<p>This can be used to generate a new private key. This is useful if you want to use the Proton API to create an account as you would use this key to extract the public key&rsquo;s needed for account creation. FYI. The account creation API requires an API key which you will need to register for. The account creation API is heavily rate limited. If you are a wallet provider and need a more liberal rate limit you will have to contact us. </p>
+</blockquote>
 
 <p><a href="https://protonprotocol.github.io/ProtonSwift">Functional Reference</a></p>
+
+<blockquote>
+<p>A function reference has been generated from the commented code.</p>
+</blockquote>
+<h3 id='vote-for-block-producer' class='heading'>Vote for Block Producer</h3>
+
+<p>Coming soon&hellip;</p>
+<h3 id='stake-xpr-tokens' class='heading'>Stake XPR Tokens</h3>
+
+<p>Coming soon&hellip;</p>
+<h3 id='unstack-xpr-tokens' class='heading'>Unstack XPR Tokens</h3>
+
+<p>Coming soon&hellip;</p>
+<h3 id='claim-staking-rewards' class='heading'>Claim Staking Rewards</h3>
+
+<p>Coming soon&hellip;</p>
+<h3 id='handling-esr-requests' class='heading'>Handling ESR requests</h3>
+
+<p>Coming soon&hellip;</p>
 <h2 id='installation' class='heading'>Installation</h2>
 <h3 id='spm' class='heading'>SPM</h3>
 
@@ -205,7 +331,7 @@ SOFTWARE.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-07-13)</p>
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-07-14)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
