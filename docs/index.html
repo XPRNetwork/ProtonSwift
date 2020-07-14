@@ -170,11 +170,18 @@
 <span class="p">}</span>
 </code></pre>
 
+<p>As seen above, most of the function closures provided by the library will return swift&rsquo;s <code>Result</code> type. </p>
+
 <blockquote>
 <p>There is also another class <code><a href="Classes/ProtonObservable.html">ProtonObservable</a></code> which can be used in iOSv13+ which takes advantage of the new Combine framework. This pairs nicely with SwiftUI.</p>
 </blockquote>
 
-<p>As seen above, most of the function closures provided by the library will return swift&rsquo;s <code>Result</code> type. </p>
+<p>This library requires the user to authenticate via FaceId, TouchId, or phone passcode fallback when signing transactions. This is because that private key is stored in the keychain using the user presense flag.</p>
+
+<p>You&rsquo;ll need to add the following to your app&rsquo;s Info.plist file.</p>
+<pre class="highlight xml"><code><span class="nt">&lt;key&gt;</span>NSFaceIDUsageDescription<span class="nt">&lt;/key&gt;</span>
+<span class="nt">&lt;string&gt;</span>$(PRODUCT_NAME) Authentication with TouchId or FaceID<span class="nt">&lt;/string&gt;</span>
+</code></pre>
 <h3 id='find-and-import-an-account' class='heading'>Find and Import an account</h3>
 
 <p>When importing and account using a private key, its important to note that sometimes a private key may have more than 1 account associated with it. For that reason we will call the <code>findAccounts</code> function to get an unattached list of <code><a href="Structs/Account.html">Account</a></code> structs associated with the public key that was extracted from the private key wif.</p>

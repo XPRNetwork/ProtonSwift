@@ -37,9 +37,18 @@ public enum Environment: String {
 }
 ```
 
+As seen above, most of the function closures provided by the library will return swift's `Result` type. 
+
 > There is also another class `ProtonObservable` which can be used in iOSv13+ which takes advantage of the new Combine framework. This pairs nicely with SwiftUI.
 
-As seen above, most of the function closures provided by the library will return swift's `Result` type. 
+This library requires the user to authenticate via FaceId, TouchId, or phone passcode fallback when signing transactions. This is because that private key is stored in the keychain using the user presense flag.
+ 
+You'll need to add the following to your app's Info.plist file.
+
+```xml
+<key>NSFaceIDUsageDescription</key>
+<string>$(PRODUCT_NAME) Authentication with TouchId or FaceID</string>
+```
 
 ### Find and Import an account
 
