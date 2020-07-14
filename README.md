@@ -16,7 +16,8 @@ Proton is a drop in library to handle all things ProtonChain. This includes but 
 - [ ] Handle ESR Signing requests ( In progress ) 🚧
 
 
-##Functional Reference
+## Functional Reference
+
 [https://protonprotocol.github.io/ProtonSwift](https://protonprotocol.github.io/ProtonSwift)
 
 ## Usage
