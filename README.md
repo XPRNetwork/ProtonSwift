@@ -189,6 +189,7 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 Coming soon...
 
 ## Libraries Used
+[WebOperations](https://github.com/ProtonProtocol/WebOperations.git) - Proton
 [EOSIO](https://github.com/greymass/swift-eosio) - Greymass   
 [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) - kishikawakatsumi   
 
