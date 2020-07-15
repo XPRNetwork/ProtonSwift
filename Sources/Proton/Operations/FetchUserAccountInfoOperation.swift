@@ -8,8 +8,9 @@
 
 import EOSIO
 import Foundation
+import WebOperations
 
-class FetchUserAccountInfoOperation: AbstractOperation {
+class FetchUserAccountInfoOperation: BaseOperation {
 
     var account: Account
     var chainProvider: ChainProvider
@@ -21,6 +22,8 @@ class FetchUserAccountInfoOperation: AbstractOperation {
 
     override func main() {
 
+        super.main()
+        
         guard let url = URL(string: chainProvider.chainUrl) else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return

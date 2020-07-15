@@ -7,10 +7,13 @@
 //
 
 import Foundation
+import WebOperations
 
-class FetchChainProviderOperation: AbstractOperation {
+class FetchChainProviderOperation: BaseOperation {
     
     override func main() {
+        
+        super.main()
         
         guard let baseUrl = Proton.config?.baseUrl else {
             fatalError("⚛️ PROTON ERROR: BaseUrl must be valid")

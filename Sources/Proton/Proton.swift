@@ -15,6 +15,7 @@ import AppKit
 import UIKit
 #endif
 import KeychainAccess
+import WebOperations
 
 /**
  The Proton class is the heart of the ProtonSwift SDK.

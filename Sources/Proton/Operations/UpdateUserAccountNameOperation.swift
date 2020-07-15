@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import WebOperations
 
-class UpdateUserAccountNameOperation: AbstractOperation {
+class UpdateUserAccountNameOperation: BaseOperation {
     
     var account: Account
     var chainProvider: ChainProvider
@@ -23,6 +24,8 @@ class UpdateUserAccountNameOperation: AbstractOperation {
     }
     
     override func main() {
+        
+        super.main()
         
         var parameters: [String: Any] = [:]
         var path = ""

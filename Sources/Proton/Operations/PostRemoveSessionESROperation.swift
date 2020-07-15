@@ -8,8 +8,9 @@
 
 import EOSIO
 import Foundation
+import WebOperations
 
-class PostRemoveSessionESROperation: AbstractOperation {
+class PostRemoveSessionESROperation: BaseOperation {
     
     var esrSession: ESRSession
     
@@ -18,6 +19,8 @@ class PostRemoveSessionESROperation: AbstractOperation {
     }
     
     override func main() {
+        
+        super.main()
         
         let parameters = ["sid": self.esrSession.sid, "sa": self.esrSession.signer.stringValue]
         

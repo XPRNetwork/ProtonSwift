@@ -8,8 +8,9 @@
 
 import EOSIO
 import Foundation
+import WebOperations
 
-class PostBackgroundESROperation: AbstractOperation {
+class PostBackgroundESROperation: BaseOperation {
     
     var esr: ESR
     var sig: Signature
@@ -22,6 +23,8 @@ class PostBackgroundESROperation: AbstractOperation {
     }
     
     override func main() {
+        
+        super.main()
         
         guard let resolved = self.esr.resolved else {
             self.finish(retval: nil, error: ProtonError.esr("MESSAGE => Issue getting resolved esr\nESR => \(esr.signingRequest)\nSIG => \(sig.stringValue)"))

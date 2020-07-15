@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import WebOperations
 
-class FetchExchangeRatesOperation: AbstractOperation {
+class FetchExchangeRatesOperation: BaseOperation {
     
     var chainProvider: ChainProvider
 
@@ -17,6 +18,8 @@ class FetchExchangeRatesOperation: AbstractOperation {
     }
     
     override func main() {
+        
+        super.main()
         
         guard let baseUrl = Proton.config?.baseUrl else {
             fatalError("⚛️ PROTON ERROR: BaseUrl must be valid")

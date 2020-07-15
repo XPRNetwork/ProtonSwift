@@ -8,8 +8,9 @@
 
 import EOSIO
 import Foundation
+import WebOperations
 
-class SignTransactionOperation: AbstractOperation {
+class SignTransactionOperation: BaseOperation {
     
     var account: Account
     var chainProvider: ChainProvider
@@ -24,6 +25,8 @@ class SignTransactionOperation: AbstractOperation {
     }
     
     override func main() {
+        
+        super.main()
         
         guard let url = URL(string: chainProvider.chainUrl) else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))

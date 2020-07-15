@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import WebOperations
 
 #if os(macOS)
 import AppKit
@@ -20,7 +21,7 @@ public typealias AvatarImage = UIImage
 import func AVFoundation.AVMakeRect
 
 // :nodoc:
-class UpdateUserAccountAvatarOperation: AbstractOperation {
+class UpdateUserAccountAvatarOperation: BaseOperation {
     
     var account: Account
     var chainProvider: ChainProvider
@@ -35,6 +36,8 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
     }
     
     override func main() {
+        
+        super.main()
         
         #if os(macOS)
         
@@ -126,7 +129,7 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
             }
 
             guard let data = data else {
-                self.finish(retval: nil, error: WebOperationError.error("No data"))
+                self.finish(retval: nil, error: WebOperationsError.error("No data"))
                 return
             }
             
@@ -134,17 +137,17 @@ class UpdateUserAccountAvatarOperation: AbstractOperation {
                 let json = try JSONSerialization.jsonObject(with: data, options: [])
                 print(json)
             } catch {
-                self.finish(retval: nil, error: WebOperationError.error("Response Error"))
+                self.finish(retval: nil, error: WebOperationsError.error("Response Error"))
                 return
             }
 
             guard let response = response as? HTTPURLResponse else {
-                self.finish(retval: nil, error: WebOperationError.error("Response Error"))
+                self.finish(retval: nil, error: WebOperationsError.error("Response Error"))
                 return
             }
 
             if !(200...299).contains(response.statusCode) {
-                self.finish(retval: nil, error: WebOperationError.error("Response Error Status code: \(response.statusCode)"))
+                self.finish(retval: nil, error: WebOperationsError.error("Response Error Status code: \(response.statusCode)"))
                 return
             }
 

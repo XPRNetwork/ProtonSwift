@@ -8,8 +8,9 @@
 
 import Foundation
 import EOSIO
+import WebOperations
 
-class FetchKeyAccountsOperation: AbstractOperation {
+class FetchKeyAccountsOperation: BaseOperation {
     
     var publicKey: String
     var chainProvider: ChainProvider
@@ -20,6 +21,8 @@ class FetchKeyAccountsOperation: AbstractOperation {
     }
     
     override func main() {
+        
+        super.main()
         
         guard let url = URL(string: chainProvider.hyperionHistoryUrl) else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
