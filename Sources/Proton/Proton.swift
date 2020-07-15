@@ -89,7 +89,10 @@ public class Proton {
      Internal pointer to various storage structures
     */
     var storage: Persistence!
-
+    
+    static let operationQueueSeq = "proton.swift.seq"
+    static let operationQueueMulti = "proton.swift.multi"
+    
     /**
      Private init
      */
@@ -98,6 +101,16 @@ public class Proton {
         guard let _ = Proton.config else {
             fatalError("ERROR: You must call setup before accessing Proton.shared")
         }
+        
+        let operationQueueSeq = OperationQueue()
+        operationQueueSeq.qualityOfService = .utility
+        operationQueueSeq.maxConcurrentOperationCount = 1
+        
+        let operationQueueMulti = OperationQueue()
+        operationQueueMulti.qualityOfService = .utility
+        
+        WebOperations.shared.addCustomQueue(operationQueueSeq, forKey: Proton.operationQueueSeq)
+        WebOperations.shared.addCustomQueue(operationQueueMulti, forKey: Proton.operationQueueMulti)
         
         self.storage = Persistence()
         
@@ -315,7 +328,7 @@ public class Proton {
      */
     public func fetchRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
-        WebOperations.shared.addSeq(FetchChainProviderOperation()) { result in
+        WebOperations.shared.add(FetchChainProviderOperation(), toCustomQueueNamed: Proton.operationQueueSeq) { result in
             
             switch result {
                 
@@ -326,7 +339,8 @@ public class Proton {
                     
                     let tokenContracts = chainProvider.tokenContracts
                     
-                    WebOperations.shared.addSeq(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts)) { result in
+                    WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts),
+                                             toCustomQueueNamed: Proton.operationQueueSeq) { result in
                         
                         switch result {
                             
@@ -375,7 +389,8 @@ public class Proton {
             return
         }
         
-        WebOperations.shared.addMulti(FetchExchangeRatesOperation(chainProvider: chainProvider)) { result in
+        WebOperations.shared.add(FetchExchangeRatesOperation(chainProvider: chainProvider),
+                                 toCustomQueueNamed: Proton.operationQueueMulti) { result in
             
             switch result {
                 
@@ -560,7 +575,7 @@ public class Proton {
             switch result {
             case .success(let signature):
                 
-                WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
+                WebOperations.shared.add(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
                     switch result {
                     case .success:
@@ -613,7 +628,7 @@ public class Proton {
             switch result {
             case .success(let signature):
                 
-                WebOperations.shared.addSeq(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image)) { result in
+                WebOperations.shared.add(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
                     switch result {
                     case .success:
@@ -666,12 +681,12 @@ public class Proton {
             switch result {
             case .success(let signature):
                 
-                WebOperations.shared.addSeq(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName)) { result in
+                WebOperations.shared.add(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
                     switch result {
                     case .success:
                         
-                        WebOperations.shared.addSeq(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image)) { result in
+                        WebOperations.shared.add(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                             
                             switch result {
                             case .success:
@@ -820,14 +835,14 @@ public class Proton {
             return
         }
         
-        WebOperations.shared.addSeq(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey)) { result in
+        WebOperations.shared.add(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey), toCustomQueueNamed: Proton.operationQueueSeq) { result in
             
             switch result {
             case .success(let signedTransaction):
                 
                 if let signedTransaction = signedTransaction as? SignedTransaction {
                     
-                    WebOperations.shared.addSeq(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
+                    WebOperations.shared.add(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                         
                         switch result {
                         case .success(let response):
@@ -1021,8 +1036,8 @@ public class Proton {
             return
         }
         
-        WebOperations.shared.addMulti(FetchTokenTransferActionsOperation(account: account, tokenContract: tokenContract,
-                                                                       chainProvider: chainProvider, tokenBalance: tokenBalance)) { result in
+        WebOperations.shared.add(FetchTokenTransferActionsOperation(account: account, tokenContract: tokenContract,
+                                                                       chainProvider: chainProvider, tokenBalance: tokenBalance), toCustomQueueNamed: Proton.operationQueueMulti) { result in
             
             switch result {
             case .success(let transferActions):
@@ -1054,8 +1069,8 @@ public class Proton {
             return
         }
         
-        WebOperations.shared.addSeq(FetchKeyAccountsOperation(publicKey: publicKey,
-                                                              chainProvider: chainProvider)) { result in
+        WebOperations.shared.add(FetchKeyAccountsOperation(publicKey: publicKey,
+                                                              chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
             
             var accounts = Set<Account>()
                                                                 
@@ -1093,7 +1108,7 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebOperations.shared.addMulti(FetchAccountOperation(accountName: account.name.stringValue, chainProvider: chainProvider)) { result in
+            WebOperations.shared.add(FetchAccountOperation(accountName: account.name.stringValue, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
                 switch result {
                 case .success(let acc):
@@ -1129,7 +1144,7 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebOperations.shared.addMulti(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider)) { result in
+            WebOperations.shared.add(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
                 switch result {
                 case .success(let updatedAccount):
@@ -1164,7 +1179,7 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebOperations.shared.addMulti(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider)) { result in
+            WebOperations.shared.add(FetchTokenBalancesOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
                 switch result {
                 case .success(let tokenBalances):
@@ -1234,7 +1249,7 @@ public class Proton {
         
         for contactName in contactNames {
             
-            WebOperations.shared.addMulti(FetchContactInfoOperation(account: account, contactName: contactName, chainProvider: chainProvider)) { result in
+            WebOperations.shared.add(FetchContactInfoOperation(account: account, contactName: contactName, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
                 switch result {
                 case .success(let contact):
@@ -1278,7 +1293,7 @@ public class Proton {
             
             var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
             
-            WebOperations.shared.addSeq(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider)) { result in
+            WebOperations.shared.add(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                 
                 switch result {
                 case .success(let acc):
@@ -1307,7 +1322,7 @@ public class Proton {
                         
                         for abiAccount in abiAccounts {
                             
-                            WebOperations.shared.addMulti(FetchRawAbiOperation(account: abiAccount, chainProvider: chainProvider)) { result in
+                            WebOperations.shared.add(FetchRawAbiOperation(account: abiAccount, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                                 
                                 abiAccountsProcessed += 1
                                 
@@ -1475,7 +1490,7 @@ public class Proton {
     public func removeESRSession(forId: String) {
         
         guard let esrSession = self.esrSessions.first(where: { $0.id == forId }) else { return }
-        WebOperations.shared.addMulti(PostRemoveSessionESROperation(esrSession: esrSession)) { _ in }
+        WebOperations.shared.add(PostRemoveSessionESROperation(esrSession: esrSession), toCustomQueueNamed: Proton.operationQueueMulti) { _ in }
         
     }
     
@@ -1498,7 +1513,7 @@ public class Proton {
         
         if abis.count == 0 { completion(nil); return }
         
-        WebOperations.shared.addSeq(FetchChainInfoOperation(chainProvider: chainProvider)) { result in
+        WebOperations.shared.add(FetchChainInfoOperation(chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
             
             switch result {
             case .success(let info):
@@ -1518,7 +1533,7 @@ public class Proton {
                         
                         if self.esr!.signingRequest.broadcast {
                             
-                            WebOperations.shared.addSeq(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction)) { result in
+                            WebOperations.shared.add(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                                 
                                 switch result {
                                 case .success(let res):
@@ -1531,7 +1546,7 @@ public class Proton {
                                         
                                         if callback.background {
                                             
-                                            WebOperations.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: blockNum)) { result in
+                                            WebOperations.shared.add(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: blockNum), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                                                 
                                                 switch result {
                                                 case .success:
@@ -1611,7 +1626,7 @@ public class Proton {
             
             if callback.background {
                 
-                WebOperations.shared.addSeq(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: nil)) { result in
+                WebOperations.shared.add(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
                     switch result {
                     case .success:
