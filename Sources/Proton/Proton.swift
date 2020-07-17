@@ -1576,15 +1576,17 @@ public class Proton {
                                         switch result {
                                         case .success(let res):
                                             
-                                            if let res = res as? API.V1.Chain.PushTransaction.Response, let blockNum = res.processed["ref_block_num"] as? UInt32 { // Check?
+                                            print((res as! API.V1.Chain.PushTransaction.Response).processed)
+                                            
+                                            if let res = res as? API.V1.Chain.PushTransaction.Response, let blockNum = res.processed["ref_block_num"] as? Int { // Check?
                                                 
-                                                guard let callback = esr.resolved?.getCallback(using: [sig], blockNum: blockNum) else { completion(nil); return }
+                                                guard let callback = esr.resolved?.getCallback(using: [sig], blockNum: UInt32(blockNum)) else { completion(nil); return }
                                                 
                                                 self.updateAccount { _ in }
                                                 
                                                 if callback.background {
                                                     
-                                                    WebOperations.shared.add(PostBackgroundESROperation(esr: esr, sig: sig, blockNum: blockNum), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                                                    WebOperations.shared.add(PostBackgroundESROperation(esr: esr, sig: sig, blockNum: UInt32(blockNum)), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                                                         
                                                         switch result {
                                                         case .success:
