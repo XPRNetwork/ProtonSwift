@@ -170,6 +170,7 @@ public final class ProtonObservable: ObservableObject {
     
     @objc func esrWillSet(_ notification: Notification) {
         guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? ESR else {
+            self.esr = nil
             return
         }
         self.esr = newValue
@@ -177,6 +178,7 @@ public final class ProtonObservable: ObservableObject {
     
     @objc func accountWillSet(_ notification: Notification) {
         guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? Account else {
+            self.account = nil
             return
         }
         self.account = newValue
