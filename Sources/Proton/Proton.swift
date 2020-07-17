@@ -1565,7 +1565,6 @@ public class Proton {
                                 guard let resolvedSigningRequest = try? esr.signingRequest.resolve(using: PermissionLevel(esr.signer.name, Name("active")), abis: abis, tapos: header) else { completion(nil); return }
                                 
                                 esr.resolved = resolvedSigningRequest
-                                self.esr = esr
 
                                 let sig = try privateKey.sign(resolvedSigningRequest.transaction.digest(using: chainId))
                                 let signedTransaction = SignedTransaction(resolvedSigningRequest.transaction, signatures: [sig])
@@ -1669,7 +1668,6 @@ public class Proton {
                     guard let resolvedSigningRequest = try? esr.signingRequest.resolve(using: PermissionLevel(esr.signer.name, Name("active"))) else { completion(nil); return }
                     
                     esr.resolved = resolvedSigningRequest
-                    self.esr = esr
                     
                     let sig = try privateKey.sign(resolvedSigningRequest.transaction.digest(using: chainId))
                     guard let callback = resolvedSigningRequest.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
