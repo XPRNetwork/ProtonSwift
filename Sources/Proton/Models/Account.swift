@@ -97,17 +97,28 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return formatter.string(for: amount) ?? "$0.00"
         
     }
-
-    public func privateKey(forPermissionName: String) -> PrivateKey? {
-        if let permission = self.permissions.first(where: { $0.permName.stringValue == forPermissionName }) {
-            if let keyWeight = permission.requiredAuth.keys.first {
-                if let privateKey = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
-                    return try? PrivateKey(stringValue: privateKey)
-                }
+    
+    public func privateKey(forPermissionName: String, completion: @escaping ((Result<PrivateKey?, Error>) -> Void)) {
+        
+        guard let permission = self.permissions.first(where: { $0.permName.stringValue == forPermissionName }) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to find accout permission of name \(forPermissionName)")))
+            return
+        }
+        
+        guard let keyWeight = permission.requiredAuth.keys.first else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to find key with permission name \(forPermissionName)")))
+            return
+        }
+        
+        DispatchQueue.global().async {
+            if let privateKey = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
+                completion(.success(try? PrivateKey(stringValue: privateKey)))
+            } else {
+                completion(.failure(ProtonError.error("MESSAGE => Unable to find private key in keychain for \(self.name.stringValue)")))
             }
         }
-        return nil
     }
+
     /**
      Check if the Account has private key stored within keychain for the passed permission
      - Parameter forPermissionName: Key permission name. ex: active

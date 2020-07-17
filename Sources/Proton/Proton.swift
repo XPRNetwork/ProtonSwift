@@ -823,57 +823,70 @@ public class Proton {
             return
         }
         
-        guard let privateKey = account.privateKey(forPermissionName: "active") else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to retrive active private key")))
-            return
-        }
-        
-        let transfer = TransferActionABI(from: account.name, to: to, quantity: Asset(quantity, tokenContract.symbol), memo: memo)
-        
-        guard let action = try? Action(account: tokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to create action")))
-            return
-        }
-        
-        WebOperations.shared.add(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+        account.privateKey(forPermissionName: "active") { result in
             
             switch result {
-            case .success(let signedTransaction):
+            case .success(let privateKey):
                 
-                if let signedTransaction = signedTransaction as? SignedTransaction {
+                guard let privateKey = privateKey else {
+                    completion(.failure(ProtonError.error("MESSAGE => Unable to retrive active private key")))
+                    return
+                }
+                
+                let transfer = TransferActionABI(from: account.name, to: to, quantity: Asset(quantity, tokenContract.symbol), memo: memo)
+                
+                guard let action = try? Action(account: tokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
+                    completion(.failure(ProtonError.error("MESSAGE => Unable to create action")))
+                    return
+                }
+                
+                WebOperations.shared.add(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
-                    WebOperations.shared.add(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                    switch result {
+                    case .success(let signedTransaction):
                         
-                        switch result {
-                        case .success(let response):
+                        if let signedTransaction = signedTransaction as? SignedTransaction {
                             
-                            if let response = response as? API.V1.Chain.PushTransaction.Response {
+                            WebOperations.shared.add(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                                 
-                                let tokenTransferAction = TokenTransferAction(chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
+                                switch result {
+                                case .success(let response):
+                                    
+                                    if let response = response as? API.V1.Chain.PushTransaction.Response {
+                                        
+                                        let tokenTransferAction = TokenTransferAction(chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
+                                        
+                                        self.tokenTransferActions.append(tokenTransferAction)
+                                        
+                                        completion(.success(tokenTransferAction))
+                                        
+                                    } else {
+                                        completion(.failure(ProtonError.error("MESSAGE => Unable to push transaction")))
+                                    }
+                                case .failure(let error):
+                                    completion(.failure(error))
+                                }
                                 
-                                self.tokenTransferActions.append(tokenTransferAction)
-                                
-                                completion(.success(tokenTransferAction))
-                                
-                            } else {
-                                completion(.failure(ProtonError.error("MESSAGE => Unable to push transaction")))
                             }
-                        case .failure(let error):
-                            completion(.failure(error))
+                            
+                        } else {
+                            completion(.failure(ProtonError.error("MESSAGE => Unable to sign transaction")))
                         }
                         
+                    case .failure(let error):
+                        completion(.failure(error))
                     }
                     
-                } else {
-                    completion(.failure(ProtonError.error("MESSAGE => Unable to sign transaction")))
                 }
                 
             case .failure(let error):
-                completion(.failure(error))
+                
+                completion(.failure(ProtonError.error("MESSAGE => Unable to sign transaction \(error.localizedDescription)")))
+                
             }
             
         }
-        
+
     }
     
     /**
@@ -900,25 +913,38 @@ public class Proton {
             completion(.failure(ProtonError.error("MESSAGE => No active account")))
             return
         }
-        
-        guard let privateKey = account.privateKey(forPermissionName: "active") else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
-            return
+
+        account.privateKey(forPermissionName: "active") { result in
+            
+            switch result {
+            case .success(let privateKey):
+                
+                guard let privateKey = privateKey else {
+                    completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
+                    return
+                }
+                
+                guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
+                    completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+                    return
+                }
+                
+                do {
+                    let signature = try privateKey.sign(signingData)
+                    completion(.success(signature))
+                    return
+                } catch {
+                    completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+                    return
+                }
+                
+            case .failure(let error):
+                
+                completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+            }
+            
         }
-        
-        guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
-            return
-        }
-        
-        do {
-            let signature = try privateKey.sign(signingData)
-            completion(.success(signature))
-            return
-        } catch {
-            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
-            return
-        }
+
     }
     
     /**
@@ -1273,401 +1299,7 @@ public class Proton {
     
     // MARK: - ESR Functions 🚧 UNDER CONSTRUCTION
     
-    /**
-     🚧 UNDER CONSTRUCTION
-     Use this to parse an esr signing request.
-     - Parameter withURL: URL passed when opening from custom uri: esr://
-     - Parameter completion: Closure thats called when the function is complete. Will return object to be used for displaying request
-     */
-    public func parseESR(withURL url: URL, completion: @escaping (ESR?) -> ()) {
-        
-        do {
-            
-            let signingRequest = try SigningRequest(url.absoluteString)
-            let chainId = signingRequest.chainId
-            
-            guard let requestingAccountName = signingRequest.getInfo("account", as: String.self) else { completion(nil); return }
-            guard let sid = signingRequest.getInfo("sid", as: String.self) else { completion(nil); return }
-            guard let account = self.account, account.chainId == String(chainId) else { completion(nil); return }
-            guard let chainProvider = account.chainProvider else { completion(nil); return }
-            
-            var requestingAccount = Account(chainId: chainId.description, name: requestingAccountName)
-            
-            WebOperations.shared.add(FetchUserAccountInfoOperation(account: requestingAccount, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                
-                switch result {
-                case .success(let acc):
-                    
-                    if let acc = acc as? Account {
-                        requestingAccount = acc
-                    }
-                    
-                    if signingRequest.isIdentity {
-                        
-                        let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: [])
-                        self.esr = response
-                        completion(response)
-                        
-                    } else {
-                        
-                        var abiAccounts = signingRequest.actions.map { $0.account }
-                        abiAccounts = abiAccounts.unique()
-                        
-                        var abiAccountsProcessed = 0
-                        var rawAbis: [String: API.V1.Chain.GetRawAbi.Response] = [:]
-                        
-                        if abiAccounts.count == 0 { completion(nil); return }
-                        
-                        let abidecoder = ABIDecoder()
-                        
-                        for abiAccount in abiAccounts {
-                            
-                            WebOperations.shared.add(FetchRawAbiOperation(account: abiAccount, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
-                                
-                                abiAccountsProcessed += 1
-                                
-                                switch result {
-                                case .success(let rawAbi):
-                                    
-                                    if let rawAbi = rawAbi as? API.V1.Chain.GetRawAbi.Response {
-                                        
-                                        rawAbis[abiAccount.stringValue] = rawAbi
-                                        
-                                    }
-                                    
-                                    if abiAccountsProcessed == abiAccounts.count && abiAccounts.count == rawAbis.count {
-                                        
-                                        let actions: [ESRAction] = signingRequest.actions.compactMap {
-                                            
-                                            let account = $0.account
-                                            
-                                            if let abi = rawAbis[account.stringValue]?.decodedAbi { // TODO
-                                                
-                                                if let transferActionABI = try? abidecoder.decode(TransferActionABI.self, from: $0.data) {
-                                                    
-                                                    let symbol = transferActionABI.quantity.symbol
-                                                    
-                                                    if let tokenContract = self.tokenContracts.first(where: { $0.chainId == String(chainId)
-                                                                                                                && $0.symbol == symbol && $0.contract == account }) {
-                                                        
-                                                        let formatter = NumberFormatter()  // TODO: make this more effiecent
-                                                        formatter.numberStyle = .currency
-                                                        formatter.locale = Locale(identifier: "en_US")
-                                                        let extra = formatter.string(for: transferActionABI.quantity.value * tokenContract.getRate(forCurrencyCode: "USD")) ?? "$0.00"
-                                                        
-                                                        
-                                                        let basicDisplay = ESRAction.BasicDisplay(actiontype: .transfer, name: tokenContract.name,
-                                                                                                  secondary: transferActionABI.quantity.stringValue, extra: "-\(extra)", tokenContract: tokenContract)
-                                                        
-                                                        return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay, abi: abi)
-                                                        
-                                                    }
 
-                                                } else {
-                                                    
-                                                    let basicDisplay = ESRAction.BasicDisplay(actiontype: .custom, name: $0.name.stringValue.uppercased(),
-                                                                                              secondary: nil, extra: nil, tokenContract: nil)
-                                                    
-                                                    return ESRAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay, abi: abi)
-                                                    
-                                                }
-
-                                            }
-                                            
-                                            return nil
-                                            
-                                        }
-                                        
-                                        print("ESR ACTIONS => \(actions.count)")
-                                        
-                                        if actions.count > 0 {
-                                            
-                                            let response = ESR(requestor: requestingAccount, signer: account, signingRequest: signingRequest, sid: sid, actions: actions)
-                                            self.esr = response
-                                            completion(response)
-
-                                        } else {
-                                            completion(nil)
-                                        }
-
-                                    }
-                                    
-                                case .failure(let error):
-                                    print("ERROR: \(error.localizedDescription)")
-                                    completion(nil)
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                    }
-
-                case .failure(let error):
-                    print("ERROR: \(error.localizedDescription)")
-                    completion(nil)
-                }
-                
-            }
-            
-        } catch {
-            completion(nil)
-        }
-        
-    }
-
-    /**
-     🚧 UNDER CONSTRUCTION
-     Use this to decline signing request
-     - Parameter completion: Closure thats called when the function is complete.
-     */
-    public func declineESR(completion: @escaping () -> ()) {
-        
-        self.esr = nil
-        completion()
-        
-    }
-    
-    /**
-     🚧 UNDER CONSTRUCTION
-     Use this to accept signing request
-     - Parameter completion: Closure thats called when the function is complete.
-     */
-    public func acceptESR(completion: @escaping (URL?) -> ()) {
-        
-        guard let esr = self.esr else { completion(nil); return }
-        
-        if esr.signingRequest.isIdentity {
-            
-            self.handleIdentityESR { url in
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                
-                    self.esr = nil
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    
-                        completion(url)
-                        
-                    }
-                    
-                }
-
-            }
-            
-        } else if esr.signingRequest.actions.count > 0 {
-
-            self.handleActionsESR { url in
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                
-                    self.esr = nil
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-
-                        completion(url)
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        } else {
-            
-            self.esr = nil
-            completion(nil)
-            
-        }
-        
-    }
-    
-    /**
-     🚧 UNDER CONSTRUCTION
-     Use this to remove authorization
-     - Parameter forId: esr Session Id
-     */
-    public func removeESRSession(forId: String) {
-        
-        guard let esrSession = self.esrSessions.first(where: { $0.id == forId }) else { return }
-        WebOperations.shared.add(PostRemoveSessionESROperation(esrSession: esrSession), toCustomQueueNamed: Proton.operationQueueMulti) { _ in }
-        
-    }
-    
-    private func handleActionsESR(completion: @escaping (URL?) -> ()) {
-        
-        guard let privateKey = esr?.signer.privateKey(forPermissionName: "active") else { completion(nil); return }
-        guard let signer = esr?.signer else { completion(nil); return }
-        guard let chainProvider = signer.chainProvider else { completion(nil); return }
-        guard let chainId = esr?.signingRequest.chainId else { completion(nil); return }
-        guard let sid = esr?.sid else { completion(nil); return }
-        guard let actions = esr?.actions else { completion(nil); return }
-        
-        var abis: [Name: ABI] = [:]
-        
-        for action in actions {
-            if let abi = action.abi {
-                abis[action.account] = abi
-            }
-        }
-        
-        if abis.count == 0 { completion(nil); return }
-        
-        WebOperations.shared.add(FetchChainInfoOperation(chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-            
-            switch result {
-            case .success(let info):
-                
-                if let info = info as? API.V1.Chain.GetInfo.Response {
-                    
-                    let expiration = info.headBlockTime.addingTimeInterval(60)
-                    let header = TransactionHeader(expiration: TimePointSec(expiration),
-                                                   refBlockId: info.lastIrreversibleBlockId)
-                    
-                    do {
-
-                        self.esr?.resolved = try self.esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")), abis: abis, tapos: header)
-                        guard let _ = self.esr?.resolved else { completion(nil); return }
-                        let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
-                        let signedTransaction = SignedTransaction(self.esr!.resolved!.transaction, signatures: [sig])
-                        
-                        if self.esr!.signingRequest.broadcast {
-                            
-                            WebOperations.shared.add(PushTransactionOperation(account: signer, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                                
-                                switch result {
-                                case .success(let res):
-                                    
-                                    if let res = res as? API.V1.Chain.PushTransaction.Response, let blockNum = res.processed["blockNum"] as? UInt32 { // Check?
-                                        
-                                        guard let callback = self.esr!.resolved!.getCallback(using: [sig], blockNum: blockNum) else { completion(nil); return }
-                                        
-                                        self.updateAccount { _ in }
-                                        
-                                        if callback.background {
-                                            
-                                            WebOperations.shared.add(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: blockNum), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                                                
-                                                switch result {
-                                                case .success:
-
-                                                    completion(nil)
-                                                    
-                                                case .failure:
-
-                                                    completion(nil)
-                                                    
-                                                }
-
-                                            }
-                                            
-                                        } else {
-                                            
-                                            var newPath = callback.url
-                                            newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
-                                            
-                                            completion(URL(string: newPath))
-                                            
-                                        }
-                                        
-                                    }
-
-                                case .failure:
-
-                                    completion(nil)
-                                    
-                                }
-                                
-                            }
-                            
-                        } else {
-                            
-                            completion(nil)
-                            
-                        }
-                        
-                    } catch {
-                        print(error.localizedDescription)
-                        completion(nil)
-                    }
-
-                } else {
-                    completion(nil)
-                }
-                
-            case .failure(let error):
-                print(error)
-                completion(nil)
-            }
-            
-        }
-
-    }
-    
-    private func handleIdentityESR(completion: @escaping (URL?) -> ()) {
-        
-        guard let privateKey = esr?.signer.privateKey(forPermissionName: "active") else { completion(nil); return }
-        guard let signer = esr?.signer else { completion(nil); return }
-        guard let chainId = esr?.signingRequest.chainId else { completion(nil); return }
-        guard let sid = esr?.sid else { completion(nil); return }
-
-        do {
-
-            self.esr?.resolved = try esr?.signingRequest.resolve(using: PermissionLevel(signer.name, Name("active")))
-            guard let _ = self.esr?.resolved else { completion(nil); return }
-            let sig = try privateKey.sign(self.esr!.resolved!.transaction.digest(using: chainId))
-            guard let callback = esr!.resolved!.getCallback(using: [sig], blockNum: nil) else { completion(nil); return }
-            print(callback.url)
-            print(sig)
-            
-            let session = ESRSession(requestor: self.esr!.requestor, signer: signer.name,
-                                     chainId: String(chainId), sid: sid,
-                                     callbackUrl: callback.url, rs: self.esr?.signingRequest.getInfo("rs", as: String.self))
-            
-            if callback.background {
-                
-                WebOperations.shared.add(PostBackgroundESROperation(esr: self.esr!, sig: sig, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                    
-                    switch result {
-                    case .success:
-
-                        if let idx = self.esrSessions.firstIndex(of: session) {
-                            self.esrSessions[idx] = session
-                        } else {
-                            self.esrSessions.append(session)
-                        }
-                        
-                        completion(nil)
-                        
-                    case .failure:
-
-                        completion(nil)
-                        
-                    }
-
-                }
-
-            } else {
-                
-                var newPath = callback.url
-                newPath = newPath.replacingOccurrences(of: "{{sid}}", with: sid)
-                
-                if let idx = self.esrSessions.firstIndex(of: session) {
-                    self.esrSessions[idx] = session
-                } else {
-                    self.esrSessions.append(session)
-                }
-                
-                completion(URL(string: newPath))
-                
-            }
-            
-        } catch {
-            
-            completion(nil)
-        }
-        
-    }
     
 }
 
