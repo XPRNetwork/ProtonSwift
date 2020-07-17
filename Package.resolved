@@ -41,9 +41,9 @@
         "package": "WebOperations",
         "repositoryURL": "https://github.com/ProtonProtocol/WebOperations.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "18c017ce07532ee4804b9c5e2dd61c8626a6af6a",
-          "version": null
+          "version": "0.5.0-beta"
         }
       }
     ]
