@@ -1576,7 +1576,7 @@ public class Proton {
                                         switch result {
                                         case .success(let res):
                                             
-                                            if let res = res as? API.V1.Chain.PushTransaction.Response, let blockNum = res.processed["headBlockNum"] as? UInt32 { // Check?
+                                            if let res = res as? API.V1.Chain.PushTransaction.Response, let blockNum = res.processed["ref_block_num"] as? UInt32 { // Check?
                                                 
                                                 guard let callback = esr.resolved?.getCallback(using: [sig], blockNum: blockNum) else { completion(nil); return }
                                                 
