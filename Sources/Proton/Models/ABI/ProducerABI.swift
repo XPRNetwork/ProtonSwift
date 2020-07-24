@@ -14,10 +14,10 @@ struct ProducerABI: ABICodable {
     let owner: Name
     let total_votes: Float64
     let is_active: Bool
-    let url: Data
+    let url: URL
     
     var str: String? {
-        return String(data: url, encoding: .utf32)
+        return url.absoluteString
     }
 
 }
