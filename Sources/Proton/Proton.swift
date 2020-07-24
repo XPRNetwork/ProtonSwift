@@ -1395,7 +1395,7 @@ public class Proton {
                     
                     if let producers = producers as? [ProducerABI] {
                         for producer in producers {
-                            print(producer.str)
+                            print(producer.url)
                         }
                         //print(producers)
                     }
