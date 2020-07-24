@@ -31,7 +31,7 @@ class FetchProducersOperation: BaseOperation {
         var req = API.V1.Chain.GetTableRows<ProducerABI>(code: Name(stringValue: "eosio"),
                                                          table: Name(stringValue: "producers"),
                                                          scope: "eosio")
-        req.limit = 100
+        //req.limit = 100
 
         do {
 

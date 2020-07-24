@@ -17,7 +17,7 @@ struct ProducerABI: ABICodable {
     let url: Data
     
     var str: String? {
-        return String(data: url, encoding: .unicode)
+        return String(data: url, encoding: .utf32)
     }
 
 }
