@@ -451,94 +451,109 @@ public class Proton {
                         self.account = account
                         NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                         
-                        self.fetchBalances(forAccount: account) { result in
+                        self.fetchAccountVotingAndStakingInfo(forAccount: account) { result in
                             
                             switch result {
-                            case .success(let tokenBalances):
+                            case .success(let returnAccount):
                                 
-                                for tokenBalance in tokenBalances {
-                                    if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
-                                        self.tokenBalances[idx] = tokenBalance
-                                    } else {
-                                        self.tokenBalances.append(tokenBalance)
-                                    }
-                                }
+                                account = returnAccount
+                                self.account = account
+                                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                 
-                                let tokenBalancesCount = self.tokenBalances.count
-                                var tokenBalancesProcessed = 0
-                                
-                                if tokenBalancesCount > 0 {
+                                self.fetchBalances(forAccount: account) { result in
                                     
-                                    for tokenBalance in self.tokenBalances {
+                                    switch result {
+                                    case .success(let tokenBalances):
                                         
-                                        self.fetchTransferActions(forTokenBalance: tokenBalance) { result in
-                                            
-                                            tokenBalancesProcessed += 1
-                                            
-                                            switch result {
-                                            case .success(let transferActions):
-                                                
-                                                for transferAction in transferActions {
-                                                    
-                                                    if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
-                                                        self.tokenTransferActions[idx] = transferAction
-                                                    } else {
-                                                        self.tokenTransferActions.append(transferAction)
-                                                    }
-                                                    
-                                                }
-
-                                            case .failure: break
+                                        for tokenBalance in tokenBalances {
+                                            if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
+                                                self.tokenBalances[idx] = tokenBalance
+                                            } else {
+                                                self.tokenBalances.append(tokenBalance)
                                             }
-                                            
-                                            if tokenBalancesProcessed == tokenBalancesCount {
-
-                                                self.fetchContacts(forAccount: account) { result in
-                                                    
-                                                    switch result {
-                                                    case .success(let contacts):
-                                                        
-                                                        for contact in contacts {
-                                                            if let idx = self.contacts.firstIndex(of: contact) {
-                                                                self.contacts[idx] = contact
-                                                            } else {
-                                                                self.contacts.append(contact)
-                                                            }
-                                                        }
-                                                        
-                                                    case .failure: break
-                                                    }
-
-                                                    completion(.success(account))
-                                                    self.saveAll()
-                                                    NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
-                                                     
-                                                    print("🧑‍💻 UPDATE COMPLETED")
-                                                    print("ACCOUNT => \(String(describing: self.account?.name))")
-                                                    print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
-                                                    print("TOKEN BALANCES => \(self.tokenBalances.count)")
-                                                    print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
-                                                    print("CONTACTS => \(self.contacts.count)")
-                                                    print("ESR SESSIONS => \(self.esrSessions.count)")
-                                                    
-                                                }
-
-                                            }
-
                                         }
                                         
+                                        let tokenBalancesCount = self.tokenBalances.count
+                                        var tokenBalancesProcessed = 0
+                                        
+                                        if tokenBalancesCount > 0 {
+                                            
+                                            for tokenBalance in self.tokenBalances {
+                                                
+                                                self.fetchTransferActions(forTokenBalance: tokenBalance) { result in
+                                                    
+                                                    tokenBalancesProcessed += 1
+                                                    
+                                                    switch result {
+                                                    case .success(let transferActions):
+                                                        
+                                                        for transferAction in transferActions {
+                                                            
+                                                            if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
+                                                                self.tokenTransferActions[idx] = transferAction
+                                                            } else {
+                                                                self.tokenTransferActions.append(transferAction)
+                                                            }
+                                                            
+                                                        }
+
+                                                    case .failure: break
+                                                    }
+                                                    
+                                                    if tokenBalancesProcessed == tokenBalancesCount {
+
+                                                        self.fetchContacts(forAccount: account) { result in
+                                                            
+                                                            switch result {
+                                                            case .success(let contacts):
+                                                                
+                                                                for contact in contacts {
+                                                                    if let idx = self.contacts.firstIndex(of: contact) {
+                                                                        self.contacts[idx] = contact
+                                                                    } else {
+                                                                        self.contacts.append(contact)
+                                                                    }
+                                                                }
+                                                                
+                                                            case .failure: break
+                                                            }
+
+                                                            completion(.success(account))
+                                                            self.saveAll()
+                                                            NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
+                                                             
+                                                            print("🧑‍💻 UPDATE COMPLETED")
+                                                            print("ACCOUNT => \(String(describing: self.account?.name))")
+                                                            print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
+                                                            print("TOKEN BALANCES => \(self.tokenBalances.count)")
+                                                            print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
+                                                            print("CONTACTS => \(self.contacts.count)")
+                                                            print("ESR SESSIONS => \(self.esrSessions.count)")
+                                                            
+                                                        }
+
+                                                    }
+
+                                                }
+                                                
+                                            }
+                                            
+                                        } else {
+                                            completion(.failure(ProtonError.error("MESSAGE => No TokenBalances found for account: \(account.name)")))
+                                        }
+                                        
+                                    case .failure(let error):
+                                        completion(.failure(error))
                                     }
-                                    
-                                } else {
-                                    completion(.failure(ProtonError.error("MESSAGE => No TokenBalances found for account: \(account.name)")))
+
                                 }
                                 
                             case .failure(let error):
                                 completion(.failure(error))
                             }
-
+                            
                         }
-                        
+
                     case .failure(let error):
                         completion(.failure(error))
                     }
@@ -1170,7 +1185,7 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebOperations.shared.add(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            WebOperations.shared.add(FetchUserAccountInfoOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                 
                 switch result {
                 case .success(let updatedAccount):
@@ -1295,6 +1310,42 @@ public class Proton {
             
         }
 
+    }
+    
+    /**
+     :nodoc:
+     Fetches the accounts voting info
+     This includes stuff like amount staked, claim amount , etc
+     - Parameter forAccount: Account
+     - Parameter completion: Closure returning Result
+     */
+    private func fetchAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        var account = account
+        
+        if let chainProvider = account.chainProvider {
+            
+            WebOperations.shared.add(FetchUserVoterOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                
+                switch result {
+                case .success(let updatedAccount):
+                    
+                    if let updatedAccount = updatedAccount as? Account {
+                        account = updatedAccount
+                    }
+                    
+                    completion(.success(account))
+                    
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+                
+            }
+            
+        } else {
+            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+        }
+        
     }
     
     // MARK: - ESR Functions 🚧 UNDER CONSTRUCTION
