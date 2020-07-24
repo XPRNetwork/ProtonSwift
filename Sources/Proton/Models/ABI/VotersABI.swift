@@ -12,9 +12,9 @@ import Foundation
 struct VotersABI: ABICodable {
 
     let owner: Name
-    let proxy: Name?
+    let proxy: Name
     let producers: [Name]
-    let staked: Int64
+    let staked: FCInt<Int64>
 //    let last_vote_weight: Float64
 //    let proxied_vote_weight: Float64
 //    let is_proxy: UInt8
