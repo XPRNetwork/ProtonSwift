@@ -432,6 +432,7 @@ public class Proton {
         }
         
         self.updateExchangeRates { _ in }
+        self.fetchProducers { _ in }
         
         self.fetchAccount(account) { result in
             
@@ -1367,6 +1368,65 @@ public class Proton {
                 }
                 
             }
+            
+        } else {
+            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+        }
+        
+    }
+    
+    /**
+     :nodoc:
+     Fetches block producers for chain
+     This includes stuff like amount staked, claim amount , etc
+     - Parameter completion: Closure returning Result
+     */
+    private func fetchProducers(completion: @escaping ((Result<[ProducerABI]?, Error>) -> Void)) {
+        
+        if let chainProvider = self.chainProvider {
+            
+            let operationCount = 1
+            var operationsProcessed = 0
+
+            WebOperations.shared.add(FetchProducersOperation(chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                
+                switch result {
+                case .success(let producers):
+                    
+                    if let producers = producers as? [ProducerABI] {
+                        print(producers)
+                    }
+                    
+                case .failure: break
+                }
+                
+                operationsProcessed += 1
+                
+                if operationCount == operationsProcessed {
+                    completion(.success(nil))
+                }
+                
+            }
+            
+//            WebOperations.shared.add(FetchUserVotersOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+//
+//                switch result {
+//                case .success(let votersABI):
+//
+//                    if let votersABI = votersABI as? VotersABI {
+//                        print(votersABI)
+//                    }
+//
+//                case .failure: break
+//                }
+//
+//                operationsProcessed += 1
+//
+//                if operationCount == operationsProcessed {
+//                    completion(.success(account))
+//                }
+//
+//            }
             
         } else {
             completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))

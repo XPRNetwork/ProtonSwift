@@ -1,5 +1,5 @@
 //
-//  VotersABI.swift
+//  ProducerABI.swift
 //  Proton
 //
 //  Created by Jacob Davis on 7/24/20.
@@ -9,11 +9,11 @@
 import EOSIO
 import Foundation
 
-struct VotersABI: ABICodable {
+struct ProducerABI: ABICodable {
 
     let owner: Name
-    let proxy: Name
-    let producers: [Name]
-    let staked: FCInt<Int64>
+    let total_votes: Float64
+    let is_active: Bool
+    let url: String
 
 }
