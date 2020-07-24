@@ -1325,19 +1325,45 @@ public class Proton {
         
         if let chainProvider = account.chainProvider {
             
-            WebOperations.shared.add(FetchUserVoterOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+            let operationCount = 2
+            var operationsProcessed = 0
+
+            WebOperations.shared.add(FetchUserVotersXPROperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
                 switch result {
-                case .success(let updatedAccount):
+                case .success(let votersXPRABI):
                     
-                    if let updatedAccount = updatedAccount as? Account {
-                        account = updatedAccount
+                    if let votersXPRABI = votersXPRABI as? VotersXPRABI {
+                        print(votersXPRABI)
                     }
                     
+                case .failure: break
+                }
+                
+                operationsProcessed += 1
+                
+                if operationCount == operationsProcessed {
                     completion(.success(account))
+                }
+                
+            }
+            
+            WebOperations.shared.add(FetchUserVotersOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                
+                switch result {
+                case .success(let votersABI):
                     
-                case .failure(let error):
-                    completion(.failure(error))
+                    if let votersABI = votersABI as? VotersABI {
+                        print(votersABI)
+                    }
+                    
+                case .failure: break
+                }
+                
+                operationsProcessed += 1
+                
+                if operationCount == operationsProcessed {
+                    completion(.success(account))
                 }
                 
             }
