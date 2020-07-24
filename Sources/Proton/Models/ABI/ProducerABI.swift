@@ -15,5 +15,9 @@ struct ProducerABI: ABICodable {
     let total_votes: Float64
     let is_active: Bool
     let url: Data
+    
+    var str: String? {
+        return String(data: url, encoding: .utf8)
+    }
 
 }

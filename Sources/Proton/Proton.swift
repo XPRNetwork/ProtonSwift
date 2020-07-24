@@ -1394,7 +1394,10 @@ public class Proton {
                 case .success(let producers):
                     
                     if let producers = producers as? [ProducerABI] {
-                        print(producers)
+                        for producer in producers {
+                            print(producer.str)
+                        }
+                        //print(producers)
                     }
                     
                 case .failure: break
