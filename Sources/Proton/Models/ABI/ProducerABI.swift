@@ -11,7 +11,7 @@ import Foundation
 
 struct ProducerABI: Codable {
 
-    let owner: String
+    let owner: Name
 //    let total_votes: Double
 //    let is_active: Bool
 //    let url: String
