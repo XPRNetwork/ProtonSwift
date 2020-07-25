@@ -49,6 +49,10 @@ class FetchProducersOperation: BaseOperation {
                 if let data = try? JSONSerialization.data(withJSONObject: rows, options: .prettyPrinted) {
                     producers = try? decoder.decode([ProducerABI].self, from: data)
                 }
+                
+                producers?.sort {
+                    $0.total_votes.value < $1.total_votes.value
+                }
 
                 self.finish(retval: producers, error: nil)
             case .failure(let error):
