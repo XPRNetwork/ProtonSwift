@@ -1396,6 +1396,9 @@ public class Proton {
                     if let producers = producers as? [ProducerABI] {
                         for producer in producers {
                             //print(producer.url)
+                            print(producer.owner.stringValue)
+                            print(producer.total_votes.value)
+                            print(producer.url)
                         }
                         //print(producers)
                     }
