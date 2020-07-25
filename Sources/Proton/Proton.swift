@@ -1397,7 +1397,7 @@ public class Proton {
                         for producer in producers {
                             //print(producer.url)
                             print(producer.owner.stringValue)
-                            print(producer.total_votes)
+                            print(Int64(producer.total_votes.value))
                             print(producer.url)
                         }
                         //print(producers)
