@@ -12,7 +12,7 @@ import Foundation
 struct ProducerABI: Codable {
 
     let owner: Name
-//    let total_votes: Double
+    let total_votes: Float64
 //    let is_active: Bool
 //    let url: String
 
