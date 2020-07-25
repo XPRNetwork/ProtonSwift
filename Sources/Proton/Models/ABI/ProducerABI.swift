@@ -9,7 +9,7 @@
 import EOSIO
 import Foundation
 
-struct ProducerABI: Codable {
+struct ProducerABI: ABICodable {
 
     let owner: Name
     let total_votes: Float64
