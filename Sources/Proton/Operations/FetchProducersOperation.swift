@@ -22,7 +22,7 @@ class FetchProducersOperation: BaseOperation {
 
         super.main()
         
-        guard let url = URL(string: chainProvider.chainUrl) else {
+        guard let url = URL(string: "\(chainProvider.chainUrl)/v1/chain/get_table_rows") else {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
