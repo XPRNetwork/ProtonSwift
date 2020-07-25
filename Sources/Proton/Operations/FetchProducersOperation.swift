@@ -26,21 +26,60 @@ class FetchProducersOperation: BaseOperation {
             self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
             return
         }
+        
+        let params = [
+            "scope": "eosio",
+            "table": "producers",
+            "code": "eosio",
+            "json": true,
+            "limit": 100
+            ] as [String : Any]
+        
+        WebOperations.shared.request(method: .post, url: url, parameters: params) { (result: Result<[String: Any]?, Error>) in
 
-        let client = Client(address: url)
-        var req = API.V1.Chain.GetTableRows<ProducerABI>(code: Name(stringValue: "eosio"),
-                                                         table: Name(stringValue: "producers"),
-                                                         scope: "eosio")
-        //req.limit = 100
-
-        do {
-
-            let res = try client.sendSync(req).get()
-            finish(retval: res.rows, error: nil)
-
-        } catch {
-            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetTableRows<ProducerABI>.path)\nERROR => \(error.localizedDescription)"))
+            switch result {
+            case .success(let res):
+                guard let res = res else { self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching producers table")); return }
+                guard let rows = res["rows"] as? [[String: Any]], rows.count > 0 else { self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching producers table")); return }
+                
+                var producers = [ProducerABI]()
+                
+                for row in rows {
+                    
+//                    let owner: Name
+//                    let total_votes: Float64
+//                    let is_active: Bool
+//                    let url: String?
+                    
+                    print(row)
+                    
+                }
+                
+                
+                
+                
+                
+                self.finish(retval: producers, error: nil)
+            case .failure(let error):
+                self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching producers table\nERROR => \(error.localizedDescription)"))
+            }
+            
         }
+
+//        let client = Client(address: url)
+//        var req = API.V1.Chain.GetTableRows<ProducerABI>(code: Name(stringValue: "eosio"),
+//                                                         table: Name(stringValue: "producers"),
+//                                                         scope: "eosio")
+//        //req.limit = 100
+//
+//        do {
+//
+//            let res = try client.sendSync(req).get()
+//            finish(retval: res.rows, error: nil)
+//
+//        } catch {
+//            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetTableRows<ProducerABI>.path)\nERROR => \(error.localizedDescription)"))
+//        }
 
     }
 
