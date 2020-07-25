@@ -42,23 +42,13 @@ class FetchProducersOperation: BaseOperation {
                 guard let res = res else { self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching producers table")); return }
                 guard let rows = res["rows"] as? [[String: Any]], rows.count > 0 else { self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching producers table")); return }
                 
-                var producers = [ProducerABI]()
+                let decoder = JSONDecoder()
+                var producers: [ProducerABI]?
                 
-                for row in rows {
-                    
-//                    let owner: Name
-//                    let total_votes: Float64
-//                    let is_active: Bool
-//                    let url: String?
-                    
-                    print(row)
-                    
+                if let data = try? JSONSerialization.data(withJSONObject: rows, options: .prettyPrinted) {
+                    producers = try? decoder.decode([ProducerABI].self, from: data)
                 }
-                
-                
-                
-                
-                
+
                 self.finish(retval: producers, error: nil)
             case .failure(let error):
                 self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching producers table\nERROR => \(error.localizedDescription)"))
