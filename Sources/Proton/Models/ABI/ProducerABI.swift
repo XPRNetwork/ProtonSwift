@@ -13,7 +13,7 @@ struct ProducerABI: ABICodable {
 
     let owner: Name
     let total_votes: Float64
-    //let is_active: Bool
+    let is_active: UInt8
     let url: String
 
 }
