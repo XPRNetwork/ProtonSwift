@@ -50,8 +50,9 @@ class FetchProducersOperation: BaseOperation {
                     producers = try? decoder.decode([ProducerABI].self, from: data)
                 }
                 
-                producers?.sort {
-                    $0.total_votes.value < $1.total_votes.value
+                producers?.removeAll(where: { $0.is_active != 0x01 }) // remove non-active producers
+                producers?.sort {                                     // sort from top to bottom
+                    $0.total_votes.value > $1.total_votes.value
                 }
 
                 self.finish(retval: producers, error: nil)
