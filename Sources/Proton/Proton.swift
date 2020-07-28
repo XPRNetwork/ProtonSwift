@@ -919,6 +919,33 @@ public class Proton {
     }
     
     /**
+    Creates signature by signing arbitrary string
+     - Parameter completion: Closure returning Result
+     */
+    public func signArbitrary(string: String, withPrivateKeyString privateKeyString: String, completion: @escaping ((Result<Signature, Error>) -> Void)) {
+        
+        guard let privateKey = PrivateKey(privateKeyString) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
+            return
+        }
+        
+        guard let signingData = string.data(using: String.Encoding.utf8) else {
+            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+            return
+        }
+        
+        do {
+            let signature = try privateKey.sign(signingData)
+            completion(.success(signature))
+            return
+        } catch {
+            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+            return
+        }
+
+    }
+    
+    /**
      :nodoc:
     Creates signature for updating avatar and userdefined name
      - Parameter completion: Closure returning Result
