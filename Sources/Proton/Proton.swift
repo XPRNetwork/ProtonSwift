@@ -130,7 +130,7 @@ public class Proton {
      Checks if user has authentication enabled. At least passcode set is required
      - Returns: Bool
      */
-    func authenticationEnabled() -> Bool {
+    public func authenticationEnabled() -> Bool {
         let context = LAContext()
         var authError: NSError?
         if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError) {
