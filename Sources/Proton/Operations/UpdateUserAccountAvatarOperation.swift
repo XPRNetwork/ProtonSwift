@@ -54,7 +54,7 @@ class UpdateUserAccountAvatarOperation: BaseOperation {
         if width > 600 || height > 600 {
             
             guard let resizedImage = resizedImage(image: image) else {
-                self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR RESIZING IMAGE"))
+                self.finish(retval: nil, error: ProtonError.error("ERROR RESIZING IMAGE"))
                 return
             }
             
@@ -65,20 +65,20 @@ class UpdateUserAccountAvatarOperation: BaseOperation {
         #if os(macOS)
         
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR CONVERTING IMAGE TO DATA"))
+            self.finish(retval: nil, error: ProtonError.error("ERROR CONVERTING IMAGE TO DATA"))
             return
         }
         
         let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
         guard let imageData = bitmapRep.representation(using: NSBitmapImageRep.FileType.jpeg, properties: [:]) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR CONVERTING IMAGE TO DATA"))
+            self.finish(retval: nil, error: ProtonError.error("ERROR CONVERTING IMAGE TO DATA"))
             return
         }
         
         #else
         
         guard let imageData = self.image.jpegData(compressionQuality: 1) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => ERROR CONVERTING IMAGE TO DATA"))
+            self.finish(retval: nil, error: ProtonError.error("ERROR CONVERTING IMAGE TO DATA"))
             return
         }
         
@@ -96,7 +96,7 @@ class UpdateUserAccountAvatarOperation: BaseOperation {
         }
         
         guard let url = URL(string: path) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form URL for updateAccountNameUrl"))
+            self.finish(retval: nil, error: ProtonError.error("Unable to form URL for updateAccountNameUrl"))
             return
         }
         

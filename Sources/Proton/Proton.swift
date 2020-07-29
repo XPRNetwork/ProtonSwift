@@ -16,6 +16,7 @@ import UIKit
 #endif
 import KeychainAccess
 import WebOperations
+import LocalAuthentication
 
 /**
  The Proton class is the heart of the ProtonSwift SDK.
@@ -123,6 +124,19 @@ public class Proton {
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
         
+    }
+    
+    /**
+     Checks if user has authentication enabled. At least passcode set is required
+     - Returns: Bool
+     */
+    func authenticationEnabled() -> Bool {
+        let context = LAContext()
+        var authError: NSError?
+        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError) {
+            return true
+        }
+        return false
     }
     
     /**
@@ -385,7 +399,7 @@ public class Proton {
     public func updateExchangeRates(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
         guard let chainProvider = self.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Missing ChainProvider")))
+            completion(.failure(ProtonError.error("Missing ChainProvider")))
             return
         }
         
@@ -427,7 +441,7 @@ public class Proton {
     public func updateAccount(completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
-            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            completion(.failure(ProtonError.error("No active account")))
             return
         }
         
@@ -540,7 +554,7 @@ public class Proton {
                                             }
                                             
                                         } else {
-                                            completion(.failure(ProtonError.error("MESSAGE => No TokenBalances found for account: \(account.name)")))
+                                            completion(.failure(ProtonError.error("No TokenBalances found for account: \(account.name)")))
                                         }
                                         
                                     case .failure(let error):
@@ -577,12 +591,12 @@ public class Proton {
     public func updateAccountUserDefinedName(userDefinedName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
-            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            completion(.failure(ProtonError.error("No active account")))
             return
         }
         
         guard let chainProvider = self.account?.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
             return
         }
         
@@ -630,12 +644,12 @@ public class Proton {
     public func updateAccountAvatar(image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
-            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            completion(.failure(ProtonError.error("No active account")))
             return
         }
         
         guard let chainProvider = account.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
             return
         }
         
@@ -683,12 +697,12 @@ public class Proton {
     public func updateAccountUserDefinedNameAndAvatar(userDefinedName: String, image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
-            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            completion(.failure(ProtonError.error("No active account")))
             return
         }
         
         guard let chainProvider = self.account?.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
             return
         }
         
@@ -773,7 +787,7 @@ public class Proton {
                 }
 
             } else {
-                completion(.failure(ProtonError.error("MESSAGE => Key not associated with Account")))
+                completion(.failure(ProtonError.error("Key not associated with Account")))
             }
 
         } catch {
@@ -804,7 +818,7 @@ public class Proton {
             }
             
         } catch {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to parse Private Key")))
+            completion(.failure(ProtonError.error("Unable to parse Private Key")))
         }
         
     }
@@ -820,22 +834,22 @@ public class Proton {
     public func transfer(to: Name, quantity: Double, tokenContract: TokenContract, memo: String = "", completion: @escaping ((Result<TokenTransferAction, Error>) -> Void)) {
         
         guard let account = self.account else {
-            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            completion(.failure(ProtonError.error("No active account")))
             return
         }
         
         guard let chainProvider = account.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to find chain provider")))
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
             return
         }
         
         guard let tokenBalance = self.tokenBalances.first(where: { $0.tokenContractId == tokenContract.id }) else {
-            completion(.failure(ProtonError.error("MESSAGE => Account has no token balance for \(tokenContract.name)")))
+            completion(.failure(ProtonError.error("Account has no token balance for \(tokenContract.name)")))
             return
         }
         
         if quantity > tokenBalance.amount.value {
-            completion(.failure(ProtonError.error("MESSAGE => Account balance insufficient")))
+            completion(.failure(ProtonError.error("Account balance insufficient")))
             return
         }
         
@@ -845,14 +859,14 @@ public class Proton {
             case .success(let privateKey):
                 
                 guard let privateKey = privateKey else {
-                    completion(.failure(ProtonError.error("MESSAGE => Unable to retrive active private key")))
+                    completion(.failure(ProtonError.error("Unable to retrive active private key")))
                     return
                 }
                 
                 let transfer = TransferActionABI(from: account.name, to: to, quantity: Asset(quantity, tokenContract.symbol), memo: memo)
                 
                 guard let action = try? Action(account: tokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
-                    completion(.failure(ProtonError.error("MESSAGE => Unable to create action")))
+                    completion(.failure(ProtonError.error("Unable to create action")))
                     return
                 }
                 
@@ -877,7 +891,7 @@ public class Proton {
                                         completion(.success(tokenTransferAction))
                                         
                                     } else {
-                                        completion(.failure(ProtonError.error("MESSAGE => Unable to push transaction")))
+                                        completion(.failure(ProtonError.error("Unable to push transaction")))
                                     }
                                 case .failure(let error):
                                     completion(.failure(error))
@@ -886,7 +900,7 @@ public class Proton {
                             }
                             
                         } else {
-                            completion(.failure(ProtonError.error("MESSAGE => Unable to sign transaction")))
+                            completion(.failure(ProtonError.error("Unable to sign transaction")))
                         }
                         
                     case .failure(let error):
@@ -897,7 +911,7 @@ public class Proton {
                 
             case .failure(let error):
                 
-                completion(.failure(ProtonError.error("MESSAGE => Unable to sign transaction \(error.localizedDescription)")))
+                completion(.failure(ProtonError.error("Unable to sign transaction")))
                 
             }
             
@@ -925,12 +939,12 @@ public class Proton {
     public func signArbitrary(string: String, withPrivateKeyString privateKeyString: String, completion: @escaping ((Result<Signature, Error>) -> Void)) {
         
         guard let privateKey = PrivateKey(privateKeyString) else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
+            completion(.failure(ProtonError.error("Unable to fetch private key")))
             return
         }
         
         guard let signingData = string.data(using: String.Encoding.utf8) else {
-            completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+            completion(.failure(ProtonError.error("Unable generate signing string data")))
             return
         }
         
@@ -939,7 +953,7 @@ public class Proton {
             completion(.success(signature))
             return
         } catch {
-            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+            completion(.failure(ProtonError.error(error.localizedDescription)))
             return
         }
 
@@ -953,7 +967,7 @@ public class Proton {
     private func signforAccountUpdate(completion: @escaping ((Result<Signature, Error>) -> Void)) {
         
         guard let account = self.account else {
-            completion(.failure(ProtonError.error("MESSAGE => No active account")))
+            completion(.failure(ProtonError.error("No active account")))
             return
         }
 
@@ -963,12 +977,12 @@ public class Proton {
             case .success(let privateKey):
                 
                 guard let privateKey = privateKey else {
-                    completion(.failure(ProtonError.error("MESSAGE => Unable to fetch private key")))
+                    completion(.failure(ProtonError.error("Unable to fetch private key")))
                     return
                 }
                 
                 guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
-                    completion(.failure(ProtonError.error("MESSAGE => Unable generate signing string data")))
+                    completion(.failure(ProtonError.error("Unable generate signing string data")))
                     return
                 }
                 
@@ -977,13 +991,13 @@ public class Proton {
                     completion(.success(signature))
                     return
                 } catch {
-                    completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+                    completion(.failure(ProtonError.error(error.localizedDescription)))
                     return
                 }
                 
             case .failure(let error):
                 
-                completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+                completion(.failure(ProtonError.error(error.localizedDescription)))
             }
             
         }
@@ -1038,7 +1052,7 @@ public class Proton {
                     }
 
                 } else {
-                    completion(.failure(ProtonError.error("MESSAGE => No accounts found for publicKey: \(publicKey)")))
+                    completion(.failure(ProtonError.error("No accounts found for publicKey: \(publicKey)")))
                 }
             case .failure(let error):
                 completion(.failure(error))
@@ -1091,17 +1105,17 @@ public class Proton {
         var retval = Set<TokenTransferAction>()
         
         guard let account = tokenBalance.account else {
-            completion(.failure(ProtonError.error("MESSAGE => TokenBalance missing Account")))
+            completion(.failure(ProtonError.error("TokenBalance missing Account")))
             return
         }
         
         guard let chainProvider = account.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Account missing ChainProvider")))
+            completion(.failure(ProtonError.error("Account missing ChainProvider")))
             return
         }
         
         guard let tokenContract = tokenBalance.tokenContract else {
-            completion(.failure(ProtonError.error("MESSAGE => TokenBalance missing TokenContract")))
+            completion(.failure(ProtonError.error("TokenBalance missing TokenContract")))
             return
         }
         
@@ -1134,7 +1148,7 @@ public class Proton {
     private func fetchKeyAccounts(forPublicKey publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
         guard let chainProvider = self.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Missing ChainProvider")))
+            completion(.failure(ProtonError.error("Missing ChainProvider")))
             return
         }
         
@@ -1158,7 +1172,7 @@ public class Proton {
             if accounts.count > 0 {
                 completion(.success(accounts))
             } else {
-                completion(.failure(ProtonError.error("MESSAGE => No accounts found for \(publicKey)")))
+                completion(.failure(ProtonError.error("No accounts found for \(publicKey)")))
             }
             
         }
@@ -1195,7 +1209,7 @@ public class Proton {
             }
             
         } else {
-            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+            completion(.failure(ProtonError.error("Account missing chainProvider")))
         }
         
     }
@@ -1231,7 +1245,7 @@ public class Proton {
             }
             
         } else {
-            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+            completion(.failure(ProtonError.error("Account missing chainProvider")))
         }
         
     }
@@ -1284,7 +1298,7 @@ public class Proton {
             }
             
         } else {
-            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+            completion(.failure(ProtonError.error("Account missing chainProvider")))
         }
         
     }
@@ -1300,7 +1314,7 @@ public class Proton {
         var retval = Set<Contact>()
 
         guard let chainProvider = account.chainProvider else {
-            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+            completion(.failure(ProtonError.error("Account missing chainProvider")))
             return
         }
 
@@ -1397,7 +1411,7 @@ public class Proton {
             }
             
         } else {
-            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+            completion(.failure(ProtonError.error("Account missing chainProvider")))
         }
         
     }
@@ -1461,7 +1475,7 @@ public class Proton {
 //            }
             
         } else {
-            completion(.failure(ProtonError.error("MESSAGE => Account missing chainProvider")))
+            completion(.failure(ProtonError.error("Account missing chainProvider")))
         }
         
     }
@@ -1910,8 +1924,26 @@ public enum ProtonError: Error, LocalizedError {
     case history(String)
     case esr(String)
     case keychain(String)
+    case authfailed(String)
 
     public var errorDescription: String? {
+        switch self {
+        case .error(let message):
+            return message
+        case .chain(let message):
+            return message
+        case .history(let message):
+            return message
+        case .esr(let message):
+            return message
+        case .keychain(let message):
+            return message
+        case .authfailed(let message):
+            return message
+        }
+    }
+    
+    public var loggingDescription: String? {
         switch self {
         case .error(let message):
             return "⚛️ PROTON ERROR\n======================\n\(message)\n======================\n"
@@ -1923,6 +1955,8 @@ public enum ProtonError: Error, LocalizedError {
             return "⚛️✍️ PROTON SIGNING REQUEST ERROR\n======================\n\(message)\n======================\n"
         case .keychain(let message):
             return "⚛️✍️ PROTON KEYCHAIN ERROR\n======================\n\(message)\n======================\n"
+        case .authfailed(let message):
+            return "⚛️✍️ PROTON AUTHENTICATION ERROR\n======================\n\(message)\n======================\n"
         }
     }
     

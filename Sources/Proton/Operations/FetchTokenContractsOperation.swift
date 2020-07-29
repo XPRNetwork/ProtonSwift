@@ -25,7 +25,7 @@ class FetchTokenContractsOperation: BaseOperation {
         super.main()
         
         guard let url = URL(string: self.chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Missing chainProvider url"))
+            self.finish(retval: nil, error: ProtonError.error("Missing chainProvider url"))
             return
         }
         

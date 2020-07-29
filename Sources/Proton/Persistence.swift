@@ -68,60 +68,77 @@ class Persistence {
                                      authenticationPolicy: AuthenticationPolicy = .userPresence,
                                      completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
-        guard let encodedData = try? self.encoder.encode(object) else {
-            return
-        }
-        
-        let keychain = Keychain(service: service)
-                        .synchronizable(synchronizable)
-                        .accessibility(accessibility, authenticationPolicy: authenticationPolicy)
-        
-        do {
-            try keychain.set(encodedData, key: key)
-            completion(.success(true))
-        } catch {
-            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+        if Proton.shared.authenticationEnabled() {
+            guard let encodedData = try? self.encoder.encode(object) else {
+                return
+            }
+            
+            let keychain = Keychain(service: service)
+                            .synchronizable(synchronizable)
+                            .accessibility(accessibility, authenticationPolicy: authenticationPolicy)
+            
+            do {
+                try keychain.set(encodedData, key: key)
+                completion(.success(true))
+            } catch {
+                completion(.failure(ProtonError.error(error.localizedDescription)))
+            }
+        } else {
+            completion(.failure(ProtonError.authfailed("Device authentication not set")))
         }
 
     }
     
     func getKeychainItem<T: Codable>(_ object: T.Type, forKey key: String, service: String = pkService) -> T? {
         
-        let keychain = Keychain(service: service)
+        if Proton.shared.authenticationEnabled() {
+            let keychain = Keychain(service: service)
 
-        guard let data = try? keychain.getData(key) else {
+            guard let data = try? keychain.getData(key) else {
+                return nil
+            }
+            
+            guard let decodedObject = try? self.decoder.decode(object.self, from: data) else {
+                return nil
+            }
+            
+            return decodedObject
+            
+        } else {
             return nil
         }
-        
-        guard let decodedObject = try? self.decoder.decode(object.self, from: data) else {
-            return nil
-        }
-        
-        return decodedObject
 
     }
     
     func deleteKeychainItem<T: Codable>(_ object: T.Type, forKey key: String, service: String = pkService,
                                         completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
-        let keychain = Keychain(service: service)
-        
-        do {
-            try keychain.remove(key)
-            completion(.success(true))
-        } catch {
-            completion(.failure(ProtonError.error("MESSAGE => \(error.localizedDescription)")))
+        if Proton.shared.authenticationEnabled() {
+            let keychain = Keychain(service: service)
+            
+            do {
+                try keychain.remove(key)
+                completion(.success(true))
+            } catch {
+                completion(.failure(ProtonError.error(error.localizedDescription)))
+            }
         }
 
     }
     
     func keychainContains(key: String, service: String = pkService) -> Bool {
-        let keychain = Keychain(service: service)
-        do {
-            return try keychain.contains(key)
-        } catch {
+        
+        if Proton.shared.authenticationEnabled() {
+            let keychain = Keychain(service: service)
+            do {
+                return try keychain.contains(key)
+            } catch {
+                return false
+            }
+        } else {
             return false
         }
+        
     }
     
 }

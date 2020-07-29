@@ -20,7 +20,7 @@ class FetchChainProviderOperation: BaseOperation {
         }
         
         guard let url = URL(string: "\(baseUrl)/v1/chain/info") else {
-            self.finish(retval: nil, error: ProtonError.error("MESSAGE => Unable to form proper url chainProviders endpoint"))
+            self.finish(retval: nil, error: ProtonError.error("Unable to form proper url chainProviders endpoint"))
             return
         }
 
@@ -30,7 +30,7 @@ class FetchChainProviderOperation: BaseOperation {
             case .success(let chainProvider):
                 self.finish(retval: chainProvider, error: nil)
             case .failure(let error):
-                self.finish(retval: nil, error: ProtonError.error("MESSAGE => There was an issue fetching chainProviders config object\nERROR => \(error.localizedDescription)"))
+                self.finish(retval: nil, error: ProtonError.error("There was an issue fetching chainProviders config object"))
             }
             
         }
