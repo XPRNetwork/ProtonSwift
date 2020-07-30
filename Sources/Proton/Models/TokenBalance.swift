@@ -79,6 +79,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     }
     /// Formated balance without symbol and precision
     public func balanceFormated() -> String {
+        // TODO: Use formatter to get seperator...
         return String(self.amount.value)
     }
     

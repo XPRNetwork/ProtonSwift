@@ -11,7 +11,7 @@ import Foundation
 /**
 The TokenTransferAction object provide information about a transfer action
 */
-public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProtocol {
+public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProtocol, TokenContractProtocol {
     /// This is used as the primary key for storing the account
     public var id: String { return "\(accountId):\(name):\(contract.stringValue):\(trxId)" }
     /// The chainId associated with the TokenTransferAction
@@ -47,6 +47,10 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     /// :nodoc:
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+    /// TokenContracts associated with this TokenBalance
+    public var tokenContract: TokenContract? {
+        return Proton.shared.tokenContracts.first(where: { $0.id == self.tokenContractId })
     }
     /// :nodoc:
     public init?(account: Account, tokenBalance: TokenBalance,
@@ -93,6 +97,22 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     /// Returns the other Account as a Contact whether it be sender or receiver
     public var contact: Contact? {
         return Proton.shared.contacts.first(where: { $0.chainId == self.chainId && $0.name == self.other })
+    }
+    /// Returns exchange rate
+    public func getRate(forCurrencyCode currencyCode: String) -> Double {
+        return self.tokenContract?.getRate(forCurrencyCode: currencyCode) ?? 0.0
+    }
+    /// Formated currency balance
+    public func currencyQuantityFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: self.quantity.value * getRate(forCurrencyCode: locale.currencyCode ?? "USD")) ?? "$0.00"
+    }
+    /// Formated balance without symbol and precision
+    public func quantityFormated() -> String {
+        // TODO: Use formatter to get seperator...
+        return String(self.quantity.value)
     }
 
 }

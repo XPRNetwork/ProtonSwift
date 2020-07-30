@@ -298,6 +298,7 @@ public class Proton {
         self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
         self.tokenTransferActions = self.storage.getDefaultsItem([TokenTransferAction].self, forKey: "tokenTransferActions") ?? []
         self.esrSessions = self.storage.getDefaultsItem([ESRSession].self, forKey: "esrSessions") ?? []
+        self.contacts = self.storage.getDefaultsItem([Contact].self, forKey: "contacts") ?? []
         
     }
     
@@ -312,6 +313,7 @@ public class Proton {
         self.storage.setDefaultsItem(self.tokenBalances, forKey: "tokenBalances")
         self.storage.setDefaultsItem(self.tokenTransferActions, forKey: "tokenTransferActions")
         self.storage.setDefaultsItem(self.esrSessions, forKey: "esrSessions")
+        self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
         
     }
     
@@ -909,7 +911,7 @@ public class Proton {
                     
                 }
                 
-            case .failure(let error):
+            case .failure:
                 
                 completion(.failure(ProtonError.error("Unable to sign transaction")))
                 
@@ -1080,6 +1082,7 @@ public class Proton {
             self.tokenTransferActions.removeAll()
             self.esrSessions.removeAll() // TODO: Actually loop through call the remove session callbacks, etc
             self.esr = nil
+            self.contacts.removeAll()
         }
 
         self.updateAccount { result in

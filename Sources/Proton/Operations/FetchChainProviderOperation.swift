@@ -29,7 +29,7 @@ class FetchChainProviderOperation: BaseOperation {
             switch result {
             case .success(let chainProvider):
                 self.finish(retval: chainProvider, error: nil)
-            case .failure(let error):
+            case .failure:
                 self.finish(retval: nil, error: ProtonError.error("There was an issue fetching chainProviders config object"))
             }
             

@@ -46,7 +46,7 @@ class FetchContactInfoOperation: BaseOperation {
 
             if let userInfo = res.rows.first {
                 contact.base64Avatar = userInfo.avatar
-                contact.nickName = userInfo.name
+                contact.userDefinedName = userInfo.name
                 contact.verified = userInfo.verified
             }
 

@@ -28,18 +28,18 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     public var name: Name
     /// Is the account KYC verified
     public var verified: Bool
-    /// The user modified name
-    public var nickName: String
+    /// The user defined name
+    public var userDefinedName: String
     /// The user modified Avatar string
     public var base64Avatar: String
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
-                nickName: String = "", base64Avatar: String = "") {
+                userDefinedName: String = "", base64Avatar: String = "") {
         
         self.chainId = chainId
         self.name = Name(name)
         self.verified = verified
-        self.nickName = nickName
+        self.userDefinedName = userDefinedName
         self.base64Avatar = base64Avatar
         
     }
