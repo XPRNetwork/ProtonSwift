@@ -40,6 +40,8 @@ class FetchTokenContractsOperation: BaseOperation {
             
             for row in res.rows {
                 
+                let systemToken = row.tcontract.stringValue == "eosio.token" && row.symbol.name == "XPR"
+                
                 if let tokenContractIndex = self.tokenContracts.firstIndex(where: { $0.contract.stringValue == row.tcontract.stringValue
                         && $0.symbol.name == row.symbol.name && $0.chainId == self.chainProvider.chainId
                 }) {
@@ -51,14 +53,14 @@ class FetchTokenContractsOperation: BaseOperation {
                     tokenContract.desc = row.desc
                     tokenContract.iconUrl = row.iconurl
                     tokenContract.isBlacklisted = row.blisted
-                    tokenContract.systemToken = row.tcontract.stringValue == "eosio.token" && row.symbol.name == "XPR"
+                    tokenContract.systemToken = systemToken
                     
                     self.tokenContracts[tokenContractIndex] = tokenContract
                     
                 } else {
                     
                     let tokenContract = TokenContract(chainId: self.chainProvider.chainId, contract: row.tcontract,
-                                                      issuer: row.tcontract, resourceToken: false, systemToken: false,
+                                                      issuer: row.tcontract, resourceToken: false, systemToken: systemToken,
                                                       name: row.tname, desc: row.desc, iconUrl: row.iconurl,
                                                       supply: Asset(0.0, row.symbol), maxSupply: Asset(0.0, row.symbol),
                                                       symbol: row.symbol, url: row.url, isBlacklisted: row.blisted)
