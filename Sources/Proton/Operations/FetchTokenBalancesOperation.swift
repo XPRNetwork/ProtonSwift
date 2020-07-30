@@ -46,6 +46,16 @@ class FetchTokenBalancesOperation: BaseOperation {
                 }
                 
             }
+            
+            // Even if user has 0 balance of XPR, still create tokenbalance.
+            if let xprTokenContract = chainProvider.tokenContracts.first(where: {$0.systemToken == true }) {
+                if tokenBalances.first(where: { $0.tokenContractId == xprTokenContract.id }) == nil {
+                    if let xprTokenBalance = TokenBalance(account: self.account, contract: xprTokenContract.contract, amount: 0.0, precision: xprTokenContract.symbol.precision, symbol: xprTokenContract.symbol.name) {
+                        tokenBalances.insert(xprTokenBalance)
+                    }
+                    
+                }
+            }
 
             finish(retval: tokenBalances, error: nil)
 
