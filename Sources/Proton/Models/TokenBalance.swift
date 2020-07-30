@@ -70,12 +70,16 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     public func getRate(forCurrencyCode currencyCode: String) -> Double {
         return self.tokenContract?.getRate(forCurrencyCode: currencyCode) ?? 0.0
     }
-
-    public func balanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    /// Formated currency balance
+    public func currencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = locale
         return formatter.string(for: self.amount.value * getRate(forCurrencyCode: locale.currencyCode ?? "USD")) ?? "$0.00"
+    }
+    /// Formated balance without symbol and precision
+    public func balanceFormated() -> String {
+        return String(self.amount.value)
     }
     
 }

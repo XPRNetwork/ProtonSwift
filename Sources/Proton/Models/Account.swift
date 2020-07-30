@@ -84,7 +84,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return "@\(name.stringValue)"
     }
 
-    public func totalBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         
         let tokenBalances = self.tokenBalances
         let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
