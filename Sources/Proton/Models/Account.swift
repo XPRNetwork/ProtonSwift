@@ -85,9 +85,9 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     }
     /// Return name if not empty, else use the account name
     public var userDefinedNameOrName: String {
-        return userDefinedName == "" ? userDefinedName : self.name.stringValue
+        return userDefinedName.isEmpty == false ? userDefinedName : self.name.stringValue
     }
-
+    
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         
         let tokenBalances = self.tokenBalances

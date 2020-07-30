@@ -96,7 +96,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     }
     /// Returns the other Account as a Contact whether it be sender or receiver
     public var contact: Contact? {
-        return Proton.shared.contacts.first(where: { $0.chainId == self.chainId && $0.name == self.other })
+        return Proton.shared.contacts.first(where: { $0.chainId == self.chainId && $0.name == self.other }) ?? Contact(chainId: self.chainId, name: other.stringValue)
     }
     /// Returns exchange rate
     public func getRate(forCurrencyCode currencyCode: String) -> Double {

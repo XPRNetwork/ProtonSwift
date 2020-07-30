@@ -57,7 +57,7 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     }
     /// Return name if not empty, else use the account name
     public var userDefinedNameOrName: String {
-        return userDefinedName == "" ? userDefinedName : self.name.stringValue
+        return userDefinedName.isEmpty == false ? userDefinedName : self.name.stringValue
     }
 
 }
