@@ -52,6 +52,10 @@ class FetchTokenContractsOperation: BaseOperation {
                     tokenContract.iconUrl = row.iconurl
                     tokenContract.isBlacklisted = row.blisted
                     
+                    if row.tcontract.stringValue == "eosio.token" && row.symbol.name == "XPR" {
+                        tokenContract.systemToken = true
+                    }
+                    
                     self.tokenContracts[tokenContractIndex] = tokenContract
                     
                 } else {
