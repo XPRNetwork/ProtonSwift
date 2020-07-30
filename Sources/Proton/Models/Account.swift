@@ -83,6 +83,10 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var nameWithAmpersand: String {
         return "@\(name.stringValue)"
     }
+    /// Return name if not empty, else use the account name
+    public var userDefinedNameOrName: String {
+        return userDefinedName == "" ? userDefinedName : self.name.stringValue
+    }
 
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         

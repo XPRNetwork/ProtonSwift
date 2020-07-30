@@ -55,5 +55,9 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     public var chainProvider: ChainProvider? {
         return Proton.shared.chainProvider?.chainId == self.chainId ? Proton.shared.chainProvider : nil
     }
+    /// Return name if not empty, else use the account name
+    public var userDefinedNameOrName: String {
+        return userDefinedName == "" ? userDefinedName : self.name.stringValue
+    }
 
 }
