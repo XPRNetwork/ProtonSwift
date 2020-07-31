@@ -28,7 +28,7 @@ class FetchProducerOrgOperation: BaseOperation {
             return
         }
 
-        WebOperations.shared.request(url: url, keyDecodingStrategy: .convertFromSnakeCase) { (result: Result<BPJson, Error>) in
+        WebOperations.shared.request(url: url, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy.convertFromSnakeCase) { (result: Result<BPJson, Error>) in
 
             switch result {
             case .success(let bpJson):
