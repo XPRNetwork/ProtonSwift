@@ -489,10 +489,8 @@ public class Proton {
                             switch result {
                             case .success(let stakingTuple):
                                 
-                                if let stakingTuple = stakingTuple as? (Staking, StakingRefund) {
-                                    account.staking = stakingTuple.0
-                                    account.stakingRefund = stakingTuple.1
-                                }
+                                account.staking = stakingTuple.0
+                                account.stakingRefund = stakingTuple.1
                                 
                                 self.account = account
                                 NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
@@ -1384,11 +1382,11 @@ public class Proton {
      - Parameter forAccount: Account
      - Parameter completion: Closure returning Result
      */
-    private func updateAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<(Staking?, StakingRefund?)?, Error>) -> Void)) {
+    private func updateAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<(Staking?, StakingRefund?), Error>) -> Void)) {
 
         if let chainProvider = account.chainProvider {
             
-            var retval: (Staking?, StakingRefund?)?
+            var retval: (Staking?, StakingRefund?) = (nil, nil)
             
             let operationCount = 1
             var operationsProcessed = 0
@@ -1415,11 +1413,7 @@ public class Proton {
                                 let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
-                                if retval == nil {
-                                    retval = (staking, nil)
-                                } else {
-                                    retval?.0 = staking
-                                }
+                                retval.0 = staking
                             } catch {
                                 print("error")
                             }
