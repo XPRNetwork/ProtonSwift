@@ -95,8 +95,8 @@ public class Proton {
     static let operationQueueMulti = "proton.swift.multi"
     
     private struct StakingFetchResult {
-        var staking: Staking?
-        var stakingRefund: StakingRefund?
+        var staking: Staking? = nil
+        var stakingRefund: StakingRefund? = nil
     }
     
     /**
