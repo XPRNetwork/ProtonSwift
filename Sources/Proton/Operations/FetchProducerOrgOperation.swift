@@ -35,7 +35,7 @@ class FetchProducerOrgOperation: BaseOperation {
                 self.producer.org = producerOrg
                 self.finish(retval: self.producer, error: nil)
             case .failure:
-                self.finish(retval: nil, error: ProtonError.error("There was an issue fetching bp.json"))
+                self.finish(retval: nil, error: ProtonError.error("There was an issue fetching bp.json for \(self.producer.url)"))
             }
             
         }
