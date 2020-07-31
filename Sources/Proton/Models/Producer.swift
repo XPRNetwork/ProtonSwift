@@ -74,6 +74,13 @@ public struct Producer: Codable, Identifiable, Hashable, ChainProviderProtocol, 
 }
 
 /**
+A BPJson object containing org
+*/
+struct BPJson: Codable {
+    /// The org property from bp.json
+    public var org: ProducerOrg
+}
+/**
 A ProducerOrg is extra info associated with Producer
 */
 public struct ProducerOrg: Codable {

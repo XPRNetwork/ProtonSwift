@@ -497,8 +497,6 @@ public class Proton {
                                 account.staking = stakingFetchResult.staking
                                 account.stakingRefund = stakingFetchResult.stakingRefund
                                 
-                                print(account.staking)
-                                
                                 self.account = account
                                 NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                 
@@ -1421,9 +1419,8 @@ public class Proton {
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
                                 retval.staking = staking
-                                print(retval)
                             } catch {
-                                print("error")
+                                print("error decoding votersxprabi")
                             }
                         }
                         

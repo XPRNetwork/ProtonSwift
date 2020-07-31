@@ -28,11 +28,11 @@ class FetchProducerOrgOperation: BaseOperation {
             return
         }
 
-        WebOperations.shared.request(url: url, keyDecodingStrategy: .convertFromSnakeCase) { (result: Result<ProducerOrg, Error>) in
+        WebOperations.shared.request(url: url, keyDecodingStrategy: .convertFromSnakeCase) { (result: Result<BPJson, Error>) in
 
             switch result {
-            case .success(let producerOrg):
-                self.producer.org = producerOrg
+            case .success(let bpJson):
+                self.producer.org = bpJson.org
                 self.finish(retval: self.producer, error: nil)
             case .failure:
                 self.finish(retval: nil, error: ProtonError.error("There was an issue fetching bp.json for \(self.producer.url)"))
