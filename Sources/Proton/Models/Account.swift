@@ -21,15 +21,15 @@ Staking is the object which represents the accounts staking info, if any
 */
 public struct Staking: Codable {
     /// The amount staked
-    public var staked: Asset
+  //  public var staked: Asset
     /// Whether or not the account is qualified to receive staking rewards. ie account has to be voting for 4 producers
     public var isQualified: Bool
     /// The reward amount in which the account can claim
-    public var claimAmount: Asset
+  //  public var claimAmount: Asset
     /// The date of the last reward claim
     public var lastclaim: Date
     /// The list of producers the account has voted for
-    public var producers: [Name]
+   // public var producers: [Name]
 }
 
 /**
@@ -37,7 +37,7 @@ StakingRefund shows the amount unstaked and request time it occured
 */
 public struct StakingRefund: Codable {
     /// The unstaked amount in which the user will be eligable for after unstaking period
-    public var quantity: Asset
+    //public var quantity: Asset
     /// The time which the last unstaking action occured
     public var requestTime: Date
 

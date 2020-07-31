@@ -1398,6 +1398,8 @@ public class Proton {
         if let chainProvider = account.chainProvider {
             
             var retval = StakingFetchResult()
+            retval.staking = Staking(isQualified: true, lastclaim: Date())
+           // retval.setStaking(staking: <#T##Staking#>)
             
             let operationCount = 1
             var operationsProcessed = 0
@@ -1423,7 +1425,7 @@ public class Proton {
                             do {
                                 let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
-                                let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
+                                let staking = Staking(isQualified: votersXPRABI.isqualified, lastclaim: Date())
                                 retval.setStaking(staking: staking)
                             } catch {
                                 print("error")
