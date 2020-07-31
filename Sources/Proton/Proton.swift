@@ -94,9 +94,9 @@ public class Proton {
     static let operationQueueSeq = "proton.swift.seq"
     static let operationQueueMulti = "proton.swift.multi"
     
-    private struct StakingFetchResult {
-        var staking: Staking?
-        var stakingRefund: StakingRefund?
+    public struct StakingFetchResult {
+        public var staking: Staking?
+        public var stakingRefund: StakingRefund?
     }
     
     /**
