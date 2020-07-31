@@ -1389,10 +1389,13 @@ public class Proton {
      */
     private func updateAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<StakingFetchResult, Error>) -> Void)) {
 
+        var account = account
+        
         if let chainProvider = account.chainProvider {
             
             var retval = StakingFetchResult()
             retval.stakingRefund = StakingRefund(quantity: Asset.init(units: Int64(500000), symbol: try! Asset.Symbol(stringValue: "4,XPR")), requestTime: Date())
+            account.stakingRefund = StakingRefund(quantity: Asset.init(units: Int64(500000), symbol: try! Asset.Symbol(stringValue: "4,XPR")), requestTime: Date())
             
             let operationCount = 1
             var operationsProcessed = 0
