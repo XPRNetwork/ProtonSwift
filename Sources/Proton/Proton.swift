@@ -94,9 +94,9 @@ public class Proton {
     static let operationQueueSeq = "proton.swift.seq"
     static let operationQueueMulti = "proton.swift.multi"
     
-    public struct StakingFetchResult {
-        public var staking: Staking?
-        public var stakingRefund: StakingRefund?
+    private struct StakingFetchResult {
+        var staking: Staking?
+        var stakingRefund: StakingRefund?
     }
     
     /**
@@ -1392,6 +1392,7 @@ public class Proton {
         if let chainProvider = account.chainProvider {
             
             var retval = StakingFetchResult()
+            retval.stakingRefund = StakingRefund(quantity: Asset.init(units: Int64(500000), symbol: try! Asset.Symbol(stringValue: "4,XPR")), requestTime: Date())
             
             let operationCount = 1
             var operationsProcessed = 0
@@ -1418,9 +1419,7 @@ public class Proton {
                                 let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
-                                var r = retval
-                                r.staking = staking
-                                retval = r
+                                retval.staking = staking
                             } catch {
                                 print("error")
                             }
