@@ -1412,8 +1412,8 @@ public class Proton {
 
                         if let votersXPRABI = votersXPRABI as? VotersXPRABI {
                             do {
-                                let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "0.0000 XPR"))
-                                let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "0.0000 XPR"))
+                                let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
+                                let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
                                 if retval == nil {
                                     retval = (staking, nil)
