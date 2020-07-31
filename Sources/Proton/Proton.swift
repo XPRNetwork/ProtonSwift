@@ -94,9 +94,15 @@ public class Proton {
     static let operationQueueSeq = "proton.swift.seq"
     static let operationQueueMulti = "proton.swift.multi"
     
-    private struct StakingFetchResult {
-        var staking: Staking? = nil
-        var stakingRefund: StakingRefund? = nil
+    struct StakingFetchResult {
+        var staking: Staking?
+        var stakingRefund: StakingRefund?
+        mutating func setStaking(staking: Staking) {
+            self.staking = staking
+        }
+        mutating func setStakingRefund(stakingRefund: StakingRefund) {
+            self.stakingRefund = stakingRefund
+        }
     }
     
     /**
@@ -494,8 +500,8 @@ public class Proton {
                             switch result {
                             case .success(let stakingFetchResult):
                                 
-                                account.staking = stakingFetchResult.staking
-                                account.stakingRefund = stakingFetchResult.stakingRefund
+                                account.setStaking(staking: stakingFetchResult.staking)
+                                account.setStakingRefund(stakingRefund: stakingFetchResult.stakingRefund)
                                 
                                 self.account = account
                                 NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
@@ -1389,13 +1395,9 @@ public class Proton {
      */
     private func updateAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<StakingFetchResult, Error>) -> Void)) {
 
-        var account = account
-        
         if let chainProvider = account.chainProvider {
             
             var retval = StakingFetchResult()
-            retval.stakingRefund = StakingRefund(quantity: Asset.init(units: Int64(500000), symbol: try! Asset.Symbol(stringValue: "4,XPR")), requestTime: Date())
-            account.stakingRefund = StakingRefund(quantity: Asset.init(units: Int64(500000), symbol: try! Asset.Symbol(stringValue: "4,XPR")), requestTime: Date())
             
             let operationCount = 1
             var operationsProcessed = 0
@@ -1422,7 +1424,7 @@ public class Proton {
                                 let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
-                                retval.staking = staking
+                                retval.setStaking(staking: staking)
                             } catch {
                                 print("error")
                             }

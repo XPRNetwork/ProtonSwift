@@ -76,9 +76,15 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         self.userDefinedName = userDefinedName
         self.base64Avatar = base64Avatar
         self.permissions = permissions
-        self.stakingRefund = nil
-        self.staking = nil
         
+    }
+    /// Set staking object
+    public mutating func setStaking(staking: Staking?) {
+        self.staking = staking
+    }
+    /// Set staking refund object
+    public mutating func setStakingRefund(stakingRefund: StakingRefund?) {
+        self.stakingRefund = stakingRefund
     }
     /// :nodoc:
     static func create(dictionary: [String: Any]?) -> Account? {
