@@ -1418,7 +1418,9 @@ public class Proton {
                                 let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
-                                retval.staking = staking
+                                var r = retval
+                                r.staking = staking
+                                retval = r
                             } catch {
                                 print("error")
                             }
