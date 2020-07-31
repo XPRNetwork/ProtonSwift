@@ -109,7 +109,7 @@ public struct ProducerOrgBranding: Codable {
     /// The 1024x1024 logo url
     public var logo1024: String
     /// The svg logo url
-    public var logosvg: String
+    public var logoSvg: String
 }
 
 /**
