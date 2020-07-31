@@ -70,11 +70,22 @@ public final class ProtonObservable: ObservableObject {
     }
     
     /**
-     Live updated set of tokenTransferActions. Subscribe to this for your tokenTransferActions
+     Live updated set of contacts. Subscribe to this for your contacts
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
     @Published public private(set) var contacts: [Contact] = [] {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
+    
+    /**
+     Live updated set of producers. Subscribe to this for your producers
+     Important: This is a copy of the source from Proton.shared. Modifications should
+     be made there.
+     */
+    @Published public private(set) var producers: [Producer] = [] {
         willSet {
             self.objectWillChange.send()
         }
@@ -114,6 +125,8 @@ public final class ProtonObservable: ObservableObject {
                                                name: Proton.Notifications.tokenTransferActionsWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(contactsWillSet(_:)),
                                                name: Proton.Notifications.contactsWillSet, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(producersWillSet(_:)),
+                                               name: Proton.Notifications.producersWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(esrSessionsWillSet(_:)),
                                                name: Proton.Notifications.esrSessionsWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(esrWillSet),
@@ -159,6 +172,13 @@ public final class ProtonObservable: ObservableObject {
             return
         }
         self.contacts = newValue
+    }
+    
+    @objc func producersWillSet(_ notification: Notification) {
+        guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? [Producer] else {
+            return
+        }
+        self.producers = newValue
     }
     
     @objc func esrSessionsWillSet(_ notification: Notification) {

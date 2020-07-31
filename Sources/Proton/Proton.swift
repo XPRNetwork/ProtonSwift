@@ -163,6 +163,10 @@ public class Proton {
         public static let contactsWillSet = Notification.Name("contactsWillSet")
         /// Use this notification name to be notified after contacts are updated.
         public static let contactsDidSet = Notification.Name("contactsDidSet")
+        /// Use this notification name to be notified right before contacts are updated
+        public static let producersWillSet = Notification.Name("producersWillSet")
+        /// Use this notification name to be notified after contacts are updated.
+        public static let producersDidSet = Notification.Name("producersDidSet")
         /// Use this notification name to be notified right before esrSessions are updated
         public static let esrSessionsWillSet = Notification.Name("esrSessionsWillSet")
         /// Use this notification name to be notified after esrSessions are updated.
@@ -243,6 +247,19 @@ public class Proton {
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.contactsDidSet, object: nil)
+        }
+    }
+    
+    /**
+     Live updated array of producers. You can observe changes via NotificaitonCenter: producersWillSet, producersDidSet
+     */
+    public var producers: [Producer] = [] {
+        willSet {
+            NotificationCenter.default.post(name: Notifications.producersWillSet, object: nil,
+                                            userInfo: ["newValue": newValue])
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.producersDidSet, object: nil)
         }
     }
     
@@ -344,6 +361,7 @@ public class Proton {
      */
     public func fetchRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
+        
         WebOperations.shared.add(FetchChainProviderOperation(), toCustomQueueNamed: Proton.operationQueueSeq) { result in
             
             switch result {
@@ -379,6 +397,7 @@ public class Proton {
                         }
                         
                         self.updateExchangeRates { _ in }
+                        self.updateProducers { _ in }
                         
                         completion(.success(true))
                         
@@ -447,9 +466,6 @@ public class Proton {
             return
         }
         
-        self.updateExchangeRates { _ in }
-        self.fetchProducers { _ in }
-        
         self.fetchAccount(account) { result in
             
             switch result {
@@ -468,12 +484,16 @@ public class Proton {
                         self.account = account
                         NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                         
-                        self.fetchAccountVotingAndStakingInfo(forAccount: account) { result in
+                        self.updateAccountVotingAndStakingInfo(forAccount: account) { result in
                             
                             switch result {
-                            case .success(let returnAccount):
+                            case .success(let stakingTuple):
                                 
-                                account = returnAccount
+                                if let stakingTuple = stakingTuple as? (Staking, StakingRefund) {
+                                    account.staking = stakingTuple.0
+                                    account.stakingRefund = stakingTuple.1
+                                }
+                                
                                 self.account = account
                                 NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                 
@@ -1364,54 +1384,54 @@ public class Proton {
      - Parameter forAccount: Account
      - Parameter completion: Closure returning Result
      */
-    private func fetchAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
-        
-        var account = account
-        
+    private func updateAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<(Staking?, StakingRefund?)?, Error>) -> Void)) {
+
         if let chainProvider = account.chainProvider {
             
-            let operationCount = 2
+            var retval: (Staking?, StakingRefund?)?
+            
+            let operationCount = 1
             var operationsProcessed = 0
-
-            WebOperations.shared.add(FetchUserVotersXPROperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
-                
-                switch result {
-                case .success(let votersXPRABI):
-                    
-                    if let votersXPRABI = votersXPRABI as? VotersXPRABI {
-                        print(votersXPRABI)
-                    }
-                    
-                case .failure: break
-                }
-                
-                operationsProcessed += 1
-                
-                if operationCount == operationsProcessed {
-                    completion(.success(account))
-                }
-                
-            }
             
             WebOperations.shared.add(FetchUserVotersOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
+                var votedForProducers = [Name]()
+                
                 switch result {
                 case .success(let votersABI):
-                    
                     if let votersABI = votersABI as? VotersABI {
-                        print(votersABI)
+                        votedForProducers = votersABI.producers
                     }
-                    
                 case .failure: break
                 }
                 
-                operationsProcessed += 1
-                
-                if operationCount == operationsProcessed {
-                    completion(.success(account))
+                WebOperations.shared.add(FetchUserVotersXPROperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                    
+                    switch result {
+                    case .success(let votersXPRABI):
+
+                        if let votersXPRABI = votersXPRABI as? VotersXPRABI {
+                            do {
+                                retval?.0 = Staking(staked: Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(4, "XPR")), isQualified: votersXPRABI.isqualified, claimAmount: Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(4, "XPR")), lastclaim: Date(), producers: votedForProducers)
+                            } catch {
+                                print("error")
+                            }
+                        }
+                        
+                    case .failure: break
+                    }
+                    
+                    operationsProcessed += 1
+                    
+                    if operationCount == operationsProcessed {
+                        completion(.success(retval))
+                    }
+                    
                 }
                 
             }
+            
+            // TODO: Fetch refunds
             
         } else {
             completion(.failure(ProtonError.error("Account missing chainProvider")))
@@ -1421,16 +1441,14 @@ public class Proton {
     
     /**
      :nodoc:
-     Fetches block producers for chain
-     This includes stuff like amount staked, claim amount , etc
+     Fetches block producers for chain as well as each producers bp.json
      - Parameter completion: Closure returning Result
      */
-    private func fetchProducers(completion: @escaping ((Result<[ProducerABI]?, Error>) -> Void)) {
+    private func updateProducers(completion: @escaping ((Result<[Producer]?, Error>) -> Void)) {
         
         if let chainProvider = self.chainProvider {
-            
-            let operationCount = 1
-            var operationsProcessed = 0
+
+            var producerSet = Set<Producer>()
 
             WebOperations.shared.add(FetchProducersOperation(chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
@@ -1439,43 +1457,57 @@ public class Proton {
                     
                     if let producers = producers as? [ProducerABI] {
                         for producer in producers {
-                            print(producer.owner.stringValue)
-                            print(producer.total_votes.value)
-                            print(producer.url)
-                            print(producer.is_active)
+                            
+                            if producer.is_active == 0x01 {
+                                producerSet.insert(Producer(chainId: chainProvider.chainId, name: producer.owner.stringValue, isActive: true, totalVotes: producer.total_votes, url: producer.url))
+                            }
+                            
                         }
                     }
-                    
-                case .failure: break
-                }
-                
-                operationsProcessed += 1
-                
-                if operationCount == operationsProcessed {
-                    completion(.success(nil))
+
+                    if producerSet.count > 0 {
+                        
+                        self.producers = Array(producerSet)
+                        
+                        let operationCount = producerSet.count
+                        var operationsProcessed = 0
+                        
+                        for producer in producerSet {
+                            
+                            WebOperations.shared.add(FetchProducerOrgOperation(producer: producer), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                                
+                                switch result {
+                                case .success(let updatedProducer):
+                                    if let updatedProducer = updatedProducer as? Producer {
+                                        if let idx = self.producers.firstIndex(of: updatedProducer) {
+                                            self.producers[idx] = updatedProducer
+                                        } else {
+                                            self.producers.append(updatedProducer)
+                                        }
+                                    }
+                                case .failure(let error):
+                                    print(error.localizedDescription)
+                                }
+                                
+                                operationsProcessed += 1
+                                
+                                if operationCount == operationsProcessed {
+                                    completion(.success(self.producers))
+                                }
+
+                            }
+                            
+                        }
+                        
+                    } else {
+                        completion(.failure(ProtonError.error("Error fetching producers")))
+                    }
+
+                case .failure(let error):
+                    completion(.failure(error))
                 }
                 
             }
-            
-//            WebOperations.shared.add(FetchUserVotersOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
-//
-//                switch result {
-//                case .success(let votersABI):
-//
-//                    if let votersABI = votersABI as? VotersABI {
-//                        print(votersABI)
-//                    }
-//
-//                case .failure: break
-//                }
-//
-//                operationsProcessed += 1
-//
-//                if operationCount == operationsProcessed {
-//                    completion(.success(account))
-//                }
-//
-//            }
             
         } else {
             completion(.failure(ProtonError.error("Account missing chainProvider")))

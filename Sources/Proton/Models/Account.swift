@@ -15,6 +15,34 @@ import SwiftUI
 import UIKit
 #endif
 
+
+/**
+Staking is the object which represents the accounts staking info, if any
+*/
+public struct Staking: Codable {
+    /// The amount staked
+    public var staked: Asset
+    /// Whether or not the account is qualified to receive staking rewards. ie account has to be voting for 4 producers
+    public var isQualified: Bool
+    /// The reward amount in which the account can claim
+    public var claimAmount: Asset
+    /// The date of the last reward claim
+    public var lastclaim: Date
+    /// The list of producers the account has voted for
+    public var producers: [Name]
+}
+
+/**
+StakingRefund shows the amount unstaked and request time it occured
+*/
+public struct StakingRefund: Codable {
+    /// The unstaked amount in which the user will be eligable for after unstaking period
+    public var quantity: Asset
+    /// The time which the last unstaking action occured
+    public var requestTime: Date
+
+}
+
 /**
 Account is the Proton chain account object.
 */
@@ -33,6 +61,11 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var permissions: [API.V1.Chain.Permission]
     /// The user modified Avatar string
     public var base64Avatar: String
+    /// The user modified Avatar string
+    public var staking: Staking?
+    /// The user modified Avatar string
+    public var stakingRefund: StakingRefund?
+    
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
                 userDefinedName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = []) {
@@ -86,6 +119,13 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     /// Return name if not empty, else use the account name
     public var userDefinedNameOrName: String {
         return userDefinedName.isEmpty == false ? userDefinedName : self.name.stringValue
+    }
+    /// Return true if account is qualified for rewards by staking and voting
+    public var isStakingRewardQualified: Bool {
+        if let staking = self.staking {
+            return staking.isQualified
+        }
+        return false
     }
     
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
