@@ -28,8 +28,12 @@ public struct Staking: Codable {
     public var claimAmount: Asset
     /// The date of the last reward claim
     public var lastclaim: Date
-    /// The list of producers the account has voted for
-    public var producers: [Name]
+    /// The list of producer names the account has voted for
+    public var producerNames: [Name]
+    /// Get list of producers the the account has voted for
+    public var producers: [Producer] {
+        return Proton.shared.producers.filter({ producerNames.contains($0.name) })
+    }
 }
 
 /**

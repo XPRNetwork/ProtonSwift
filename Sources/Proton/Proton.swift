@@ -321,6 +321,7 @@ public class Proton {
         self.tokenTransferActions = self.storage.getDefaultsItem([TokenTransferAction].self, forKey: "tokenTransferActions") ?? []
         self.esrSessions = self.storage.getDefaultsItem([ESRSession].self, forKey: "esrSessions") ?? []
         self.contacts = self.storage.getDefaultsItem([Contact].self, forKey: "contacts") ?? []
+        self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
         
     }
     
@@ -336,6 +337,7 @@ public class Proton {
         self.storage.setDefaultsItem(self.tokenTransferActions, forKey: "tokenTransferActions")
         self.storage.setDefaultsItem(self.esrSessions, forKey: "esrSessions")
         self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
+        self.storage.setDefaultsItem(self.producers, forKey: "producers")
         
     }
     
@@ -1417,7 +1419,7 @@ public class Proton {
                             do {
                                 let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
-                                let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
+                                let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producerNames: votedForProducers)
                                 retval.staking = staking
                             } catch {
                                 print("error decoding votersxprabi")
