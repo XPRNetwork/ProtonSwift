@@ -94,15 +94,9 @@ public class Proton {
     static let operationQueueSeq = "proton.swift.seq"
     static let operationQueueMulti = "proton.swift.multi"
     
-    struct StakingFetchResult {
+    private struct StakingFetchResult {
         var staking: Staking?
         var stakingRefund: StakingRefund?
-        mutating func setStaking(staking: Staking) {
-            self.staking = staking
-        }
-        mutating func setStakingRefund(stakingRefund: StakingRefund) {
-            self.stakingRefund = stakingRefund
-        }
     }
     
     /**
@@ -500,8 +494,10 @@ public class Proton {
                             switch result {
                             case .success(let stakingFetchResult):
                                 
-                                account.setStaking(staking: stakingFetchResult.staking)
-                                account.setStakingRefund(stakingRefund: stakingFetchResult.stakingRefund)
+                                account.staking = stakingFetchResult.staking
+                                account.stakingRefund = stakingFetchResult.stakingRefund
+                                
+                                print(account.staking)
                                 
                                 self.account = account
                                 NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
@@ -1398,8 +1394,6 @@ public class Proton {
         if let chainProvider = account.chainProvider {
             
             var retval = StakingFetchResult()
-            retval.staking = Staking(isQualified: true, lastclaim: Date())
-           // retval.setStaking(staking: <#T##Staking#>)
             
             let operationCount = 1
             var operationsProcessed = 0
@@ -1425,8 +1419,9 @@ public class Proton {
                             do {
                                 let staked = Asset.init(units: Int64(votersXPRABI.staked), symbol: try Asset.Symbol(stringValue: "4,XPR"))
                                 let claimAmount = Asset.init(units: Int64(votersXPRABI.claimamount), symbol: try Asset.Symbol(stringValue: "4,XPR"))
-                                let staking = Staking(isQualified: votersXPRABI.isqualified, lastclaim: Date())
-                                retval.setStaking(staking: staking)
+                                let staking = Staking(staked: staked, isQualified: votersXPRABI.isqualified, claimAmount: claimAmount, lastclaim: Date(), producers: votedForProducers)
+                                retval.staking = staking
+                                print(retval)
                             } catch {
                                 print("error")
                             }
