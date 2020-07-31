@@ -76,6 +76,8 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         self.userDefinedName = userDefinedName
         self.base64Avatar = base64Avatar
         self.permissions = permissions
+        self.stakingRefund = nil
+        self.staking = nil
         
     }
     /// :nodoc:
