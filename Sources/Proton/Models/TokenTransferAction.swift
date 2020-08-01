@@ -110,9 +110,12 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
         return formatter.string(for: self.quantity.value * getRate(forCurrencyCode: locale.currencyCode ?? "USD")) ?? "$0.00"
     }
     /// Formated balance without symbol and precision
-    public func quantityFormated() -> String {
-        // TODO: Use formatter to get seperator...
-        return String(self.quantity.value)
+    public func quantityFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = locale
+        formatter.maximumFractionDigits = Int(self.quantity.symbol.precision)
+        return formatter.string(for: self.quantity.value) ?? "0.0"
     }
 
 }
