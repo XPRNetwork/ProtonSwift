@@ -984,7 +984,7 @@ public class Proton {
                 
                 let claim = ClaimRewardsABI(owner: account.name)
                 
-                guard let action = try? Action(account: Name("eosio"), name: "claimrewards", authorization: [PermissionLevel(account.name, "active")], value: claim) else {
+                guard let action = try? Action(account: Name("eosio"), name: "voterclaim", authorization: [PermissionLevel(account.name, "active")], value: claim) else {
                     completion(.failure(ProtonError.error("Unable to create action")))
                     return
                 }
