@@ -16,7 +16,7 @@
     <a title="  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html"> Docs</a> (72% documented)</p>
+        <p><a href="index.html"> Docs</a> (0% documented)</p>
         <p class="header-right">
           <form role="search" action="search.json">
             <input type="text" placeholder="Search documentation" data-typeahead>
@@ -34,102 +34,6 @@
     <div class="content-wrapper">
       <nav class="sidebar">
         <ul class="nav-groups">
-          <li class="nav-group-name">
-            <a href="Classes.html">Classes</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Classes/Proton.html">Proton</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/Proton/Config.html">– Config</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/Proton/Notifications.html">– Notifications</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/ProtonObservable.html">ProtonObservable</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Enums.html">Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Enums/ProtonError.html">ProtonError</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Extensions.html">Extensions</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Extensions/Date.html">Date</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Extensions/String.html">String</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Protocols.html">Protocols</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Protocols/AvatarProtocol.html">AvatarProtocol</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Structs.html">Structures</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Structs/Account.html">Account</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ChainProvider.html">ChainProvider</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/Contact.html">Contact</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ESR.html">ESR</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ESRAction.html">ESRAction</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ESRAction/ActionType.html">– ActionType</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ESRAction/BasicDisplay.html">– BasicDisplay</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/ESRSession.html">ESRSession</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/TokenBalance.html">TokenBalance</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/TokenContract.html">TokenContract</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/TokenTransferAction.html">TokenTransferAction</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/TransferActionABI.html">TransferActionABI</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Typealiases.html">Type Aliases</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Typealiases.html#/AvatarImage">AvatarImage</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Typealiases.html#/s:6Proton11AvatarImagea">AvatarImage</a>
-              </li>
-            </ul>
-          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -153,9 +57,12 @@
 <li>[x] Signing transactions</li>
 <li>[ ] Handle ESR Signing requests ( In progress ) 🚧</li>
 </ul>
+<h2 id='functional-reference' class='heading'>Functional Reference</h2>
+
+<p><a href="https://protonprotocol.github.io/ProtonSwift">https://protonprotocol.github.io/ProtonSwift</a></p>
 <h2 id='usage' class='heading'>Usage</h2>
 
-<p>The main class that you will need to interface with is <code><a href="Classes/Proton.html">Proton</a></code> which encapsulates most all of the needed functions. Firstly you import <code><a href="Classes/Proton.html">Proton</a></code>. Initialize <code><a href="Classes/Proton.html">Proton</a></code> by passing a <code><a href="Classes/Proton/Config.html">Proton.Config</a></code> struct. You&rsquo;ll want to also call <code>Proton.shared.fetchRequirements</code> function at startup so that all needed requirements for the library will be present before moving forward.</p>
+<p>The main class that you will need to interface with is <code>Proton</code> which encapsulates most all of the needed functions. Firstly you import <code>Proton</code>. Initialize <code>Proton</code> by passing a <code>Proton.Config</code> struct. You&rsquo;ll want to also call <code>Proton.shared.fetchRequirements</code> function at startup so that all needed requirements for the library will be present before moving forward.</p>
 <pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">Proton</span>
 
 <span class="kt">Proton</span><span class="o">.</span><span class="nf">initialize</span><span class="p">(</span><span class="kt">Proton</span><span class="o">.</span><span class="kt">Config</span><span class="p">(</span><span class="nv">environment</span><span class="p">:</span> <span class="o">.</span><span class="n">testnet</span><span class="p">))</span><span class="o">.</span><span class="n">fetchRequirements</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
@@ -163,7 +70,7 @@
 <span class="p">}</span>
 </code></pre>
 
-<p>There are currently 2 environment enum values that can be used which live on the <code><a href="Classes/Proton/Config.html">Proton.Config</a></code> object.</p>
+<p>There are currently 2 environment enum values that can be used which live on the <code>Proton.Config</code> object.</p>
 <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">Environment</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
     <span class="k">case</span> <span class="n">testnet</span> <span class="o">=</span> <span class="s">"https://api-dev.protonchain.com"</span>
     <span class="k">case</span> <span class="n">mainnet</span> <span class="o">=</span> <span class="s">"https://api.protonchain.com"</span>
@@ -173,7 +80,7 @@
 <p>As seen above, most of the function closures provided by the library will return swift&rsquo;s <code>Result</code> type. </p>
 
 <blockquote>
-<p>There is also another class <code><a href="Classes/ProtonObservable.html">ProtonObservable</a></code> which can be used in iOSv13+ which takes advantage of the new Combine framework. This pairs nicely with SwiftUI.</p>
+<p>There is also another class <code>ProtonObservable</code> which can be used in iOSv13+ which takes advantage of the new Combine framework. This pairs nicely with SwiftUI.</p>
 </blockquote>
 
 <p>This library requires the user to authenticate via FaceId, TouchId, or phone passcode fallback when signing transactions. This is because that private key is stored in the keychain using the user presense flag.</p>
@@ -184,7 +91,7 @@
 </code></pre>
 <h3 id='find-and-import-an-account' class='heading'>Find and Import an account</h3>
 
-<p>When importing and account using a private key, its important to note that sometimes a private key may have more than 1 account associated with it. For that reason we will call the <code>findAccounts</code> function to get an unattached list of <code><a href="Structs/Account.html">Account</a></code> structs associated with the public key that was extracted from the private key wif.</p>
+<p>When importing and account using a private key, its important to note that sometimes a private key may have more than 1 account associated with it. For that reason we will call the <code>findAccounts</code> function to get an unattached list of <code>Account</code> structs associated with the public key that was extracted from the private key wif.</p>
 <pre class="highlight swift"><code><span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">findAccounts</span><span class="p">(</span><span class="nv">forPrivateKey</span><span class="p">:</span> <span class="s">"&lt;wif_formatted_private_key_here&gt;"</span><span class="p">)</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
 
     <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
@@ -212,10 +119,10 @@
 </code></pre>
 
 <blockquote>
-<p>The <code><a href="Classes/Proton.html">Proton</a></code> library only stores one <code><a href="Structs/Account.html">Account</a></code> struct at a time. Using the <code>storePrivateKey</code> or <code>setAccount</code> functions will overwrite the the current active <code><a href="Structs/Account.html">Account</a></code> if there is already one. It will however NOT remove the private key from the keychain. That operation will have to be done seperately. </p>
+<p>The <code>Proton</code> library only stores one <code>Account</code> struct at a time. Using the <code>storePrivateKey</code> or <code>setAccount</code> functions will overwrite the the current active <code>Account</code> if there is already one. It will however NOT remove the private key from the keychain. That operation will have to be done seperately. </p>
 </blockquote>
 
-<p>Now that you have an active <code><a href="Structs/Account.html">Account</a></code> stored, you can access it at <code>Proton.shared.account</code></p>
+<p>Now that you have an active <code>Account</code> stored, you can access it at <code>Proton.shared.account</code></p>
 <h3 id='update-active-account' class='heading'>Update active account</h3>
 
 <p>You can easily fetch the latest actions and other updates about your active account by simply calling <code>Proton.shared.updateAccount</code></p>
@@ -223,11 +130,11 @@
 </code></pre>
 
 <blockquote>
-<p>This will fetch the lates <code><a href="Structs/TokenTransferAction.html">TokenTransferAction</a></code> items, <code><a href="Structs/Account.html">Account</a></code> info, etc. It will automatically update these on the shared <code><a href="Classes/Proton.html">Proton</a></code> singleton.</p>
+<p>This will fetch the lates <code>TokenTransferAction</code> items, <code>Account</code> info, etc. It will automatically update these on the shared <code>Proton</code> singleton.</p>
 </blockquote>
 <h3 id='transfer-token' class='heading'>Transfer token</h3>
 
-<p>Transfering a token is a fairly simple process. You&rsquo;ll the need to grab the <code><a href="Structs/TokenContract.html">TokenContract</a></code> struct of the token you will be transfering. This can be fetched from <code>Proton.shared.tokenContracts</code>.</p>
+<p>Transfering a token is a fairly simple process. You&rsquo;ll the need to grab the <code>TokenContract</code> struct of the token you will be transfering. This can be fetched from <code>Proton.shared.tokenContracts</code>.</p>
 <pre class="highlight swift"><code><span class="k">guard</span> <span class="k">let</span> <span class="nv">xprTokenContract</span> <span class="o">=</span> <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">tokenContracts</span><span class="o">.</span><span class="nf">first</span><span class="p">(</span><span class="nv">where</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">stringValue</span> <span class="o">==</span> <span class="s">"eosio.token"</span> <span class="o">&amp;&amp;</span> <span class="nv">$0</span><span class="o">.</span><span class="n">symbol</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">"XPR"</span> <span class="p">})</span> <span class="k">else</span> <span class="p">{</span>
     <span class="k">return</span>
 <span class="p">}</span>
@@ -250,7 +157,7 @@
 </blockquote>
 <h3 id='get-privatekey-from-keychain' class='heading'>Get PrivateKey from keychain</h3>
 
-<p>You can fetch the private key stored for an <code><a href="Structs/Account.html">Account</a></code> by calling the member function <code>privateKey(forPermissionName: String)</code>. You will mostly be dealing with active permission keys.</p>
+<p>You can fetch the private key stored for an <code>Account</code> by calling the member function <code>privateKey(forPermissionName: String)</code>. You will mostly be dealing with active permission keys.</p>
 <pre class="highlight swift"><code><span class="k">guard</span> <span class="k">let</span> <span class="nv">account</span> <span class="o">=</span> <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">account</span> <span class="k">else</span> <span class="p">{</span>
     <span class="k">return</span>
 <span class="p">}</span>
@@ -264,13 +171,13 @@
 </code></pre>
 
 <blockquote>
-<p>Used to load all saved data objects from disk. This is called during the <code><a href="Classes/Proton.html">Proton</a></code> init phase. You may however want to call this for instance when your app goes comes back from the background.</p>
+<p>Used to load all saved data objects from disk. This is called during the <code>Proton</code> init phase. You may however want to call this for instance when your app goes comes back from the background.</p>
 </blockquote>
 <pre class="highlight swift"><code><span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">saveAll</span><span class="p">()</span>
 </code></pre>
 
 <blockquote>
-<p>Used to save all data objects to disk that are currently in memory on the <code><a href="Classes/Proton.html#/s:6ProtonAAC6sharedABvpZ">Proton.shared</a></code> singleton. This is called at the completion of <code>Proton.shared.updateAccount</code>. You may however want to call this for instance when your app goes in the background.</p>
+<p>Used to save all data objects to disk that are currently in memory on the <code>Proton.shared</code> singleton. This is called at the completion of <code>Proton.shared.updateAccount</code>. You may however want to call this for instance when your app goes in the background.</p>
 </blockquote>
 <pre class="highlight plaintext"><code>Proton.shared.generatePrivateKey()
 </code></pre>
@@ -290,7 +197,7 @@
 <h3 id='stake-xpr-tokens' class='heading'>Stake XPR Tokens</h3>
 
 <p>Coming soon&hellip;</p>
-<h3 id='unstack-xpr-tokens' class='heading'>Unstack XPR Tokens</h3>
+<h3 id='unstake-xpr-tokens' class='heading'>Unstake XPR Tokens</h3>
 
 <p>Coming soon&hellip;</p>
 <h3 id='claim-staking-rewards' class='heading'>Claim Staking Rewards</h3>
@@ -311,7 +218,8 @@ Add Proton as a dependency to your Package.swift. For more information, please s
 <p>Coming soon&hellip;</p>
 <h2 id='libraries-used' class='heading'>Libraries Used</h2>
 
-<p><a href="https://github.com/greymass/swift-eosio">EOSIO</a> - Greymass<br>
+<p><a href="https://github.com/ProtonProtocol/WebOperations.git">WebOperations</a> - Proton<br>
+<a href="https://github.com/greymass/swift-eosio">EOSIO</a> - Greymass<br>
 <a href="https://github.com/kishikawakatsumi/KeychainAccess">KeychainAccess</a> - kishikawakatsumi   </p>
 <h2 id='mit-license' class='heading'>MIT License</h2>
 
@@ -338,7 +246,7 @@ SOFTWARE.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-07-14)</p>
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-08-01)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

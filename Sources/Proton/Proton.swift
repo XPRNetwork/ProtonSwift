@@ -947,6 +947,94 @@ public class Proton {
     }
     
     /**
+     Claims XPR staking rewards
+     - Parameter completion: Closure returning Result
+     */
+    public func claimRewards(completion: @escaping ((Result<Any?, Error>) -> Void)) {
+        
+        guard let account = self.account else {
+            completion(.failure(ProtonError.error("No active account")))
+            return
+        }
+        
+        guard let chainProvider = account.chainProvider else {
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
+            return
+        }
+        
+        guard let staking = self.account?.staking, staking.isQualified else {
+            completion(.failure(ProtonError.error("Account has no rewards to claim")))
+            return
+        }
+        
+        if staking.claimAmount.value == .zero {
+            completion(.failure(ProtonError.error("Account has no rewards to claim")))
+            return
+        }
+        
+        account.privateKey(forPermissionName: "active") { result in
+            
+            switch result {
+            case .success(let privateKey):
+                
+                guard let privateKey = privateKey else {
+                    completion(.failure(ProtonError.error("Unable to retrive active private key")))
+                    return
+                }
+                
+                let claim = ClaimRewardsABI(owner: account.name)
+                
+                guard let action = try? Action(account: Name("eosio"), name: "claimrewards", authorization: [PermissionLevel(account.name, "active")], value: claim) else {
+                    completion(.failure(ProtonError.error("Unable to create action")))
+                    return
+                }
+                
+                WebOperations.shared.add(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                    
+                    switch result {
+                    case .success(let signedTransaction):
+                        
+                        if let signedTransaction = signedTransaction as? SignedTransaction {
+                            
+                            WebOperations.shared.add(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                                
+                                switch result {
+                                case .success(let response):
+                                    
+                                    if let response = response as? API.V1.Chain.PushTransaction.Response {
+                                        
+                                        completion(.success(response))
+                                        
+                                    } else {
+                                        completion(.failure(ProtonError.error("Unable to push transaction")))
+                                    }
+                                case .failure(let error):
+                                    completion(.failure(error))
+                                }
+                                
+                            }
+                            
+                        } else {
+                            completion(.failure(ProtonError.error("Unable to sign transaction")))
+                        }
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            case .failure:
+                
+                completion(.failure(ProtonError.error("Unable to sign transaction")))
+                
+            }
+            
+        }
+
+    }
+    
+    /**
      Use this function generate a k1 PrivateKey object. See PrivateKey inside of EOSIO for more details
      */
     public func generatePrivateKey() -> PrivateKey? {
