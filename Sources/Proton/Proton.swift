@@ -65,6 +65,16 @@ public class Proton {
     public typealias PrivateKey = EOSIO.PrivateKey
     
     /**
+     Proton typealias of the EOSIO.Asset
+    */
+    public typealias Asset = EOSIO.Asset
+    
+    /**
+     Proton typealias of the EOSIO.Asset.Symbol
+    */
+    public typealias Symbol = EOSIO.Asset.Symbol
+    
+    /**
      The proton config which gets set during initialisation
     */
     public static var config: Config?
