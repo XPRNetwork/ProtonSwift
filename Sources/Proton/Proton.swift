@@ -501,6 +501,8 @@ public class Proton {
                         
                     }
                     
+                    self.tokenBalances = Array(self.tokenBalances) // HACK to trigger updates on tokebalances after rate has been updated.
+                    
                 }
                 
             case .failure: break
