@@ -1,5 +1,5 @@
 //
-//  UpdateUserAccountAvatarOperation.swift
+//  ChangeUserAccountAvatarOperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 4/20/20.
@@ -21,7 +21,7 @@ public typealias AvatarImage = UIImage
 import func AVFoundation.AVMakeRect
 
 // :nodoc:
-class UpdateUserAccountAvatarOperation: BaseOperation {
+class ChangeUserAccountAvatarOperation: BaseOperation {
     
     var account: Account
     var chainProvider: ChainProvider

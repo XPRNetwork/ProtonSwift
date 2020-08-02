@@ -1,5 +1,5 @@
 //
-//  UpdateUserAccountNameOperation.swift
+//  ChangeUserAccountNameOperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 4/20/20.
@@ -9,7 +9,7 @@
 import Foundation
 import WebOperations
 
-class UpdateUserAccountNameOperation: BaseOperation {
+class ChangeUserAccountNameOperation: BaseOperation {
     
     var account: Account
     var chainProvider: ChainProvider

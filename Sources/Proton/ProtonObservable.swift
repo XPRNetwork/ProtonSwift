@@ -63,7 +63,7 @@ public final class ProtonObservable: ObservableObject {
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
      */
-    @Published public private(set) var tokenTransferActions: [TokenTransferAction] = [] {
+    @Published public private(set) var tokenTransferActions: [String: [TokenTransferAction]] = [:] {
         willSet {
             self.objectWillChange.send()
         }
@@ -161,7 +161,7 @@ public final class ProtonObservable: ObservableObject {
     }
     
     @objc func tokenTransferActionsWillSet(_ notification: Notification) {
-        guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? [TokenTransferAction] else {
+        guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? [String: [TokenTransferAction]] else {
             return
         }
         self.tokenTransferActions = newValue

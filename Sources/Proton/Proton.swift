@@ -194,8 +194,6 @@ public class Proton {
         public static let accountWillSet = Notification.Name("accountWillSet")
         /// Use this notification name to be notified right after the active acount is set
         public static let accountDidSet = Notification.Name("accountDidSet")
-        /// Use this notification name to be notified right after the active acount is updated
-        public static let accountDidUpdate = Notification.Name("accountDidUpdate")
     }
     
     // MARK: - Data Containers
@@ -242,7 +240,7 @@ public class Proton {
     /**
      Live updated array of tokenTransferActions. You can observe changes via NotificaitonCenter: tokenTransferActionsWillSet, tokenTransferActionsDidSet
      */
-    public var tokenTransferActions: [TokenTransferAction] = [] {
+    public var tokenTransferActions: [String: [TokenTransferAction]] = [:] {
         willSet {
             NotificationCenter.default.post(name: Notifications.tokenTransferActionsWillSet, object: nil,
                                             userInfo: ["newValue": newValue])
@@ -328,7 +326,7 @@ public class Proton {
         self.chainProvider = self.storage.getDefaultsItem(ChainProvider.self, forKey: "chainProvider") ?? nil
         self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
         self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
-        self.tokenTransferActions = self.storage.getDefaultsItem([TokenTransferAction].self, forKey: "tokenTransferActions") ?? []
+        self.tokenTransferActions = self.storage.getDefaultsItem([String: [TokenTransferAction]].self, forKey: "tokenTransferActions") ?? [:]
         self.esrSessions = self.storage.getDefaultsItem([ESRSession].self, forKey: "esrSessions") ?? []
         self.contacts = self.storage.getDefaultsItem([Contact].self, forKey: "contacts") ?? []
         self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
@@ -373,11 +371,53 @@ public class Proton {
     }
     
     /**
+     Use this function to store the private key and set the account after finding the account you want to save via findAccounts
+     - Parameter account: Account object, normally retrieved via findAccounts
+     - Parameter withPrivateKey: Wif formated private key
+     - Parameter completion: Closure returning Result
+     */
+    public func setAccount(_ account: Account, withPrivateKey privateKey: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        do {
+            
+            let pk = try PrivateKey(stringValue: privateKey)
+            let publicKey = try pk.getPublic()
+            
+            if account.isKeyAssociated(publicKey: publicKey.stringValue) {
+                
+                self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue) { result in
+                    
+                    switch result {
+                    case .success:
+                        self.setAccount(account) { result in
+                            switch result {
+                            case .success(let account):
+                                completion(.success(account))
+                            case .failure(let error):
+                                completion(.failure(error))
+                            }
+                        }
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+
+            } else {
+                completion(.failure(ProtonError.error("Key not associated with Account")))
+            }
+
+        } catch {
+            completion(.failure(ProtonError.error(error.localizedDescription)))
+        }
+        
+    }
+    
+    /**
      Fetchs all required data objects from external data sources. This should be done at startup
      - Parameter completion: Closure returning Result
      */
-    public func fetchRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
-        
+    public func updateDataRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
         WebOperations.shared.add(FetchChainProviderOperation(), toCustomQueueNamed: Proton.operationQueueSeq) { result in
             
@@ -490,7 +530,6 @@ public class Proton {
                 
                 account = returnAccount
                 self.account = account
-                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                 
                 self.fetchAccountUserInfo(forAccount: account) { result in
                     
@@ -499,9 +538,8 @@ public class Proton {
                         
                         account = returnAccount
                         self.account = account
-                        NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                         
-                        self.updateAccountVotingAndStakingInfo(forAccount: account) { result in
+                        self.fetchAccountVotingAndStakingInfo(forAccount: account) { result in
                             
                             switch result {
                             case .success(let stakingFetchResult):
@@ -510,7 +548,6 @@ public class Proton {
                                 account.stakingRefund = stakingFetchResult.stakingRefund
                                 
                                 self.account = account
-                                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                 
                                 self.fetchBalances(forAccount: account) { result in
                                     
@@ -539,14 +576,21 @@ public class Proton {
                                                     switch result {
                                                     case .success(let transferActions):
                                                         
+                                                        var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
+
                                                         for transferAction in transferActions {
                                                             
-                                                            if let idx = self.tokenTransferActions.firstIndex(of: transferAction) {
-                                                                self.tokenTransferActions[idx] = transferAction
+                                                            if let idx = tokenTransferActions.firstIndex(of: transferAction) {
+                                                                tokenTransferActions[idx] = transferAction
                                                             } else {
-                                                                self.tokenTransferActions.append(transferAction)
+                                                                tokenTransferActions.append(transferAction)
                                                             }
                                                             
+                                                        }
+                                                        
+                                                        if tokenTransferActions.count > 0 {
+                                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
+                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
                                                         }
 
                                                     case .failure: break
@@ -572,15 +616,6 @@ public class Proton {
 
                                                             completion(.success(account))
                                                             self.saveAll()
-                                                            NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
-                                                             
-                                                            print("🧑‍💻 UPDATE COMPLETED")
-                                                            print("ACCOUNT => \(String(describing: self.account?.name))")
-                                                            print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
-                                                            print("TOKEN BALANCES => \(self.tokenBalances.count)")
-                                                            print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
-                                                            print("CONTACTS => \(self.contacts.count)")
-                                                            print("ESR SESSIONS => \(self.esrSessions.count)")
                                                             
                                                         }
 
@@ -625,7 +660,7 @@ public class Proton {
      - Parameter userDefinedName: New user defined name
      - Parameter completion: Closure returning Result
      */
-    public func updateAccountUserDefinedName(userDefinedName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func changeAccountUserDefinedName(userDefinedName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -642,7 +677,7 @@ public class Proton {
             switch result {
             case .success(let signature):
                 
-                WebOperations.shared.add(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                WebOperations.shared.add(ChangeUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
                     switch result {
                     case .success:
@@ -652,7 +687,6 @@ public class Proton {
                             case .success(let returnAccount):
                                 account = returnAccount
                                 self.account = account
-                                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                 completion(.success(account))
                             case .failure(let error):
                                 completion(.failure(error))
@@ -678,7 +712,7 @@ public class Proton {
      - Parameter image: AvatarImage which is platform dependent alias. UIImage for iOS, NSImage for macOS
      - Parameter completion: Closure returning Result
      */
-    public func updateAccountAvatar(image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func changeAccountAvatar(image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -695,7 +729,7 @@ public class Proton {
             switch result {
             case .success(let signature):
                 
-                WebOperations.shared.add(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                WebOperations.shared.add(ChangeUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
                     switch result {
                     case .success:
@@ -705,7 +739,6 @@ public class Proton {
                             case .success(let returnAccount):
                                 account = returnAccount
                                 self.account = account
-                                NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                 completion(.success(account))
                             case .failure(let error):
                                 completion(.failure(error))
@@ -731,7 +764,7 @@ public class Proton {
      - Parameter userDefinedName: New user defined name
      - Parameter completion: Closure returning Result
      */
-    public func updateAccountUserDefinedNameAndAvatar(userDefinedName: String, image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func changeAccountUserDefinedNameAndAvatar(userDefinedName: String, image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -748,12 +781,12 @@ public class Proton {
             switch result {
             case .success(let signature):
                 
-                WebOperations.shared.add(UpdateUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                WebOperations.shared.add(ChangeUserAccountNameOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, userDefinedName: userDefinedName), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
                     switch result {
                     case .success:
                         
-                        WebOperations.shared.add(UpdateUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                        WebOperations.shared.add(ChangeUserAccountAvatarOperation(account: account, chainProvider: chainProvider, signature: signature.stringValue, image: image), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                             
                             switch result {
                             case .success:
@@ -763,7 +796,6 @@ public class Proton {
                                     case .success(let returnAccount):
                                         account = returnAccount
                                         self.account = account
-                                        NotificationCenter.default.post(name: Notifications.accountDidUpdate, object: nil)
                                         completion(.success(account))
                                     case .failure(let error):
                                         completion(.failure(error))
@@ -786,49 +818,6 @@ public class Proton {
                 completion(.failure(error))
             }
             
-        }
-        
-    }
-    
-    /**
-     Use this function to store the private key and set the account after finding the account you want to save via findAccounts
-     - Parameter privateKey: Wif formated private key
-     - Parameter forAccount: Account object, normally retrieved via findAccounts
-     - Parameter completion: Closure returning Result
-     */
-    public func storePrivateKey(privateKey: String, forAccount account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
-        
-        do {
-            
-            let pk = try PrivateKey(stringValue: privateKey)
-            let publicKey = try pk.getPublic()
-            
-            if account.isKeyAssociated(publicKey: publicKey.stringValue) {
-                
-                self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue) { result in
-                    
-                    switch result {
-                    case .success:
-                        self.setAccount(account) { result in
-                            switch result {
-                            case .success(let account):
-                                completion(.success(account))
-                            case .failure(let error):
-                                completion(.failure(error))
-                            }
-                        }
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                    
-                }
-
-            } else {
-                completion(.failure(ProtonError.error("Key not associated with Account")))
-            }
-
-        } catch {
-            completion(.failure(ProtonError.error(error.localizedDescription)))
         }
         
     }
@@ -923,8 +912,11 @@ public class Proton {
                                         
                                         let tokenTransferAction = TokenTransferAction(chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
                                         
-                                        self.tokenTransferActions.append(tokenTransferAction)
+                                        var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
                                         
+                                        tokenTransferActions.append(tokenTransferAction)
+                                        self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
+                
                                         completion(.success(tokenTransferAction))
                                         
                                     } else {
@@ -1307,8 +1299,8 @@ public class Proton {
     
     /**
      :nodoc:
-     Fetches the account found for the publickey passed
-     - Parameter forPublicKey: Wif formated public key
+     Fetches the basic account info from chain
+     - Parameter account: Account object
      - Parameter completion: Closure returning Result
      */
     private func fetchAccount(_ account: Account, completion: @escaping ((Result<Account, Error>) -> Void)) {
@@ -1443,6 +1435,8 @@ public class Proton {
             completion(.failure(ProtonError.error("Account missing chainProvider")))
             return
         }
+        
+        let tokenTransferActions = self.tokenTransferActions.flatMap { $0.value }
 
         let contactNames: [String] = tokenTransferActions.map { transferAction in
             return transferAction.other.stringValue
@@ -1487,7 +1481,7 @@ public class Proton {
      - Parameter forAccount: Account
      - Parameter completion: Closure returning Result
      */
-    private func updateAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<StakingFetchResult, Error>) -> Void)) {
+    private func fetchAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<StakingFetchResult, Error>) -> Void)) {
 
         if let chainProvider = account.chainProvider {
             

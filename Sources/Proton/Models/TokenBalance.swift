@@ -57,7 +57,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     }
     /// TokenTransferActions associated with this TokenBalance
     public var tokenTransferActions: [TokenTransferAction] {
-        return Proton.shared.tokenTransferActions.filter { $0.accountId == self.accountId && $0.tokenBalanceId == self.id }
+        return Proton.shared.tokenTransferActions[self.tokenContractId]?.filter { $0.accountId == self.accountId && $0.tokenBalanceId == self.id } ?? []
     }
     /// Account associated with this TokenBalance
     public var account: Account? {
