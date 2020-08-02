@@ -40,13 +40,19 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     public var url: String
     /// Is the token blacklisted. This is a value set by the blockproducers
     public var isBlacklisted: Bool
-    ///
-    public var rates: [String: Double]
+    /// When the tokebalance was updated. This will also be updated after tokenContract exchange rate was updated
+    public var updatedAt: Date
+    /// Exchange rates
+    public var rates: [String: Double] {
+        didSet {
+            self.updatedAt = Date()
+        }
+    }
     /// :nodoc:
     public init(chainId: String, contract: Name, issuer: Name, resourceToken: Bool,
                   systemToken: Bool, name: String, desc: String, iconUrl: String,
                   supply: Asset, maxSupply: Asset, symbol: Asset.Symbol, url: String, isBlacklisted: Bool,
-                  rates: [String: Double] = ["USD": 0.0]) {
+                  updatedAt: Date = Date(), rates: [String: Double] = ["USD": 0.0]) {
         
         self.chainId = chainId
         self.contract = contract
@@ -61,6 +67,7 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
         self.symbol = symbol
         self.url = url
         self.isBlacklisted = isBlacklisted
+        self.updatedAt = updatedAt
         self.rates = rates
         
     }

@@ -34,6 +34,22 @@ public struct Staking: Codable {
     public var producers: [Producer] {
         return Proton.shared.producers.filter({ producerNames.contains($0.name) })
     }
+    /// Formated staked without symbol and precision
+    public func stakedFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = locale
+        formatter.maximumFractionDigits = Int(self.staked.symbol.precision)
+        return formatter.string(for: self.staked.value) ?? "0.0"
+    }
+    /// Formated claimAmount without symbol and precision
+    public func claimAmountFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = locale
+        formatter.maximumFractionDigits = Int(self.claimAmount.symbol.precision)
+        return formatter.string(for: self.claimAmount.value) ?? "0.0"
+    }
 }
 
 /**
@@ -44,6 +60,14 @@ public struct StakingRefund: Codable {
     public var quantity: Asset
     /// The time which the last unstaking action occured
     public var requestTime: Date
+    /// Formated quantity without symbol and precision
+    public func quantityFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = locale
+        formatter.maximumFractionDigits = Int(self.quantity.symbol.precision)
+        return formatter.string(for: self.quantity.value) ?? "0.0"
+    }
 }
 
 /**
@@ -68,7 +92,6 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var staking: Staking?
     /// The user modified Avatar string
     public var stakingRefund: StakingRefund?
-    
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
                 userDefinedName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = []) {

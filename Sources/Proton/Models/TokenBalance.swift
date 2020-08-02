@@ -25,8 +25,10 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     public let contract: Name
     /// The Asset amount. See EOSIO type Asset for more info
     public var amount: Asset
+    /// When the tokebalance was updated. This will also be updated after tokenContract exchange rate was updated
+    public var updatedAt: Date
     /// :nodoc:
-    public init?(account: Account, contract: Name, amount: Double, precision: UInt8, symbol: String) {
+    public init?(account: Account, contract: Name, amount: Double, precision: UInt8, symbol: String, updatedAt: Date = Date()) {
         
         do {
             
@@ -36,6 +38,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
             self.contract = contract
             self.amount = Asset(amount, assetSymbol)
             self.tokenContractId = "\(contract.stringValue):\(self.amount.symbol.name)"
+            self.updatedAt = updatedAt
             
         } catch {
             print("ERROR: \(error.localizedDescription)")

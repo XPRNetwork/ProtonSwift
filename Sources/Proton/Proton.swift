@@ -497,11 +497,12 @@ public class Proton {
                         guard let rates = token["rates"] as? [String: Double] else { return }
                         if let idx = self.tokenContracts.firstIndex(where: { $0.id == "\(contract):\(symbol)" }) {
                             self.tokenContracts[idx].rates = rates
+                            if let iid = self.tokenBalances.firstIndex(where: { $0.tokenContractId == "\(contract):\(symbol)" }) {
+                                self.tokenBalances[iid].updatedAt = self.tokenContracts[idx].updatedAt
+                            }
                         }
                         
                     }
-                    
-                    self.tokenBalances = Array(self.tokenBalances) // HACK to trigger updates on tokebalances after rate has been updated.
                     
                 }
                 
