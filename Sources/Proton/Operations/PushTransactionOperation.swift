@@ -12,12 +12,10 @@ import WebOperations
 
 class PushTransactionOperation: BaseOperation {
     
-    var account: Account
     var chainProvider: ChainProvider
     var signedTransaction: SignedTransaction
     
-    init(account: Account, chainProvider: ChainProvider, signedTransaction: SignedTransaction) {
-        self.account = account
+    init(chainProvider: ChainProvider, signedTransaction: SignedTransaction) {
         self.chainProvider = chainProvider
         self.signedTransaction = signedTransaction
     }

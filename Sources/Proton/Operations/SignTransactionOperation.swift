@@ -12,13 +12,11 @@ import WebOperations
 
 class SignTransactionOperation: BaseOperation {
     
-    var account: Account
     var chainProvider: ChainProvider
     var actions: [Action]
     var privateKey: PrivateKey
     
-    init(account: Account, chainProvider: ChainProvider, actions: [Action], privateKey: PrivateKey) {
-        self.account = account
+    init(chainProvider: ChainProvider, actions: [Action], privateKey: PrivateKey) {
         self.chainProvider = chainProvider
         self.actions = actions
         self.privateKey = privateKey

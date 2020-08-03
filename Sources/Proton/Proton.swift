@@ -885,15 +885,10 @@ public class Proton {
             return
         }
         
-        account.privateKey(forPermissionName: "active") { result in
+        getPrivateKey(forAccount: account) { result in
             
             switch result {
             case .success(let privateKey):
-                
-                guard let privateKey = privateKey else {
-                    completion(.failure(ProtonError.error("Unable to retrive active private key")))
-                    return
-                }
                 
                 let transfer = TransferActionABI(from: account.name, to: to, quantity: Asset(quantity, tokenContract.symbol), memo: memo)
                 
@@ -902,41 +897,19 @@ public class Proton {
                     return
                 }
                 
-                WebOperations.shared.add(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                self.signAndPushTransaction(withActions: [action], privateKey: privateKey) { result in
                     
                     switch result {
-                    case .success(let signedTransaction):
+                    case .success(let response):
                         
-                        if let signedTransaction = signedTransaction as? SignedTransaction {
-                            
-                            WebOperations.shared.add(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                                
-                                switch result {
-                                case .success(let response):
-                                    
-                                    if let response = response as? API.V1.Chain.PushTransaction.Response {
-                                        
-                                        let tokenTransferAction = TokenTransferAction(chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
-                                        
-                                        var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
-                                        
-                                        tokenTransferActions.append(tokenTransferAction)
-                                        self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
-                
-                                        completion(.success(tokenTransferAction))
-                                        
-                                    } else {
-                                        completion(.failure(ProtonError.error("Unable to push transaction")))
-                                    }
-                                case .failure(let error):
-                                    completion(.failure(error))
-                                }
-                                
-                            }
-                            
-                        } else {
-                            completion(.failure(ProtonError.error("Unable to sign transaction")))
-                        }
+                        let tokenTransferAction = TokenTransferAction(chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
+                        
+                        var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
+                        
+                        tokenTransferActions.append(tokenTransferAction)
+                        self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
+
+                        completion(.success(tokenTransferAction))
                         
                     case .failure(let error):
                         completion(.failure(error))
@@ -944,10 +917,8 @@ public class Proton {
                     
                 }
                 
-            case .failure:
-                
-                completion(.failure(ProtonError.error("Unable to sign transaction")))
-                
+            case .failure(let error):
+                completion(.failure(error))
             }
             
         }
@@ -965,11 +936,6 @@ public class Proton {
             return
         }
         
-        guard let chainProvider = account.chainProvider else {
-            completion(.failure(ProtonError.error("Unable to find chain provider")))
-            return
-        }
-        
         guard let staking = self.account?.staking, staking.isQualified else {
             completion(.failure(ProtonError.error("Account has no rewards to claim")))
             return
@@ -980,15 +946,10 @@ public class Proton {
             return
         }
         
-        account.privateKey(forPermissionName: "active") { result in
+        getPrivateKey(forAccount: account) { result in
             
             switch result {
             case .success(let privateKey):
-                
-                guard let privateKey = privateKey else {
-                    completion(.failure(ProtonError.error("Unable to retrive active private key")))
-                    return
-                }
                 
                 let claim = ClaimRewardsABI(owner: account.name)
                 
@@ -997,45 +958,64 @@ public class Proton {
                     return
                 }
                 
-                WebOperations.shared.add(SignTransactionOperation(account: account, chainProvider: chainProvider, actions: [action], privateKey: privateKey), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                self.signAndPushTransaction(withActions: [action], privateKey: privateKey) { result in
                     
                     switch result {
-                    case .success(let signedTransaction):
-                        
-                        if let signedTransaction = signedTransaction as? SignedTransaction {
-                            
-                            WebOperations.shared.add(PushTransactionOperation(account: account, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                                
-                                switch result {
-                                case .success(let response):
-                                    
-                                    if let response = response as? API.V1.Chain.PushTransaction.Response {
-                                        
-                                        completion(.success(response))
-                                        
-                                    } else {
-                                        completion(.failure(ProtonError.error("Unable to push transaction")))
-                                    }
-                                case .failure(let error):
-                                    completion(.failure(error))
-                                }
-                                
-                            }
-                            
-                        } else {
-                            completion(.failure(ProtonError.error("Unable to sign transaction")))
-                        }
-                        
+                    case .success(let response):
+                        completion(.success(response))
                     case .failure(let error):
                         completion(.failure(error))
                     }
                     
                 }
                 
-            case .failure:
+            case .failure(let error):
+                completion(.failure(error))
+            }
+            
+        }
+
+    }
+    
+    /**
+     Votes for block producers
+     - Parameter forProducers: Array of producer Names
+     - Parameter completion: Closure returning Result
+     */
+    public func vote(forProducers producerNames: [Name], completion: @escaping ((Result<Any?, Error>) -> Void)) {
+
+        guard let account = self.account else {
+            completion(.failure(ProtonError.error("No active account")))
+            return
+        }
+        
+        let producerNames = producerNames.sorted { $0.stringValue < $1.stringValue }
+        
+        getPrivateKey(forAccount: account) { result in
+            
+            switch result {
+            case .success(let privateKey):
                 
-                completion(.failure(ProtonError.error("Unable to sign transaction")))
+                let vote = VoteProducersABI(voter: account.name, producers: producerNames)
                 
+                guard let action = try? Action(account: Name("eosio"), name: "voteproducers", authorization: [PermissionLevel(account.name, "active")], value: vote) else {
+                    completion(.failure(ProtonError.error("Unable to create action")))
+                    return
+                }
+                
+                self.signAndPushTransaction(withActions: [action], privateKey: privateKey) { result in
+                    
+                    switch result {
+                    case .success(let response):
+                        completion(.success(response))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
             }
             
         }
@@ -1084,6 +1064,81 @@ public class Proton {
     
     /**
      :nodoc:
+    Get private key for account
+     - Parameter completion: Closure returning Result
+     */
+    private func getPrivateKey(forAccount account: Account, andPermissionName permissionName: String = "active", completion: @escaping ((Result<PrivateKey, Error>) -> Void)) {
+        
+        account.privateKey(forPermissionName: permissionName) { result in
+            
+            switch result {
+            case .success(let privateKey):
+                
+                guard let privateKey = privateKey else {
+                    completion(.failure(ProtonError.error("Unable to fetch private key")))
+                    return
+                }
+        
+                completion(.success(privateKey))
+                
+            case .failure(let error):
+                
+                completion(.failure(ProtonError.error(error.localizedDescription)))
+            }
+            
+        }
+        
+    }
+    
+    /**
+    Signs and pushes transaction
+     - Parameter withActions: [Actions]
+     - Parameter privateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter completion: Closure returning Result
+     */
+    public func signAndPushTransaction(withActions actions: [Action], privateKey: PrivateKey, completion: @escaping ((Result<API.V1.Chain.PushTransaction.Response, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
+            return
+        }
+        
+        WebOperations.shared.add(SignTransactionOperation(chainProvider: chainProvider, actions: actions, privateKey: privateKey), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+            
+            switch result {
+            case .success(let signedTransaction):
+                
+                if let signedTransaction = signedTransaction as? SignedTransaction {
+                    
+                    WebOperations.shared.add(PushTransactionOperation(chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+
+                        switch result {
+                        case .success(let response):
+                            if let response = response as? API.V1.Chain.PushTransaction.Response {
+                                completion(.success(response))
+                            } else {
+                                completion(.failure(ProtonError.error("Unable to push transaction")))
+                            }
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
+                        
+                    }
+                    
+                } else {
+                    completion(.failure(ProtonError.error("Unable to sign transaction")))
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
+            
+        }
+        
+    }
+    
+    /**
+     :nodoc:
     Creates signature for updating avatar and userdefined name
      - Parameter completion: Closure returning Result
      */
@@ -1093,16 +1148,11 @@ public class Proton {
             completion(.failure(ProtonError.error("No active account")))
             return
         }
-
-        account.privateKey(forPermissionName: "active") { result in
+        
+        getPrivateKey(forAccount: account) { result in
             
             switch result {
             case .success(let privateKey):
-                
-                guard let privateKey = privateKey else {
-                    completion(.failure(ProtonError.error("Unable to fetch private key")))
-                    return
-                }
                 
                 guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
                     completion(.failure(ProtonError.error("Unable generate signing string data")))
@@ -1119,8 +1169,7 @@ public class Proton {
                 }
                 
             case .failure(let error):
-                
-                completion(.failure(ProtonError.error(error.localizedDescription)))
+                completion(.failure(error))
             }
             
         }
@@ -1891,7 +1940,7 @@ public class Proton {
                                 
                                 if esr.signingRequest.broadcast {
                                     
-                                    WebOperations.shared.add(PushTransactionOperation(account: esr.signer, chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                                    WebOperations.shared.add(PushTransactionOperation(chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                                         
                                         switch result {
                                         case .success(let res):
