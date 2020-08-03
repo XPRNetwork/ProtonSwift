@@ -1563,11 +1563,7 @@ public class Proton {
                     
                     if let producers = producers as? [ProducerABI] {
                         for producer in producers {
-                            
-                            if producer.is_active == 0x01 {
-                                producerSet.insert(Producer(chainId: chainProvider.chainId, name: producer.owner.stringValue, isActive: true, totalVotes: producer.total_votes, url: producer.url))
-                            }
-                            
+                            producerSet.insert(Producer(chainId: chainProvider.chainId, name: producer.owner.stringValue, isActive: producer.is_active == 0x01, totalVotes: producer.total_votes, url: producer.url))
                         }
                     }
 
