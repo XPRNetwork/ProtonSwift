@@ -998,7 +998,7 @@ public class Proton {
                 
                 let vote = VoteProducersABI(voter: account.name, producers: producerNames)
                 
-                guard let action = try? Action(account: Name("eosio"), name: "voteproducers", authorization: [PermissionLevel(account.name, "active")], value: vote) else {
+                guard let action = try? Action(account: Name("eosio"), name: "voteproducer", authorization: [PermissionLevel(account.name, "active")], value: vote) else {
                     completion(.failure(ProtonError.error("Unable to create action")))
                     return
                 }
