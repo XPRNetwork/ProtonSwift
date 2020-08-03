@@ -54,6 +54,29 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     }
     /// :nodoc:
     public init?(account: Account, tokenBalance: TokenBalance,
+                 dictionary: [String: Any]) {
+
+        guard let act = dictionary["act"] as? [String: Any] else { return nil }
+        guard let name = act["name"] as? String else { return nil }
+        guard let contract = act["account"] as? String else { return nil }
+        guard let trxId = dictionary["trx_id"] as? String else { return nil }
+        guard let timestamp = dictionary["block_time"] as? String,
+            let date = Date.dateFromAction(timeStamp: timestamp) else { return nil }
+        guard let data = act["data"] as? [String: Any] else { return nil }
+        guard let from = data["from"] as? String else { return nil }
+        guard let to = data["to"] as? String else { return nil }
+        guard let memo = data["memo"] as? String else { return nil }
+        guard let quantityString = data["quantity"] as? String else { return nil }
+        guard let quantity = try? Asset(stringValue: quantityString) else { return nil }
+
+        self.init(chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
+                  tokenContractId: tokenBalance.tokenContractId, name: name, contract: Name(contract), trxId: trxId,
+                  date: date, sent: account.name.stringValue == from ? true : false,
+                  from: Name(from), to: Name(to), quantity: quantity, memo: memo)
+
+    }
+    /// :nodoc:
+    public init?(account: Account, tokenBalance: TokenBalance,
                  tokenContract: TokenContract, transferActionABI: TransferActionABI,
                  dictionary: [String: Any]) {
 

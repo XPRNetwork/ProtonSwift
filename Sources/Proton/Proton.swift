@@ -941,6 +941,16 @@ public class Proton {
             return
         }
         
+        guard let chainProvider = self.account?.chainProvider else {
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
+            return
+        }
+        
+        guard let tokenBalance = self.tokenBalances.first(where: { $0.tokenContract?.systemToken == true }) else {
+            completion(.failure(ProtonError.error("Unable to find chain provider")))
+            return
+        }
+        
         if staking.claimAmount.value == .zero {
             completion(.failure(ProtonError.error("Account has no rewards to claim")))
             return
@@ -962,7 +972,33 @@ public class Proton {
                     
                     switch result {
                     case .success(let response):
+                        
+                        if let actions = response.processed["actions"] as? [[String: Any]] {
+                            
+                            for action in actions {
+                                
+                                if let act = action["act"] as? [String: Any], let name = act["name"] as? String, let acc = act["account"] as? String {
+                                    
+                                    if name == "transfer" && acc == "eosio.token" {
+                                        
+                                        if let claimReceivedAction = TokenTransferAction(account: account, tokenBalance: tokenBalance, dictionary: action) {
+                                            
+                                            var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
+                                            tokenTransferActions.append(claimReceivedAction)
+                                            self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
                         completion(.success(response))
+                        
                     case .failure(let error):
                         completion(.failure(error))
                     }
