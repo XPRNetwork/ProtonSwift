@@ -526,6 +526,9 @@ public class Proton {
             return
         }
         
+        WebOperations.shared.cancel(queueForKey: Proton.operationQueueSeq)
+        WebOperations.shared.cancel(queueForKey: Proton.operationQueueMulti)
+        
         self.fetchAccount(account) { result in
             
             switch result {

@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/ProtonProtocol/WebOperations.git",
         "state": {
           "branch": null,
-          "revision": "4ccdaac625e8cc9e5cbc7dda2296fa00767fc607",
-          "version": "0.5.2-beta"
+          "revision": "b8a07609299593c3630dc1dd813b0fefd6adf65f",
+          "version": "0.5.3-beta"
         }
       }
     ]
