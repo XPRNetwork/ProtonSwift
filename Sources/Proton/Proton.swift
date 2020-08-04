@@ -875,7 +875,7 @@ public class Proton {
             return
         }
         
-        guard let tokenBalance = self.tokenBalances.first(where: { $0.tokenContractId == tokenContract.id }) else {
+        guard var tokenBalance = self.tokenBalances.first(where: { $0.tokenContractId == tokenContract.id }) else {
             completion(.failure(ProtonError.error("Account has no token balance for \(tokenContract.name)")))
             return
         }
@@ -908,6 +908,16 @@ public class Proton {
                         
                         tokenTransferActions.append(tokenTransferAction)
                         self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
+                        
+                        if tokenTransferAction.sent {
+                            tokenBalance.amount -= tokenTransferAction.quantity
+                        } else {
+                            tokenBalance.amount += tokenTransferAction.quantity
+                        }
+                        
+                        if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
+                            self.tokenBalances[index] = tokenBalance
+                        }
 
                         completion(.success(tokenTransferAction))
                         
@@ -941,12 +951,7 @@ public class Proton {
             return
         }
         
-        guard let chainProvider = self.account?.chainProvider else {
-            completion(.failure(ProtonError.error("Unable to find chain provider")))
-            return
-        }
-        
-        guard let tokenBalance = self.tokenBalances.first(where: { $0.tokenContract?.systemToken == true }) else {
+        guard var tokenBalance = self.tokenBalances.first(where: { $0.tokenContract?.systemToken == true }) else {
             completion(.failure(ProtonError.error("Unable to find chain provider")))
             return
         }
@@ -977,6 +982,8 @@ public class Proton {
                             
                             for action in actions {
                                 
+                                print(action)
+                                
                                 if let act = action["act"] as? [String: Any], let name = act["name"] as? String, let acc = act["account"] as? String {
                                     
                                     if name == "transfer" && acc == "eosio.token" {
@@ -986,6 +993,12 @@ public class Proton {
                                             var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
                                             tokenTransferActions.append(claimReceivedAction)
                                             self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
+                                            
+                                            tokenBalance.amount += claimReceivedAction.quantity
+                                            
+                                            if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
+                                                self.tokenBalances[index] = tokenBalance
+                                            }
                                             
                                         }
                                         
