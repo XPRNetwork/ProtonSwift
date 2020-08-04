@@ -125,15 +125,15 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     public func getRate(forCurrencyCode currencyCode: String) -> Double {
         return self.tokenContract?.getRate(forCurrencyCode: currencyCode) ?? 0.0
     }
-    /// Formated currency balance
+    /// Formatted currency balance
     public func currencyQuantityFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = locale
         return formatter.string(for: self.quantity.value * getRate(forCurrencyCode: locale.currencyCode ?? "USD")) ?? "$0.00"
     }
-    /// Formated balance without symbol and precision
-    public func quantityFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    /// Formatted balance without symbol and precision
+    public func quantityFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = locale

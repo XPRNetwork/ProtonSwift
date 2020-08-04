@@ -35,7 +35,7 @@ public struct Staking: Codable {
         return Proton.shared.producers.filter({ producerNames.contains($0.name) })
     }
     /// Formated staked without symbol and precision
-    public func stakedFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    public func stakedFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = locale
@@ -43,7 +43,7 @@ public struct Staking: Codable {
         return formatter.string(for: self.staked.value) ?? "0.0"
     }
     /// Formated claimAmount without symbol and precision
-    public func claimAmountFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    public func claimAmountFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = locale

@@ -81,7 +81,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
         return formatter.string(for: self.amount.value * getRate(forCurrencyCode: locale.currencyCode ?? "USD")) ?? "$0.00"
     }
     /// Formated balance without symbol and precision
-    public func balanceFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    public func balanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = locale
