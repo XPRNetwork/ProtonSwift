@@ -907,7 +907,8 @@ public class Proton {
                         var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
                         
                         tokenTransferActions.append(tokenTransferAction)
-                        self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
+                        tokenTransferActions.sort(by: {  $0.date > $1.date })
+                        self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
                         
                         if tokenTransferAction.sent {
                             tokenBalance.amount -= tokenTransferAction.quantity
@@ -992,7 +993,8 @@ public class Proton {
                                             
                                             var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
                                             tokenTransferActions.append(claimReceivedAction)
-                                            self.tokenTransferActions[tokenBalance.tokenContractId] = tokenTransferActions
+                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
+                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
                                             
                                             tokenBalance.amount += claimReceivedAction.quantity
                                             
