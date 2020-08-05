@@ -982,7 +982,7 @@ public class Proton {
             if quantity > 0 {
                 return StakeXPRABI(from: account.name, stake_xpr_quantity: Asset(quantity, tokenContract.symbol))
             } else {
-                return UnStakeXPRABI(from: account.name, unstake_xpr_quantity: Asset(quantity, tokenContract.symbol))
+                return UnStakeXPRABI(from: account.name, unstake_xpr_quantity: Asset(quantity * -1.0, tokenContract.symbol))
             }
         }
         
