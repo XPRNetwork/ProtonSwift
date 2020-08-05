@@ -352,11 +352,11 @@ public class Proton {
     /**
      Sets the active account, fetchs and updates. This includes, account names, avatars, balances, etc
       Use this for switching accounts when you know the private key has already been stored.
-     - Parameter forAccountName: Proton account name not including @
+     - Parameter withName: Proton account name not including @
      - Parameter chainId: chainId for the account
      - Parameter completion: Closure returning Result
      */
-    public func setAccount(forAccountName accountName: String, chainId: String,
+    public func setAccount(withName accountName: String, chainId: String,
                            completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         self.setAccount(Account(chainId: chainId, name: accountName)) { result in
@@ -373,10 +373,10 @@ public class Proton {
     /**
      Use this function to store the private key and set the account after finding the account you want to save via findAccounts
      - Parameter account: Account object, normally retrieved via findAccounts
-     - Parameter withPrivateKey: Wif formated private key
+     - Parameter withPrivateKeyString: Wif formated private key
      - Parameter completion: Closure returning Result
      */
-    public func setAccount(_ account: Account, withPrivateKey privateKey: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func setAccount(_ account: Account, withPrivateKeyString privateKey: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         do {
             
@@ -664,9 +664,10 @@ public class Proton {
     /**
      Changes the account's userdefined name on chain
      - Parameter userDefinedName: New user defined name
+     - Parameter andPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func changeAccountUserDefinedName(userDefinedName: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func changeAccountUserDefinedName(withUserDefinedName userDefinedName: String, andPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -678,7 +679,7 @@ public class Proton {
             return
         }
         
-        signforAccountUpdate { result in
+        signforAccountUpdate(withPrivateKey: privateKey) { result in
             
             switch result {
             case .success(let signature):
@@ -715,10 +716,11 @@ public class Proton {
     
     /**
      Changes the account's avatar on chain
-     - Parameter image: AvatarImage which is platform dependent alias. UIImage for iOS, NSImage for macOS
+     - Parameter withImage: AvatarImage which is platform dependent alias. UIImage for iOS, NSImage for macOS
+     - Parameter andPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func changeAccountAvatar(image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func changeAccountAvatar(withImage image: AvatarImage, andPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -730,7 +732,7 @@ public class Proton {
             return
         }
         
-        signforAccountUpdate { result in
+        signforAccountUpdate(withPrivateKey: privateKey) { result in
             
             switch result {
             case .success(let signature):
@@ -767,10 +769,12 @@ public class Proton {
     
     /**
      Changes the account's userdefined name and avatar on chain
-     - Parameter userDefinedName: New user defined name
+     - Parameter withUserDefinedName: New user defined name
+     - Parameter image: AvatarImage
+     - Parameter andPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func changeAccountUserDefinedNameAndAvatar(userDefinedName: String, image: AvatarImage, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func changeAccountUserDefinedNameAndAvatar(withUserDefinedName userDefinedName: String, image: AvatarImage, andPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         guard var account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -782,7 +786,7 @@ public class Proton {
             return
         }
         
-        signforAccountUpdate { result in
+        signforAccountUpdate(withPrivateKey: privateKey) { result in
             
             switch result {
             case .success(let signature):
@@ -830,17 +834,17 @@ public class Proton {
     
     /**
      Use this function to obtain a list of Accounts which match a given private key. These accounts are not stored. If you want to store the Account and private key, you should then call storePrivateKey function
-     - Parameter forPrivateKey: Wif formated private key
+     - Parameter forPrivateKeyString: Wif formated private key
      - Parameter completion: Closure returning Result
      */
-    public func findAccounts(forPrivateKey privateKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
+    public func findAccounts(forPrivateKeyString privateKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
         do {
             
             let pk = try PrivateKey(stringValue: privateKey)
             let publicKey = try pk.getPublic()
             
-            findAccounts(forPublicKey: publicKey.stringValue) { result in
+            findAccounts(forPublicKeyString: publicKey.stringValue) { result in
                 switch result {
                 case .success(let accounts):
                     completion(.success(accounts))
@@ -857,13 +861,14 @@ public class Proton {
     
     /**
      Creates a transfer, signs and pushes that transfer to the chain
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter to: The account to be transfered to
      - Parameter quantity: The amount to be transfered
      - Parameter tokenContract: The TokenContract that's being transfered
      - Parameter memo: The memo for the transfer
      - Parameter completion: Closure returning Result
      */
-    public func transfer(to: Name, quantity: Double, tokenContract: TokenContract, memo: String = "", completion: @escaping ((Result<TokenTransferAction, Error>) -> Void)) {
+    public func transfer(withPrivateKey privateKey: PrivateKey, to: Name, quantity: Double, tokenContract: TokenContract, memo: String = "", completion: @escaping ((Result<TokenTransferAction, Error>) -> Void)) {
         
         guard let account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -885,11 +890,11 @@ public class Proton {
             return
         }
         
-        getPrivateKey(forAccount: account) { result in
+        do {
             
-            switch result {
-            case .success(let privateKey):
-                
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
                 let transfer = TransferActionABI(from: account.name, to: to, quantity: Asset(quantity, tokenContract.symbol), memo: memo)
                 
                 guard let action = try? Action(account: tokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
@@ -897,7 +902,7 @@ public class Proton {
                     return
                 }
                 
-                self.signAndPushTransaction(withActions: [action], privateKey: privateKey) { result in
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
                     
                     switch result {
                     case .success(let response):
@@ -928,19 +933,22 @@ public class Proton {
                     
                 }
                 
-            case .failure(let error):
-                completion(.failure(error))
+            } else {
+                completion(.failure(ProtonError.error("Key not associated with active permissions for account")))
             }
             
+        } catch {
+            completion(.failure(ProtonError.error("Key not valid for transaction")))
         }
 
     }
     
     /**
      Claims XPR staking rewards
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func claimRewards(completion: @escaping ((Result<Any?, Error>) -> Void)) {
+    public func claimRewards(withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Any?, Error>) -> Void)) {
         
         guard let account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
@@ -962,11 +970,11 @@ public class Proton {
             return
         }
         
-        getPrivateKey(forAccount: account) { result in
+        do {
             
-            switch result {
-            case .success(let privateKey):
-                
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
                 let claim = ClaimRewardsABI(owner: account.name)
                 
                 guard let action = try? Action(account: Name("eosio"), name: "voterclaim", authorization: [PermissionLevel(account.name, "active")], value: claim) else {
@@ -974,7 +982,7 @@ public class Proton {
                     return
                 }
                 
-                self.signAndPushTransaction(withActions: [action], privateKey: privateKey) { result in
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
                     
                     switch result {
                     case .success(let response):
@@ -1020,32 +1028,35 @@ public class Proton {
                     
                 }
                 
-            case .failure(let error):
-                completion(.failure(error))
+            } else {
+                completion(.failure(ProtonError.error("Key not associated with active permissions for account")))
             }
             
+        } catch {
+            completion(.failure(ProtonError.error("Key not valid for transaction")))
         }
-
+        
     }
     
     /**
      Votes for block producers
      - Parameter forProducers: Array of producer Names
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func vote(forProducers producerNames: [Name], completion: @escaping ((Result<Any?, Error>) -> Void)) {
+    public func vote(forProducers producerNames: [Name], withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Any?, Error>) -> Void)) {
 
         guard let account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
             return
         }
         
-        let producerNames = producerNames.sorted { $0.stringValue < $1.stringValue }
-        
-        getPrivateKey(forAccount: account) { result in
+        do {
             
-            switch result {
-            case .success(let privateKey):
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
+                let producerNames = producerNames.sorted { $0.stringValue < $1.stringValue }
                 
                 let vote = VoteProducersABI(voter: account.name, producers: producerNames)
                 
@@ -1054,7 +1065,7 @@ public class Proton {
                     return
                 }
                 
-                self.signAndPushTransaction(withActions: [action], privateKey: privateKey) { result in
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
                     
                     switch result {
                     case .success(let response):
@@ -1065,10 +1076,12 @@ public class Proton {
                     
                 }
                 
-            case .failure(let error):
-                completion(.failure(error))
+            } else {
+                completion(.failure(ProtonError.error("Key not associated with active permissions for account")))
             }
             
+        } catch {
+            completion(.failure(ProtonError.error("Key not valid for transaction")))
         }
 
     }
@@ -1088,15 +1101,11 @@ public class Proton {
     
     /**
     Creates signature by signing arbitrary string
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func signArbitrary(string: String, withPrivateKeyString privateKeyString: String, completion: @escaping ((Result<Signature, Error>) -> Void)) {
-        
-        guard let privateKey = PrivateKey(privateKeyString) else {
-            completion(.failure(ProtonError.error("Unable to fetch private key")))
-            return
-        }
-        
+    public func signArbitrary(string: String, withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Signature, Error>) -> Void)) {
+                
         guard let signingData = string.data(using: String.Encoding.utf8) else {
             completion(.failure(ProtonError.error("Unable generate signing string data")))
             return
@@ -1114,40 +1123,12 @@ public class Proton {
     }
     
     /**
-     :nodoc:
-    Get private key for account
-     - Parameter completion: Closure returning Result
-     */
-    private func getPrivateKey(forAccount account: Account, andPermissionName permissionName: String = "active", completion: @escaping ((Result<PrivateKey, Error>) -> Void)) {
-        
-        account.privateKey(forPermissionName: permissionName) { result in
-            
-            switch result {
-            case .success(let privateKey):
-                
-                guard let privateKey = privateKey else {
-                    completion(.failure(ProtonError.error("Unable to fetch private key")))
-                    return
-                }
-        
-                completion(.success(privateKey))
-                
-            case .failure(let error):
-                
-                completion(.failure(ProtonError.error(error.localizedDescription)))
-            }
-            
-        }
-        
-    }
-    
-    /**
     Signs and pushes transaction
      - Parameter withActions: [Actions]
-     - Parameter privateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter andPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func signAndPushTransaction(withActions actions: [Action], privateKey: PrivateKey, completion: @escaping ((Result<API.V1.Chain.PushTransaction.Response, Error>) -> Void)) {
+    public func signAndPushTransaction(withActions actions: [Action], andPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<API.V1.Chain.PushTransaction.Response, Error>) -> Void)) {
         
         guard let chainProvider = self.chainProvider else {
             completion(.failure(ProtonError.error("Unable to find chain provider")))
@@ -1191,38 +1172,35 @@ public class Proton {
     /**
      :nodoc:
     Creates signature for updating avatar and userdefined name
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    private func signforAccountUpdate(completion: @escaping ((Result<Signature, Error>) -> Void)) {
+    private func signforAccountUpdate(withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Signature, Error>) -> Void)) {
         
         guard let account = self.account else {
             completion(.failure(ProtonError.error("No active account")))
             return
         }
         
-        getPrivateKey(forAccount: account) { result in
+        guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
+            completion(.failure(ProtonError.error("Unable generate signing string data")))
+            return
+        }
+        
+        do {
             
-            switch result {
-            case .success(let privateKey):
-                
-                guard let signingData = account.name.stringValue.data(using: String.Encoding.utf8) else {
-                    completion(.failure(ProtonError.error("Unable generate signing string data")))
-                    return
-                }
-                
-                do {
-                    let signature = try privateKey.sign(signingData)
-                    completion(.success(signature))
-                    return
-                } catch {
-                    completion(.failure(ProtonError.error(error.localizedDescription)))
-                    return
-                }
-                
-            case .failure(let error):
-                completion(.failure(error))
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+                let signature = try privateKey.sign(signingData)
+                completion(.success(signature))
+                return
+            } else {
+                completion(.failure(ProtonError.error("Key not associated with active permissions for account")))
             }
-            
+    
+        } catch {
+            completion(.failure(ProtonError.error(error.localizedDescription)))
+            return
         }
 
     }
@@ -1230,10 +1208,10 @@ public class Proton {
     /**
      :nodoc:
      Use this function to obtain a list of Accounts which match a given public key. These accounts are not stored. If you want to store the Account and private key, you should then call storePrivateKey function
-     - Parameter forPublicKey: Wif formated public key
+     - Parameter forPublicKeyString: Wif formated public key
      - Parameter completion: Closure returning Result
      */
-    private func findAccounts(forPublicKey publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
+    private func findAccounts(forPublicKeyString publicKey: String, completion: @escaping ((Result<Set<Account>, Error>) -> Void)) {
         
         self.fetchKeyAccounts(forPublicKey: publicKey) { result in
             

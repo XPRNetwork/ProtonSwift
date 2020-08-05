@@ -35,20 +35,14 @@ public struct Staking: Codable {
         return Proton.shared.producers.filter({ producerNames.contains($0.name) })
     }
     /// Formated staked without symbol and precision
-    public func stakedFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = locale
-        formatter.maximumFractionDigits = Int(self.staked.symbol.precision)
-        return formatter.string(for: self.staked.value) ?? "0.0"
+    public func stakedFormatted(forLocale locale: Locale = Locale(identifier: "en_US"),
+                                withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
+        return self.staked.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }
     /// Formated claimAmount without symbol and precision
-    public func claimAmountFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = locale
-        formatter.maximumFractionDigits = Int(self.claimAmount.symbol.precision)
-        return formatter.string(for: self.claimAmount.value) ?? "0.0"
+    public func claimAmountFormatted(forLocale locale: Locale = Locale(identifier: "en_US"),
+                                     withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
+        return self.claimAmount.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }
 }
 
@@ -61,12 +55,9 @@ public struct StakingRefund: Codable {
     /// The time which the last unstaking action occured
     public var requestTime: Date
     /// Formated quantity without symbol and precision
-    public func quantityFormated(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = locale
-        formatter.maximumFractionDigits = Int(self.quantity.symbol.precision)
-        return formatter.string(for: self.quantity.value) ?? "0.0"
+    public func quantityFormated(forLocale locale: Locale = Locale(identifier: "en_US"),
+                                 withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
+        return self.quantity.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }
 }
 
@@ -219,6 +210,25 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
         return false
         
+    }
+    /**
+     Check if the publickey is associated with the Account
+     - Parameter withPermissionName: The permission name. ex: active
+     - Parameter publicKey: Wif formated public key
+     - Returns: Bool
+     */
+    public func isKeyAssociated(withPermissionName permissionName: String, forPublicKey publicKey: PublicKey) -> Bool {
+        
+        if let permission = self.permissions.first(where: { $0.permName.stringValue == permissionName }) {
+            for key in permission.requiredAuth.keys {
+                if key.key.stringValue == publicKey.stringValue || key.key.stringValue == publicKey.legacyStringValue {
+                    return true
+                }
+            }
+        }
+        
+        return false
+
     }
     /**
      Returns a set of keys associated with the Account

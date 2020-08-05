@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EOSIO
 
 // MARK: - Private Extensions
 
@@ -73,6 +74,28 @@ public extension String {
             return false
         }
         return true
+    }
+    
+}
+
+public extension Asset {
+    
+    func formatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = locale
+        formatter.minimumIntegerDigits = 1
+        formatter.minimumFractionDigits = precision ? Int(self.symbol.precision) : 0
+        formatter.maximumFractionDigits = Int(self.symbol.precision)
+        let retval = formatter.string(for: self.value) ?? "0.0"
+        return symbol ? "\(retval) \(self.symbol.name)" : retval
+    }
+    
+    func formattedAsCurrency(forLocale locale: Locale = Locale(identifier: "en_US"), withRate rate: Double = 0.0) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: self.value * rate) ?? "$0.00"
     }
     
 }

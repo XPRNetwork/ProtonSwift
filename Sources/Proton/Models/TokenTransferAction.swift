@@ -127,18 +127,12 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     }
     /// Formatted currency balance
     public func currencyQuantityFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = locale
-        return formatter.string(for: self.quantity.value * getRate(forCurrencyCode: locale.currencyCode ?? "USD")) ?? "$0.00"
+        return self.quantity.formattedAsCurrency(forLocale: locale, withRate: getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
     }
     /// Formatted balance without symbol and precision
-    public func quantityFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = locale
-        formatter.maximumFractionDigits = Int(self.quantity.symbol.precision)
-        return formatter.string(for: self.quantity.value) ?? "0.0"
+    public func quantityFormatted(forLocale locale: Locale = Locale(identifier: "en_US"),
+                                  withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
+        return self.quantity.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }
 
 }
