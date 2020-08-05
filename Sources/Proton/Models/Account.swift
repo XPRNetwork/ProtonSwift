@@ -129,6 +129,10 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var tokenBalances: [TokenBalance] {
         return Proton.shared.tokenBalances.filter { $0.accountId == self.id }
     }
+    /// XPR TokenBalance associated with the Account
+    public var systemTokenBalance: TokenBalance? {
+        return tokenBalances.first(where: { $0.tokenContractId == "eosio.token:XPR" })
+    }
     /// Name formated with leading @
     public var nameWithAmpersand: String {
         return "@\(name.stringValue)"
@@ -157,6 +161,18 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         formatter.locale = locale
         return formatter.string(for: amount) ?? "$0.00"
         
+    }
+    
+    public func availableSystemBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool, andPrecision precision: Bool) -> String {
+        let retval = self.systemTokenBalance?.balanceFormatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+        if let retval = retval {
+            return retval
+        }
+        do {
+            return Asset(0.0, try Asset.Symbol(stringValue: "4,XPR")).formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+        } catch {
+            return "0.0"
+        }
     }
     
     public func privateKey(forPermissionName: String, completion: @escaping ((Result<PrivateKey?, Error>) -> Void)) {
