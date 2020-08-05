@@ -944,6 +944,117 @@ public class Proton {
     }
     
     /**
+     Stakes XPR
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter quantity: Amount to added or removed from stake. Postive for adding stake, Negative for removing stake. Cannot be zero
+     - Parameter completion: Closure returning Result
+     */
+    public func stake(withPrivateKey privateKey: PrivateKey, quantity: Double, completion: @escaping ((Result<Any?, Error>) -> Void)) {
+        
+        guard let account = self.account else {
+            completion(.failure(ProtonError.error("No active account")))
+            return
+        }
+        
+        guard var tokenBalance = account.systemTokenBalance else {
+            completion(.failure(ProtonError.error("Account has no token balance for XPR")))
+            return
+        }
+        
+        guard var tokenContract = tokenBalance.tokenContract else {
+            completion(.failure(ProtonError.error("Account has no token balance for XPR")))
+            return
+        }
+        
+        if quantity == Double.zero {
+            completion(.failure(ProtonError.error("Cannot stake zero value")))
+            return
+        }
+        
+        let availableBalance = account.availableSystemBalance().value
+        
+        if availableBalance < quantity {
+            completion(.failure(ProtonError.error("Not enough availbe balance to stake \(quantity)")))
+            return
+        }
+        
+        func getActionData(account: Account, quantity: Double, symbol: Asset.Symbol) -> ABICodable {
+            if quantity > 0 {
+                return StakeXPRABI(from: account.name, stake_xpr_quantity: Asset(quantity, tokenContract.symbol))
+            } else {
+                return UnStakeXPRABI(from: account.name, unstake_xpr_quantity: Asset(quantity, tokenContract.symbol))
+            }
+        }
+        
+        do {
+            
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+                
+                let data = try ABIEncoder.encode(getActionData(account: account, quantity: quantity, symbol: tokenContract.symbol)) as Data
+                let action = Action(account: Name("eosio"), name: quantity > 0 ? "stakexpr" : "unstakexpr", authorization: [PermissionLevel(account.name, "active")], data: data)
+                
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
+                    
+                    switch result {
+                    case .success(let response):
+                        
+                        if let actions = response.processed["actions"] as? [[String: Any]] {
+                            
+                            for action in actions {
+                                
+                                print(action)
+                                
+                                if let act = action["act"] as? [String: Any], let name = act["name"] as? String, let acc = act["account"] as? String {
+                                    
+                                    if name == "transfer" && acc == "eosio.token" {
+                                        
+                                        if let stakeAction = TokenTransferAction(account: account, tokenBalance: tokenBalance, dictionary: action) {
+                                            
+                                            var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
+                                            tokenTransferActions.append(stakeAction)
+                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
+                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
+                                            
+                                            if quantity > 0 {
+                                                tokenBalance.amount -= stakeAction.quantity
+                                            } else {
+                                                tokenBalance.amount += stakeAction.quantity
+                                            }
+                                            
+                                            if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
+                                                self.tokenBalances[index] = tokenBalance
+                                            }
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                        completion(.success(response))
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            } else {
+                completion(.failure(ProtonError.error("Key not associated with active permissions for account")))
+            }
+            
+        } catch {
+            completion(.failure(ProtonError.error("Key not valid for transaction")))
+        }
+        
+    }
+    
+    /**
      Claims XPR staking rewards
      - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
