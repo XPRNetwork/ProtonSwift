@@ -163,7 +163,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
     }
     
-    public func availableSystemBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool, andPrecision precision: Bool) -> String {
+    public func availableSystemBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
         return self.systemTokenBalance?.balanceFormatted(forLocale: locale, withSymbol: symbol, andPrecision: precision) ??
         Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR")).formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }
