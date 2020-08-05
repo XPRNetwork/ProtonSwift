@@ -164,15 +164,12 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     }
     
     public func availableSystemBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool, andPrecision precision: Bool) -> String {
-        let retval = self.systemTokenBalance?.balanceFormatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
-        if let retval = retval {
-            return retval
-        }
-        do {
-            return Asset(0.0, try Asset.Symbol(stringValue: "4,XPR")).formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
-        } catch {
-            return "0.0"
-        }
+        return self.systemTokenBalance?.balanceFormatted(forLocale: locale, withSymbol: symbol, andPrecision: precision) ??
+        Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR")).formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+    }
+    
+    public func availableSystemBalance() -> Asset {
+        return self.systemTokenBalance?.amount ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
     }
     
     public func privateKey(forPermissionName: String, completion: @escaping ((Result<PrivateKey?, Error>) -> Void)) {
