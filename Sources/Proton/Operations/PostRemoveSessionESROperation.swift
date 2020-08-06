@@ -31,7 +31,7 @@ class PostRemoveSessionESROperation: BaseOperation {
                 return
             }
             
-            WebOperations.shared.request(method: WebOperations.RequestMethod.post, url: url, parameters: parameters) { result in
+            WebOperations.shared.request(method: WebOperations.RequestMethod.post, url: url, parameters: parameters, errorModel: NilErrorModel.self) { result in
                 
                 switch result {
                 case .success:

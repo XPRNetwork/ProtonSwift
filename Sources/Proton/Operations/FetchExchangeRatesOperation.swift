@@ -30,7 +30,7 @@ class FetchExchangeRatesOperation: BaseOperation {
             return
         }
 
-        WebOperations.shared.request(url: url) { (result: Result<Any?, Error>) in
+        WebOperations.shared.request(url: url, errorModel: NilErrorModel.self) { (result: Result<Any?, WebError>) in
 
             switch result {
             case .success(let rates):

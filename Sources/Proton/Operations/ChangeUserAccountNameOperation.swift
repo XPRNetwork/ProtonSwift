@@ -44,7 +44,7 @@ class ChangeUserAccountNameOperation: BaseOperation {
             return
         }
         
-        WebOperations.shared.request(method: WebOperations.RequestMethod.put, auth: WebOperations.Auth.bearer, authValue: signature, url: url, parameters: parameters) { result in
+        WebOperations.shared.request(method: WebOperations.RequestMethod.put, auth: WebOperations.Auth.bearer, authValue: signature, url: url, parameters: parameters, errorModel: NilErrorModel.self) { result in
             switch result {
             case .success:
                 self.finish(retval: nil, error: nil)

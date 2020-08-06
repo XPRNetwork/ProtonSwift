@@ -128,26 +128,13 @@ class ChangeUserAccountAvatarOperation: BaseOperation {
                 return
             }
 
-            guard let data = data else {
-                self.finish(retval: nil, error: WebOperationsError.error("No data"))
-                return
-            }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: [])
-                print(json)
-            } catch {
-                self.finish(retval: nil, error: WebOperationsError.error("Response Error"))
-                return
-            }
-
             guard let response = response as? HTTPURLResponse else {
-                self.finish(retval: nil, error: WebOperationsError.error("Response Error"))
+                self.finish(retval: nil, error: WebError(kind: WebError.ErrorKind.error("Unable to parse response")))
                 return
             }
 
             if !(200...299).contains(response.statusCode) {
-                self.finish(retval: nil, error: WebOperationsError.error("Response Error Status code: \(response.statusCode)"))
+                self.finish(retval: nil, error: WebError(kind: WebError.ErrorKind.error("Unaccaptable response code"), response: response.statusCode))
                 return
             }
 

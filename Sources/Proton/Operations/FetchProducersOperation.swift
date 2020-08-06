@@ -35,7 +35,7 @@ class FetchProducersOperation: BaseOperation {
             "limit": 100
             ] as [String : Any]
 
-        WebOperations.shared.request(method: .post, url: url, parameters: params) { (result: Result<[String: Any]?, Error>) in
+        WebOperations.shared.request(method: .post, url: url, parameters: params, errorModel: NilErrorModel.self) { (result: Result<[String: Any]?, WebError>) in
 
             switch result {
             case .success(let res):

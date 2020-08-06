@@ -24,7 +24,7 @@ class FetchChainProviderOperation: BaseOperation {
             return
         }
 
-        WebOperations.shared.request(url: url) { (result: Result<ChainProvider, Error>) in
+        WebOperations.shared.request(url: url, errorModel: TestERR.self) { (result: Result<ChainProvider, WebError>) in
 
             switch result {
             case .success(let chainProvider):
@@ -37,4 +37,8 @@ class FetchChainProviderOperation: BaseOperation {
         
     }
     
+}
+
+public struct TestERR: Codable {
+    let message: String
 }
