@@ -24,7 +24,7 @@ class FetchProducerOrgOperation: BaseOperation {
         let urlString = producer.url.last == "/" ? String(producer.url.dropLast()) : producer.url
         
         guard let url = URL(string: "\(urlString)/bp.json") else {
-            self.finish(retval: nil, error: ProtonError.error("Unable to form proper url bp.json endpoint"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form proper url bp.json endpoint"))
             return
         }
 
@@ -35,7 +35,7 @@ class FetchProducerOrgOperation: BaseOperation {
                 self.producer.org = bpJson.org
                 self.finish(retval: self.producer, error: nil)
             case .failure(let error):
-                self.finish(retval: nil, error: ProtonError.error("There was an issue fetching bp.json for \(self.producer.url): \(error)"))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "There was an issue fetching bp.json for \(self.producer.url): \(error)"))
             }
             
         }

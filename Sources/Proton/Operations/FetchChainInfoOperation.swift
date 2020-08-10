@@ -23,7 +23,7 @@ class FetchChainInfoOperation: BaseOperation {
         super.main()
         
         guard let url = URL(string: chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: ProtonError.error("Missing chainProvider url"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Missing chainProvider url"))
             return
         }
         
@@ -32,7 +32,7 @@ class FetchChainInfoOperation: BaseOperation {
             let info = try client.sendSync(API.V1.Chain.GetInfo()).get()
             self.finish(retval: info, error: nil)
         } catch {
-            self.finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetInfo.path)\nERROR => \(error.localizedDescription)"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
         }
         
     }

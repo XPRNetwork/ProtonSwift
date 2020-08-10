@@ -25,7 +25,7 @@ class FetchUserVotersOperation: BaseOperation {
         super.main()
         
         guard let url = URL(string: chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: ProtonError.error("Missing chainProvider url"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Missing chainProvider url"))
             return
         }
 
@@ -42,7 +42,7 @@ class FetchUserVotersOperation: BaseOperation {
             finish(retval: res.rows.first, error: nil)
 
         } catch {
-            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetTableRows<VotersABI>.path)\nERROR => \(error.localizedDescription)"))
+            finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
         }
 
     }

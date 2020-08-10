@@ -27,7 +27,7 @@ class PostRemoveSessionESROperation: BaseOperation {
         if let path = self.esrSession.rs {
             
             guard let url = URL(string: path) else {
-                self.finish(retval: nil, error: ProtonError.error("Unable to form proper url for ESR remove session"))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form proper url for ESR remove session"))
                 return
             }
             
@@ -37,13 +37,13 @@ class PostRemoveSessionESROperation: BaseOperation {
                 case .success:
                     self.finish(retval: nil, error: nil)
                 case .failure(let error):
-                    self.finish(retval: nil, error: ProtonError.esr("Issue removing esr session\nESRSession => \(self.esrSession)\nERROR => \(error.localizedDescription)"))
+                    self.finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
                 }
                 
             }
             
         } else {
-            self.finish(retval: nil, error: ProtonError.esr("No remove session url found\nESRSession => \(self.esrSession)"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "No remove session url found\nESRSession => \(self.esrSession)"))
         }
     
     }

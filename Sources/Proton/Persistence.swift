@@ -81,10 +81,10 @@ class Persistence {
                 try keychain.set(encodedData, key: key)
                 completion(.success(true))
             } catch {
-                completion(.failure(ProtonError.error(error.localizedDescription)))
+                completion(.failure(Proton.ProtonError(message: error.localizedDescription)))
             }
         } else {
-            completion(.failure(ProtonError.authfailed("Device authentication not set")))
+            completion(.failure(Proton.ProtonError(message: "Device authentication not set")))
         }
 
     }
@@ -120,7 +120,7 @@ class Persistence {
                 try keychain.remove(key)
                 completion(.success(true))
             } catch {
-                completion(.failure(ProtonError.error(error.localizedDescription)))
+                completion(.failure(Proton.ProtonError(message: error.localizedDescription)))
             }
         }
 

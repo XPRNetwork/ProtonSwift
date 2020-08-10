@@ -23,7 +23,7 @@ class FetchProducersOperation: BaseOperation {
         super.main()
         
         guard let url = URL(string: "\(chainProvider.chainUrl)/v1/chain/get_table_rows") else {
-            self.finish(retval: nil, error: ProtonError.error("Missing chainProvider url"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Missing chainProvider url"))
             return
         }
         
@@ -39,8 +39,8 @@ class FetchProducersOperation: BaseOperation {
 
             switch result {
             case .success(let res):
-                guard let res = res else { self.finish(retval: nil, error: ProtonError.error("There was an issue fetching producers table")); return }
-                guard let rows = res["rows"] as? [[String: Any]], rows.count > 0 else { self.finish(retval: nil, error: ProtonError.error("There was an issue fetching producers table")); return }
+                guard let res = res else { self.finish(retval: nil, error: Proton.ProtonError(message: "There was an issue fetching producers table")); return }
+                guard let rows = res["rows"] as? [[String: Any]], rows.count > 0 else { self.finish(retval: nil, error: Proton.ProtonError(message: "There was an issue fetching producers table")); return }
 
                 let decoder = JSONDecoder()
                 var producers: [ProducerABI]?
@@ -52,7 +52,7 @@ class FetchProducersOperation: BaseOperation {
                 self.finish(retval: producers, error: nil)
                 
             case .failure(let error):
-                self.finish(retval: nil, error: ProtonError.error("There was an issue fetching producers table\nERROR => \(error.localizedDescription)"))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "There was an issue fetching producers table\nERROR => \(error.localizedDescription)"))
             }
 
         }

@@ -54,7 +54,7 @@ class ChangeUserAccountAvatarOperation: BaseOperation {
         if width > 600 || height > 600 {
             
             guard let resizedImage = resizedImage(image: image) else {
-                self.finish(retval: nil, error: ProtonError.error("ERROR RESIZING IMAGE"))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "ERROR RESIZING IMAGE"))
                 return
             }
             
@@ -65,20 +65,20 @@ class ChangeUserAccountAvatarOperation: BaseOperation {
         #if os(macOS)
         
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            self.finish(retval: nil, error: ProtonError.error("ERROR CONVERTING IMAGE TO DATA"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "ERROR CONVERTING IMAGE TO DATA"))
             return
         }
         
         let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
         guard let imageData = bitmapRep.representation(using: NSBitmapImageRep.FileType.jpeg, properties: [:]) else {
-            self.finish(retval: nil, error: ProtonError.error("ERROR CONVERTING IMAGE TO DATA"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "ERROR CONVERTING IMAGE TO DATA"))
             return
         }
         
         #else
         
         guard let imageData = self.image.jpegData(compressionQuality: 1) else {
-            self.finish(retval: nil, error: ProtonError.error("ERROR CONVERTING IMAGE TO DATA"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "ERROR CONVERTING IMAGE TO DATA"))
             return
         }
         
@@ -96,7 +96,7 @@ class ChangeUserAccountAvatarOperation: BaseOperation {
         }
         
         guard let url = URL(string: path) else {
-            self.finish(retval: nil, error: ProtonError.error("Unable to form URL for updateAccountNameUrl"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form URL for updateAccountNameUrl"))
             return
         }
         
@@ -124,17 +124,17 @@ class ChangeUserAccountAvatarOperation: BaseOperation {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
 
             if let error = error {
-                self.finish(retval: nil, error: error)
+                self.finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
                 return
             }
 
             guard let response = response as? HTTPURLResponse else {
-                self.finish(retval: nil, error: WebError(kind: WebError.ErrorKind.error("Unable to parse response")))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to parse response"))
                 return
             }
 
             if !(200...299).contains(response.statusCode) {
-                self.finish(retval: nil, error: WebError(kind: WebError.ErrorKind.error("Unaccaptable response code"), response: response.statusCode))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to parse response", response: response.statusCode))
                 return
             }
 

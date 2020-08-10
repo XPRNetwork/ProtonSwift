@@ -32,7 +32,7 @@ class FetchTokenTransferActionsOperation: BaseOperation {
         super.main()
         
         guard let url = URL(string: chainProvider.hyperionHistoryUrl) else {
-            self.finish(retval: nil, error: ProtonError.error("Missing chainProvider url"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Missing chainProvider url"))
             return
         }
 
@@ -75,7 +75,7 @@ class FetchTokenTransferActionsOperation: BaseOperation {
             finish(retval: tokenTranfsers, error: nil)
 
         } catch {
-            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V2.Hyperion.GetActions<TransferActionABI>.path)\nERROR => \(error.localizedDescription)"))
+            finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
         }
         
     }

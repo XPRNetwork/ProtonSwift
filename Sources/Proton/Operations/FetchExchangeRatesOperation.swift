@@ -26,7 +26,7 @@ class FetchExchangeRatesOperation: BaseOperation {
         }
         
         guard let url = URL(string: baseUrl+chainProvider.exchangeRatePath) else {
-            self.finish(retval: nil, error: ProtonError.error("Unable to form proper url exchangeRateUrl endpoint"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form proper url exchangeRateUrl endpoint"))
             return
         }
 
@@ -36,7 +36,7 @@ class FetchExchangeRatesOperation: BaseOperation {
             case .success(let rates):
                 self.finish(retval: rates as? [[String: Any]], error: nil)
             case .failure(let error):
-                self.finish(retval: nil, error: ProtonError.error("There was an issue fetching exchange rates \(error.localizedDescription)"))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "There was an issue fetching exchange rates \(error.localizedDescription)"))
             }
         }
         

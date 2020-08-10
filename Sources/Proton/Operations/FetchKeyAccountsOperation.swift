@@ -25,12 +25,12 @@ class FetchKeyAccountsOperation: BaseOperation {
         super.main()
         
         guard let url = URL(string: chainProvider.hyperionHistoryUrl) else {
-            self.finish(retval: nil, error: ProtonError.error("Missing chainProvider url"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Missing chainProvider url"))
             return
         }
         
         guard let publicKey = PublicKey(publicKey) else {
-            self.finish(retval: nil, error: ProtonError.error("Unable to parse public key"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to parse public key"))
             return
         }
 
@@ -54,13 +54,13 @@ class FetchKeyAccountsOperation: BaseOperation {
             if accountNames.count > 0 {
                 self.finish(retval: accountNames, error: nil)
             } else {
-                self.finish(retval: nil, error: ProtonError.history("RPC => \(API.V2.Hyperion.GetTokens.path) No accounts found for key: \(self.publicKey)"))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "No accounts found for key: \(self.publicKey)"))
             }
 
             finish(retval: accountNames, error: nil)
 
         } catch {
-            finish(retval: nil, error: ProtonError.chain("RPC => \(API.V2.Hyperion.GetTokens.path)\nERROR => \(error.localizedDescription)"))
+            finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
         }
 
     }

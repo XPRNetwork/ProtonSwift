@@ -40,7 +40,7 @@ class ChangeUserAccountNameOperation: BaseOperation {
         }
         
         guard let url = URL(string: path) else {
-            self.finish(retval: nil, error: ProtonError.error("Unable to form URL for updateAccountNameUrl"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form URL for updateAccountNameUrl"))
             return
         }
         

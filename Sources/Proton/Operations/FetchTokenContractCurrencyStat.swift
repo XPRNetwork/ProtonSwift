@@ -25,7 +25,7 @@ class FetchTokenContractCurrencyStat: BaseOperation {
         super.main()
         
         guard let url = URL(string: self.chainProvider.chainUrl) else {
-            self.finish(retval: nil, error: ProtonError.error("Missing chainProvider url"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: "Missing chainProvider url"))
             return
         }
 
@@ -46,7 +46,7 @@ class FetchTokenContractCurrencyStat: BaseOperation {
             self.finish(retval: self.tokenContract, error: nil)
 
         } catch {
-            self.finish(retval: nil, error: ProtonError.chain("RPC => \(API.V1.Chain.GetTableRows<TokenContractCurrencyStatsABI>.path)\nERROR => \(error.localizedDescription)"))
+            self.finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
         }
 
     }
