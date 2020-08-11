@@ -208,14 +208,14 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     }
     /**
      Check if the publickey is associated with the Account
-     - Parameter publicKey: Wif formated public key
+     - Parameter publicKey: PublicKey
      - Returns: Bool
      */
-    public func isKeyAssociated(publicKey: String) -> Bool {
+    public func isKeyAssociated(publicKey: PublicKey) -> Bool {
         
         for permission in self.permissions {
             for key in permission.requiredAuth.keys {
-                if key.key.stringValue == publicKey {
+                if key.key.stringValue == publicKey.stringValue || key.key.stringValue == publicKey.legacyStringValue {
                     return true
                 }
             }
@@ -227,7 +227,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     /**
      Check if the publickey is associated with the Account
      - Parameter withPermissionName: The permission name. ex: active
-     - Parameter publicKey: Wif formated public key
+     - Parameter publicKey: PublicKey
      - Returns: Bool
      */
     public func isKeyAssociated(withPermissionName permissionName: String, forPublicKey publicKey: PublicKey) -> Bool {

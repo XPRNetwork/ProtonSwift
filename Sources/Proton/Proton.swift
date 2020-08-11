@@ -388,7 +388,7 @@ public class Proton {
             let pk = try PrivateKey(stringValue: privateKey)
             let publicKey = try pk.getPublic()
             
-            if account.isKeyAssociated(publicKey: publicKey.stringValue) {
+            if account.isKeyAssociated(publicKey: publicKey) {
                 
                 self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue) { result in
                     
