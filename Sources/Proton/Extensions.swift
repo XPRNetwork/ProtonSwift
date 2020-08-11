@@ -45,7 +45,7 @@ public extension String {
     /// Returns whether or not the string has valid account name characters
     func hasAllValidPublicAccountCreationNameCharacters() -> Bool {
         let fullCharacterSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz12345").inverted as CharacterSet
-        if self.rangeOfCharacter(from: fullCharacterSet) != nil {
+        if self.rangeOfCharacter(from: fullCharacterSet) == nil {
             return true
         }
         return false
