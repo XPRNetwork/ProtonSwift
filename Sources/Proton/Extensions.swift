@@ -45,7 +45,7 @@ public extension String {
     /// Returns whether or not the string has valid account name characters
     func hasAllValidPublicAccountCreationNameCharacters() -> Bool {
         let fullCharacterSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz12345").inverted as CharacterSet
-        if self.rangeOfCharacter(from: fullCharacterSet) == nil {
+        if self.rangeOfCharacter(from: fullCharacterSet) != nil {
             return true
         }
         return false
@@ -53,7 +53,7 @@ public extension String {
     /// Returns whether or not the string is a valid account name when creating an account
     func isValidPublicAccountCreationName() -> Bool {
         let fullCharacterSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz12345").inverted as CharacterSet
-        if self.rangeOfCharacter(from: fullCharacterSet) == nil {
+        if self.rangeOfCharacter(from: fullCharacterSet) != nil {
             return false
         }
         if self.count < 4 || self.count > 12 {
@@ -64,7 +64,7 @@ public extension String {
     /// Returns whether or not the string is a valid account name
     func isValidAccountName() -> Bool {
         let fullCharacterSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz12345.").inverted as CharacterSet
-        if self.rangeOfCharacter(from: fullCharacterSet) == nil {
+        if self.rangeOfCharacter(from: fullCharacterSet) != nil {
             return false
         }
         if self.count < 3 || self.count > 12 {
