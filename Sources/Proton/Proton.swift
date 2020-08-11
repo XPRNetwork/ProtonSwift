@@ -355,6 +355,34 @@ public class Proton {
     }
     
     /**
+     Fetches the account from the chain, the stores private key and sets account active
+     - Parameter withName: Proton account name not including @
+     - Parameter andPrivateKey: PrivateKey
+     - Parameter chainId: chainId for the account
+     - Parameter completion: Closure returning Result
+     */
+    public func setAccount(withName accountName: String, andPrivateKey privateKey: PrivateKey,
+                           completion: @escaping ((Result<Account, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Missing ChainProvider")))
+            return
+        }
+        
+        self.fetchAccount(Account(chainId: chainProvider.chainId, name: accountName)) { result in
+            switch result {
+            case .success(let account):
+                self.setAccount(account, withPrivateKeyString: privateKey.stringValue) { result in
+                    completion(result)
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+        
+    }
+    
+    /**
      Sets the active account, fetchs and updates. This includes, account names, avatars, balances, etc
       Use this for switching accounts when you know the private key has already been stored.
      - Parameter withName: Proton account name not including @
