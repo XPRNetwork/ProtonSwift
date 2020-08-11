@@ -865,6 +865,32 @@ public class Proton {
     }
     
     /**
+     Checks the chain for presence of account by name
+     - Parameter hasAccountWithName: String account name
+     - Parameter completion: Closure returning Result
+     */
+    public func chain(hasAccountWithName accountName: String, completion: @escaping ((Result<Bool, Error>) -> Void)) {
+
+        if let chainProvider = self.chainProvider {
+            
+            WebOperations.shared.add(FetchAccountOperation(accountName: accountName, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                
+                switch result {
+                case .success:
+                    completion(.success(true))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+                
+            }
+            
+        } else {
+            completion(.failure(Proton.ProtonError(message: "Missing chainProvider")))
+        }
+        
+    }
+    
+    /**
      Creates a transfer, signs and pushes that transfer to the chain
      - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter to: The account to be transfered to
