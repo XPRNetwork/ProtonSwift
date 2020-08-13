@@ -59,5 +59,9 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     public var userDefinedNameOrName: String {
         return userDefinedName.isEmpty == false ? userDefinedName : self.name.stringValue
     }
+    /// Name formated with leading @
+    public var nameWithAmpersand: String {
+        return "@\(name.stringValue)"
+    }
 
 }
