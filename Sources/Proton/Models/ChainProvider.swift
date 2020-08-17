@@ -36,11 +36,13 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     public let updateAccountNamePath: String
     /// The api url for fetching exhange rates
     public let exchangeRatePath: String
+    /// The default explorer url
+    public let explorerUrl: String
     /// :nodoc:
     public init(chainId: String, chainUrl: String, hyperionHistoryUrl: String,
                 iconUrl: String, name: String, systemTokenSymbol: String,
                 systemTokenContract: String, isTestnet: Bool, updateAccountAvatarPath: String,
-                updateAccountNamePath: String, exchangeRatePath: String) {
+                updateAccountNamePath: String, exchangeRatePath: String, explorerUrl: String) {
         
         self.chainId = chainId
         self.chainUrl = chainUrl
@@ -53,6 +55,7 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
         self.updateAccountAvatarPath = updateAccountAvatarPath
         self.updateAccountNamePath = updateAccountNamePath
         self.exchangeRatePath = exchangeRatePath
+        self.explorerUrl = explorerUrl
         
     }
     /// :nodoc:
