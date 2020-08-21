@@ -355,6 +355,37 @@ public class Proton {
     }
     
     /**
+     Use this to force storing the key into the keychain.
+     - Parameter privateKey: PrivateKey
+     - Parameter forAccountName: Proton account name not including @
+     - Parameter chainId: chainId for the account
+     - Parameter completion: Closure returning Result
+     */
+    public func store(privateKey: PrivateKey, forAccountName: String,
+                      completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        do {
+            
+            let publicKey = try privateKey.getPublic()
+            
+            self.storage.setKeychainItem(privateKey.stringValue, forKey: publicKey.stringValue) { result in
+                
+                switch result {
+                case .success:
+                    completion(.success(true))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+                
+            }
+
+        } catch {
+            completion(.failure(Proton.ProtonError(message: error.localizedDescription)))
+        }
+        
+    }
+    
+    /**
      Fetches the account from the chain, the stores private key and sets account active
      - Parameter withName: Proton account name not including @
      - Parameter andPrivateKey: PrivateKey
