@@ -357,11 +357,10 @@ public class Proton {
     /**
      Use this to force storing the key into the keychain.
      - Parameter privateKey: PrivateKey
-     - Parameter forAccountName: Proton account name not including @
      - Parameter chainId: chainId for the account
      - Parameter completion: Closure returning Result
      */
-    public func store(privateKey: PrivateKey, forAccountName: String,
+    public func store(privateKey: PrivateKey,
                       completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
         do {
