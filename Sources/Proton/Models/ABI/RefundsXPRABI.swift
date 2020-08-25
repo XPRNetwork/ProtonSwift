@@ -11,7 +11,7 @@ import Foundation
 struct RefundsXPRABI: ABICodable {
 
     let owner: Name
-    let request_time: TimePoint
+    let request_time: TimePointSec
     let quantity: Asset
 
 }
