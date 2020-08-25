@@ -1771,7 +1771,7 @@ public class Proton {
             
             var retval = StakingFetchResult()
             
-            let operationCount = 1
+            let operationCount = 2
             var operationsProcessed = 0
             
             WebOperations.shared.add(FetchUserVotersOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
@@ -1813,9 +1813,27 @@ public class Proton {
                     
                 }
                 
+                WebOperations.shared.add(FetchUserRefundsXPROperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                    
+                    switch result {
+                    case .success(let refundsXPRABI):
+
+                        if let refundsXPRABI = refundsXPRABI as? RefundsXPRABI {
+                            retval.stakingRefund = StakingRefund(quantity: refundsXPRABI.quantity, requestTime: refundsXPRABI.request_time.date)
+                        }
+                        
+                    case .failure: break
+                    }
+                    
+                    operationsProcessed += 1
+                    
+                    if operationCount == operationsProcessed {
+                        completion(.success(retval))
+                    }
+                    
+                }
+                
             }
-            
-            // TODO: Fetch refunds
             
         } else {
             completion(.failure(Proton.ProtonError(message: "Account missing chainProvider")))
