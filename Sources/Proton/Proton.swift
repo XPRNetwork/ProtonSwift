@@ -589,9 +589,6 @@ public class Proton {
             return
         }
         
-//        WebOperations.shared.cancel(queueForKey: Proton.operationQueueSeq)
-//        WebOperations.shared.cancel(queueForKey: Proton.operationQueueMulti)
-        
         self.fetchAccount(account) { result in
             
             switch result {
@@ -1634,7 +1631,9 @@ public class Proton {
                 switch result {
                 case .success(let updatedAccount):
                     
-                    if let updatedAccount = updatedAccount as? Account {
+                    if var updatedAccount = updatedAccount as? Account {
+                        updatedAccount.staking = account.staking
+                        updatedAccount.stakingRefund = account.stakingRefund
                         account = updatedAccount
                     }
                     
