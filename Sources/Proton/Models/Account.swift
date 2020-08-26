@@ -19,7 +19,8 @@ import UIKit
 /**
 Staking is the object which represents the accounts staking info, if any
 */
-public struct Staking: Codable {
+public struct Staking: Codable, GlobalsXPRProtocol {
+    
     /// The amount staked
     public var staked: Asset
     /// Whether or not the account is qualified to receive staking rewards. ie account has to be voting for 4 producers
@@ -30,7 +31,10 @@ public struct Staking: Codable {
     public var lastclaim: Date
     /// The list of producer names the account has voted for
     public var producerNames: [Name]
-    /// Get list of producers the the account has voted for
+    /// Get globalsXPR settings
+    public var globalsXPR: GlobalsXPR? {
+        return Proton.shared.globalsXPR ?? nil
+    }
     public var producers: [Producer] {
         return Proton.shared.producers.filter({ producerNames.contains($0.name) })
     }
@@ -49,11 +53,15 @@ public struct Staking: Codable {
 /**
 StakingRefund shows the amount unstaked and request time it occured
 */
-public struct StakingRefund: Codable {
+public struct StakingRefund: Codable, GlobalsXPRProtocol {
     /// The unstaked amount in which the user will be eligable for after unstaking period
     public var quantity: Asset
     /// The time which the last unstaking action occured
     public var requestTime: Date
+    /// Get globalsXPR settings
+    public var globalsXPR: GlobalsXPR? {
+        return Proton.shared.globalsXPR ?? nil
+    }
     /// Formated quantity without symbol and precision
     public func quantityFormated(forLocale locale: Locale = Locale(identifier: "en_US"),
                                  withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
@@ -64,7 +72,7 @@ public struct StakingRefund: Codable {
 /**
 Account is the Proton chain account object.
 */
-public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, TokenBalancesProtocol, AvatarProtocol {
+public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, TokenBalancesProtocol, AvatarProtocol, GlobalsXPRProtocol {
     /// This is used as the primary key for storing the account
     public var id: String { return self.name.stringValue }
     /// The chainId associated with the account
@@ -151,6 +159,10 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     /// :nodoc:
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
+    }
+    /// Get globalsXPR settings
+    public var globalsXPR: GlobalsXPR? {
+        return Proton.shared.globalsXPR ?? nil
     }
     /// ChainProvider associated with the Account
     public var chainProvider: ChainProvider? {

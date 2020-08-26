@@ -48,6 +48,17 @@ public final class ProtonObservable: ObservableObject {
     }
     
     /**
+     Live globalsXPR. Subscribe to this for your account
+     Important: This is a copy of the source from Proton.shared. Modifications should
+     be made there.
+     */
+    @Published public private(set) var globalsXPR: GlobalsXPR? = nil {
+        willSet {
+            self.objectWillChange.send()
+        }
+    }
+    
+    /**
      Live updated set of tokenBalances. Subscribe to this for your tokenBalances
      Important: This is a copy of the source from Proton.shared. Modifications should
      be made there.
@@ -133,6 +144,8 @@ public final class ProtonObservable: ObservableObject {
                                                name: Proton.Notifications.esrWillSet, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(accountWillSet),
                                                name: Proton.Notifications.accountWillSet, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(globalsXPRWillSet),
+                                               name: Proton.Notifications.globalsXPRWillSet, object: nil)
     }
     
     deinit {
@@ -202,6 +215,14 @@ public final class ProtonObservable: ObservableObject {
             return
         }
         self.account = newValue
+    }
+    
+    @objc func globalsXPRWillSet(_ notification: Notification) {
+        guard let userInfo = notification.userInfo, let newValue = userInfo["newValue"] as? GlobalsXPR else {
+            self.globalsXPR = nil
+            return
+        }
+        self.globalsXPR = newValue
     }
 
 }

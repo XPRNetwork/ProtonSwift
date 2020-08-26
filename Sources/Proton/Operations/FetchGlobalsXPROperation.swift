@@ -1,5 +1,5 @@
 //
-//  FetchUserRefundsXPROperation.swift
+//  FetchGlobalsXPROperation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 7/24/20.
@@ -10,13 +10,11 @@ import EOSIO
 import Foundation
 import WebOperations
 
-class FetchUserRefundsXPROperation: BaseOperation {
+class FetchGlobalsXPROperation: BaseOperation {
 
-    var account: Account
     var chainProvider: ChainProvider
 
-    init(account: Account, chainProvider: ChainProvider) {
-        self.account = account
+    init(chainProvider: ChainProvider) {
         self.chainProvider = chainProvider
     }
 
@@ -30,11 +28,9 @@ class FetchUserRefundsXPROperation: BaseOperation {
         }
 
         let client = Client(address: url)
-        var req = API.V1.Chain.GetTableRows<RefundsXPRABI>(code: Name(stringValue: "eosio"),
-                                                           table: Name(stringValue: "refundsxpr"),
-                                                           scope: account.name)
-        req.lowerBound = account.name.stringValue
-        req.upperBound = account.name.stringValue
+        let req = API.V1.Chain.GetTableRows<GlobalsXPRABI>(code: Name(stringValue: "eosio"),
+                                                           table: Name(stringValue: "globalsxpr"),
+                                                           scope: Name(stringValue: "eosio"))
 
         do {
 

@@ -199,6 +199,10 @@ public class Proton {
         public static let accountWillSet = Notification.Name("accountWillSet")
         /// Use this notification name to be notified right after the active acount is set
         public static let accountDidSet = Notification.Name("accountDidSet")
+        /// Use this notification name to be notified right before the globalsXPR is set
+        public static let globalsXPRWillSet = Notification.Name("globalsXPRWillSet")
+        /// Use this notification name to be notified right after the globalsXPR is set
+        public static let globalsXPRDidSet = Notification.Name("globalsXPRDidSet")
     }
     
     // MARK: - Data Containers
@@ -308,7 +312,7 @@ public class Proton {
     }
     
     /**
-     Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet
+     Live updated account. You can observe changes via NotificaitonCenter: accountWillSet, accountDidSet
      */
     public var account: Account? = nil {
         willSet {
@@ -317,6 +321,19 @@ public class Proton {
         }
         didSet {
             NotificationCenter.default.post(name: Notifications.accountDidSet, object: nil)
+        }
+    }
+    
+    /**
+     Live updated GlobalsXPR. You can observe changes via NotificaitonCenter: globalsXPRWillSet, globalsXPRDidSet
+     */
+    public var globalsXPR: GlobalsXPR? = nil {
+        willSet {
+            NotificationCenter.default.post(name: Notifications.globalsXPRWillSet, object: nil,
+                                            userInfo: newValue != nil ? ["newValue": newValue!] : nil)
+        }
+        didSet {
+            NotificationCenter.default.post(name: Notifications.globalsXPRDidSet, object: nil)
         }
     }
     
@@ -335,6 +352,7 @@ public class Proton {
         self.esrSessions = self.storage.getDefaultsItem([ESRSession].self, forKey: "esrSessions") ?? []
         self.contacts = self.storage.getDefaultsItem([Contact].self, forKey: "contacts") ?? []
         self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
+        self.globalsXPR = self.storage.getDefaultsItem(GlobalsXPR.self, forKey: "globalsXPR") ?? nil
         
     }
     
@@ -351,6 +369,7 @@ public class Proton {
         self.storage.setDefaultsItem(self.esrSessions, forKey: "esrSessions")
         self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
         self.storage.setDefaultsItem(self.producers, forKey: "producers")
+        self.storage.setDefaultsItem(self.globalsXPR, forKey: "globalsXPR")
         
     }
     
@@ -489,8 +508,8 @@ public class Proton {
             case .success(let chainProvider):
                 
                 if let chainProvider = chainProvider as? ChainProvider {
-                    self.chainProvider = chainProvider
                     
+                    self.chainProvider = chainProvider
                     let tokenContracts = chainProvider.tokenContracts
                     
                     WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts),
@@ -518,6 +537,7 @@ public class Proton {
                         
                         self.updateExchangeRates { _ in }
                         self.updateProducers { _ in }
+                        self.updateGlobalsXPR { _ in }
                         
                         completion(.success(true))
                         
@@ -528,6 +548,37 @@ public class Proton {
             case .failure(let error):
                 completion(.failure(error))
             }
+            
+        }
+        
+    }
+    
+    /**
+     Updates the GlobalsXPR object. This has information like min required bp votes, staking period, etc.
+     - Parameter completion: Closure returning Result
+     */
+    public func updateGlobalsXPR(completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Missing ChainProvider")))
+            return
+        }
+        
+        WebOperations.shared.add(FetchGlobalsXPROperation(chainProvider: chainProvider),
+                                 toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            
+            switch result {
+                
+            case .success(let globalsXPRABI):
+                
+                if let globalsXPRABI = globalsXPRABI as? GlobalsXPRABI {
+                    self.globalsXPR = GlobalsXPR(globalsXPRABI: globalsXPRABI)
+                }
+                
+            case .failure: break
+            }
+            
+            completion(.success(true))
             
         }
         
