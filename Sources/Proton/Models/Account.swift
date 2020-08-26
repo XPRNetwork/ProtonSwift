@@ -179,6 +179,13 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         }
         return false
     }
+    /// Returns the max staking amount for the account.
+    public var maxStakingAmount: Asset {
+        let systemBalance = self.availableSystemBalance().value
+        let stakingAmount = self.staking?.staked.value ?? 0.0
+        let stakingRefundAmount = self.stakingRefund?.quantity.value ?? 0.0
+        return Asset(stakingAmount+stakingRefundAmount+systemBalance, Asset.Symbol(stringLiteral: "4,XPR"))
+    }
     
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         
