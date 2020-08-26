@@ -1236,6 +1236,91 @@ public class Proton {
     }
     
     /**
+     Refunds unstaking amount if the deferred action did not complete
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter completion: Closure returning Result
+     */
+    public func refund(withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Any?, Error>) -> Void)) {
+        
+        guard let account = self.account else {
+            completion(.failure(Proton.ProtonError(message: "No active account")))
+            return
+        }
+        
+        guard var tokenBalance = self.tokenBalances.first(where: { $0.tokenContract?.systemToken == true }) else {
+            completion(.failure(Proton.ProtonError(message: "Unable to find chain provider")))
+            return
+        }
+        
+        do {
+            
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
+                let refund = RefundXPRABI(owner: account.name)
+                
+                guard let action = try? Action(account: Name("eosio"), name: "refundxpr", authorization: [PermissionLevel(account.name, "active")], value: refund) else {
+                    completion(.failure(Proton.ProtonError(message: "Unable to create action")))
+                    return
+                }
+                
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
+                    
+                    switch result {
+                    case .success(let response):
+                        
+                        if let actions = response.processed["actions"] as? [[String: Any]] {
+                            
+                            for action in actions {
+                                
+                                print(action)
+                                
+                                if let act = action["act"] as? [String: Any], let name = act["name"] as? String, let acc = act["account"] as? String {
+                                    
+                                    if name == "transfer" && acc == "eosio.token" {
+                                        
+                                        if let claimReceivedAction = TokenTransferAction(account: account, tokenBalance: tokenBalance, dictionary: action) {
+                                            
+                                            var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
+                                            tokenTransferActions.append(claimReceivedAction)
+                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
+                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
+                                            
+                                            tokenBalance.amount += claimReceivedAction.quantity
+                                            
+                                            if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
+                                                self.tokenBalances[index] = tokenBalance
+                                            }
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                        completion(.success(response))
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            } else {
+                completion(.failure(Proton.ProtonError(message: "Key not associated with active permissions for account")))
+            }
+            
+        } catch {
+            completion(.failure(Proton.ProtonError(message: "Key not valid for transaction")))
+        }
+        
+    }
+    
+    /**
      Votes for block producers
      - Parameter forProducers: Array of producer Names
      - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
