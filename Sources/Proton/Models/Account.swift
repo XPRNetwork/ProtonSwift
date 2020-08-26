@@ -85,7 +85,8 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var stakingRefund: StakingRefund?
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
-                userDefinedName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = []) {
+                userDefinedName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = [],
+                staking: Staking? = nil, stakingRefund: StakingRefund? = nil) {
         
         self.chainId = chainId
         self.name = Name(name)
@@ -93,6 +94,8 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         self.userDefinedName = userDefinedName
         self.base64Avatar = base64Avatar
         self.permissions = permissions
+        self.staking = staking
+        self.stakingRefund = stakingRefund
         
     }
     /// :nodoc:
@@ -110,7 +113,11 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             return nil
         }
         
-        return Account(chainId: chainId, name: name, verified: dictionary["verified"] as? Bool ?? false, userDefinedName: dictionary["userDefinedName"] as? String ?? "", base64Avatar: dictionary["base64Avatar"] as? String ?? "", permissions: dictionary["permissions"] as? [API.V1.Chain.Permission] ?? [])
+        return Account(chainId: chainId, name: name, verified: dictionary["verified"] as? Bool ?? false,
+                       userDefinedName: dictionary["userDefinedName"] as? String ?? "",
+                       base64Avatar: dictionary["base64Avatar"] as? String ?? "",
+                       permissions: dictionary["permissions"] as? [API.V1.Chain.Permission] ?? [],
+                       staking: dictionary["staking"] as? Staking, stakingRefund: dictionary["stakingRefund"] as? StakingRefund)
         
     }
     /// :nodoc:
