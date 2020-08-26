@@ -117,11 +117,34 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             return nil
         }
         
+        var staking: Staking?
+        
+        if let stakingDictionary = dictionary["staking"] as? [String: Any] {
+            if let data = try? JSONSerialization.data(withJSONObject: stakingDictionary, options: .prettyPrinted) {
+                do {
+                    staking = try JSONDecoder().decode(Staking.self, from: data)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        var stakingRefund: StakingRefund?
+        
+        if let stakingRefundDictionary = dictionary["stakingRefund"] as? [String: Any] {
+            if let data = try? JSONSerialization.data(withJSONObject: stakingRefundDictionary, options: .prettyPrinted) {
+                do {
+                    stakingRefund = try JSONDecoder().decode(StakingRefund.self, from: data)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        
         return Account(chainId: chainId, name: name, verified: dictionary["verified"] as? Bool ?? false,
                        userDefinedName: dictionary["userDefinedName"] as? String ?? "",
                        base64Avatar: dictionary["base64Avatar"] as? String ?? "",
                        permissions: dictionary["permissions"] as? [API.V1.Chain.Permission] ?? [],
-                       staking: dictionary["staking"] as? Staking, stakingRefund: dictionary["stakingRefund"] as? StakingRefund)
+                       staking: staking, stakingRefund: stakingRefund)
         
     }
     /// :nodoc:
