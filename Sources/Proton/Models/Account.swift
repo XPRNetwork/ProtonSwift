@@ -80,7 +80,11 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     /// The user modified Avatar string
     public var base64Avatar: String
     /// The user modified Avatar string
-    public var staking: Staking?
+    public var staking: Staking? {
+        didSet {
+            print(staking)
+        }
+    }
     /// The user modified Avatar string
     public var stakingRefund: StakingRefund?
     /// :nodoc:
