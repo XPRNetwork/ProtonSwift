@@ -143,6 +143,7 @@ public class Proton {
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
+        print("STAKING => \(self.account?.staking)")
         
     }
     
