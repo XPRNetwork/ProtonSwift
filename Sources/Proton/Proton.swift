@@ -589,10 +589,19 @@ public class Proton {
             return
         }
         
+        // DEBUG
+        print(account.staking)
+        
         self.fetchAccount(account) { result in
             
             switch result {
             case .success(let returnAccount):
+                
+                // DEBUG
+                print(account.staking)
+                
+                // DEBUG
+                print(returnAccount.staking)
                 
                 account = returnAccount
                 self.account = account
@@ -601,6 +610,12 @@ public class Proton {
                     
                     switch result {
                     case .success(let returnAccount):
+                        
+                        // DEBUG
+                        print(account.staking)
+                        
+                        // DEBUG
+                        print(returnAccount.staking)
                         
                         account = returnAccount
                         self.account = account
