@@ -143,7 +143,6 @@ public class Proton {
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
         print("ESR SESSIONS => \(self.esrSessions.count)")
-        print("STAKING => \(self.account?.staking)")
         
     }
     
@@ -590,19 +589,10 @@ public class Proton {
             return
         }
         
-        // DEBUG
-        print(account.staking)
-        
         self.fetchAccount(account) { result in
             
             switch result {
             case .success(let returnAccount):
-                
-                // DEBUG
-                print(account.staking)
-                
-                // DEBUG
-                print(returnAccount.staking)
                 
                 account = returnAccount
                 self.account = account
@@ -611,12 +601,6 @@ public class Proton {
                     
                     switch result {
                     case .success(let returnAccount):
-                        
-                        // DEBUG
-                        print(account.staking)
-                        
-                        // DEBUG
-                        print(returnAccount.staking)
                         
                         account = returnAccount
                         self.account = account

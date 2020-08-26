@@ -80,11 +80,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     /// The user modified Avatar string
     public var base64Avatar: String
     /// The user modified Avatar string
-    public var staking: Staking? {
-        didSet {
-            print(staking)
-        }
-    }
+    public var staking: Staking?
     /// The user modified Avatar string
     public var stakingRefund: StakingRefund?
     /// :nodoc:
@@ -128,6 +124,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
                 }
             }
         }
+        
         var stakingRefund: StakingRefund?
         
         if let stakingRefundDictionary = dictionary["stakingRefund"] as? [String: Any] {
