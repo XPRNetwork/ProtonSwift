@@ -104,9 +104,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         guard let dictionary = dictionary else {
             return nil
         }
-        
-        print(dictionary)
-        
+
         guard let chainId = dictionary["chainId"] as? String else {
             return nil
         }
