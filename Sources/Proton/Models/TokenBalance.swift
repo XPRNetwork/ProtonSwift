@@ -74,11 +74,19 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
         return self.tokenContract?.getRate(forCurrencyCode: currencyCode) ?? 0.0
     }
     /// Formated currency balance
-    public func currencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    public func currencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> String {
+        if self.tokenContractId == "eosio.token:XPR" && withStakedXPR {
+            return self.account?.totalSystemBalance().formattedAsCurrency(forLocale: locale, withRate: getRate(forCurrencyCode: locale.currencyCode ?? "USD")) ?? self.amount.formattedAsCurrency(forLocale: locale, withRate: getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
+        }
         return self.amount.formattedAsCurrency(forLocale: locale, withRate: getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
     }
     /// Formated balance without symbol and precision
-    public func balanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
+    public func balanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"),
+                                 withSymbol symbol: Bool = false, andPrecision precision: Bool = false,
+                                 withStakedXPR: Bool = false) -> String {
+        if self.tokenContractId == "eosio.token:XPR" && withStakedXPR {
+            return self.account?.totalSystemBalanceFormatted() ?? self.amount.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+        }
         return self.amount.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }
     
