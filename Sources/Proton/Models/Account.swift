@@ -214,11 +214,13 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         let tokenBalances = self.tokenBalances
         let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
             var value = value
-            var rate = tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD")
+            let rate = tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD")
             if withStakedXPR && tokenBalance.tokenContractId == "eosio.token:XPR" {
                 let staked = self.staking?.staked.value ?? 0.0
                 let refund = self.stakingRefund?.quantity.value ?? 0.0
-                value += (tokenBalance.amount.value+staked+refund * rate)
+                let amount = tokenBalance.amount.value
+                let total = (amount+staked+refund) * rate
+                value += total
             } else {
                 value += (tokenBalance.amount.value * rate)
             }
