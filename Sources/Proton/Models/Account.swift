@@ -199,11 +199,17 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return Asset(stakingAmount+stakingRefundAmount+systemBalance, Asset.Symbol(stringLiteral: "4,XPR"))
     }
     
-    public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> String {
         
         let tokenBalances = self.tokenBalances
         let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
-            value + (tokenBalance.amount.value * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
+            if withStakedXPR && tokenBalance.tokenContractId == "eosio.token:XPR" {
+                let staked = self.staking?.staked.value ?? 0.0
+                let refund = self.stakingRefund?.quantity.value ?? 0.0
+                return value + (tokenBalance.amount.value+staked+refund * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
+            } else {
+                return value + (tokenBalance.amount.value * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
+            }
         }
         
         let formatter = NumberFormatter()
@@ -214,14 +220,24 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     }
     
     public func availableSystemBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
-        return self.systemTokenBalance?.balanceFormatted(forLocale: locale, withSymbol: symbol, andPrecision: precision) ??
-        Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR")).formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+        return availableSystemBalance().formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+    }
+    
+    public func totalSystemBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
+        return totalSystemBalance().formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }
     
     public func availableSystemBalance() -> Asset {
         return self.systemTokenBalance?.amount ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
     }
     
+    public func totalSystemBalance() -> Asset {
+        let available = self.systemTokenBalance?.amount ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
+        let staked = self.staking?.staked ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
+        let refund = self.stakingRefund?.quantity ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
+        return available+staked+refund
+    }
+
     public func privateKey(forPermissionName: String, completion: @escaping ((Result<PrivateKey?, Error>) -> Void)) {
         
         guard let permission = self.permissions.first(where: { $0.permName.stringValue == forPermissionName }) else {
