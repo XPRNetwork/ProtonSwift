@@ -201,15 +201,28 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> String {
         
+//        let tokenBalances = self.tokenBalances
+//        let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
+//            value + (tokenBalance.amount.value * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
+//        }
+//
+//        let formatter = NumberFormatter()
+//        formatter.numberStyle = .currency
+//        formatter.locale = locale
+//        return formatter.string(for: amount) ?? "$0.00"
+        
         let tokenBalances = self.tokenBalances
         let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
+            var value = value
+            var rate = tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD")
             if withStakedXPR && tokenBalance.tokenContractId == "eosio.token:XPR" {
                 let staked = self.staking?.staked.value ?? 0.0
                 let refund = self.stakingRefund?.quantity.value ?? 0.0
-                return value + (tokenBalance.amount.value+staked+refund * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
+                value += (tokenBalance.amount.value+staked+refund * rate)
             } else {
-                return value + (tokenBalance.amount.value * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
+                value += (tokenBalance.amount.value * rate)
             }
+            return value
         }
         
         let formatter = NumberFormatter()
