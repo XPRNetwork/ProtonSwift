@@ -1,5 +1,5 @@
 //
-//  ESRAction.swift
+//  ProtonSigningRequestAction.swift
 //  Proton
 //
 //  Created by Jacob Davis on 4/20/20.
@@ -9,7 +9,7 @@
 import EOSIO
 import Foundation
 
-public struct ESRAction: Identifiable, Hashable {
+public struct ProtonSigningRequestAction: Identifiable, Hashable {
     
     public enum ActionType {
         case transfer, custom
@@ -31,7 +31,7 @@ public struct ESRAction: Identifiable, Hashable {
     public let basicDisplay: BasicDisplay
     public let abi: ABI?
 
-    public static func == (lhs: ESRAction, rhs: ESRAction) -> Bool {
+    public static func == (lhs: ProtonSigningRequestAction, rhs: ProtonSigningRequestAction) -> Bool {
         lhs.id == rhs.id
     }
 
