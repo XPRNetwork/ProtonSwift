@@ -22,6 +22,13 @@ public struct ProtonSigningRequestAction: Identifiable, Hashable {
         public let extra: String?
         public let tokenContract: TokenContract?
     }
+    
+    public struct ViewData {
+        public let actiontype: ActionType
+        public let name: String
+        public let secondary: String?
+        public let iconUrl: String?
+    }
 
     public var id = UUID()
 

@@ -138,6 +138,8 @@ public class Proton: ObservableObject {
         
         self.loadAll()
         
+        self.addProtonSigningRequestSocketConnections()
+        
         print("🧑‍💻 LOAD COMPLETED")
         print("ACTIVE ACCOUNT => \(String(describing: self.account?.name.stringValue))")
         print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
@@ -285,6 +287,42 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
         self.storage.setDefaultsItem(self.producers, forKey: "producers")
         self.storage.setDefaultsItem(self.globalsXPR, forKey: "globalsXPR")
+        
+    }
+    
+    private func addProtonSigningRequestSocketConnections() {
+        
+        for protonSigingRequestSession in self.protonSigningRequestSessions {
+            
+            if let receiveChannel = URL(string: protonSigingRequestSession.receiveChannel.absoluteString.replacingOccurrences(of: "https://", with: "wss://")) {
+                
+                WebOperations.shared.addSocket(withURL: receiveChannel) { [weak self] result in
+                    switch result {
+                    case .success(let response):
+                        
+                        switch response.message {
+                        case .string(let text):
+                            print(text)
+                            if let url = URL(string: text) {
+                                self?.decodeAndPrepareProtonSigningRequest(withURL: url, completion: { result in })
+                            }
+                        case .data(let data):
+                            print(data)
+                            if let url = URL(string: String(decoding: data, as: UTF8.self)) {
+                                self?.decodeAndPrepareProtonSigningRequest(withURL: url, completion: { result in })
+                            }
+                        @unknown default:
+                            print("uknown")
+                        }
+                        
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
+                
+            }
+            
+        }
         
     }
     
@@ -2447,6 +2485,8 @@ public class Proton: ObservableObject {
                         } else {
                             self.protonSigningRequestSessions.append(session)
                         }
+                        
+                        self.addProtonSigningRequestSocketConnections()
 
                         completion(.success(nil))
 
