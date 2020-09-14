@@ -20,12 +20,30 @@
         }
       },
       {
+        "package": "Starscream",
+        "repositoryURL": "https://github.com/daltoniam/Starscream.git",
+        "state": {
+          "branch": null,
+          "revision": "e6b65c6d9077ea48b4a7bdda8994a1d3c6969c8d",
+          "version": "3.1.1"
+        }
+      },
+      {
         "package": "swift-eosio",
         "repositoryURL": "https://github.com/greymass/swift-eosio.git",
         "state": {
           "branch": "master",
           "revision": "db5b958f8a46bdb01e1861e1ecc3d7772952be12",
           "version": null
+        }
+      },
+      {
+        "package": "swift-nio-zlib-support",
+        "repositoryURL": "https://github.com/apple/swift-nio-zlib-support.git",
+        "state": {
+          "branch": null,
+          "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
+          "version": "1.0.0"
         }
       },
       {
