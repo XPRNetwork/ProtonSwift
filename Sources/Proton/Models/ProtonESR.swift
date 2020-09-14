@@ -9,18 +9,18 @@
 import Foundation
 import EOSIO
 
-public struct ProtonSigningRequest: Equatable {
+public struct ProtonESR: Equatable {
     
     public var requestKey: PublicKey
     public var signer: Account
     public var signingRequest: SigningRequest
     public var resolvedSigningRequest: ResolvedSigningRequest?
     public var requestor: Account?
-    public var actions: [ProtonSigningRequestAction]
-    
+    public var actions: [ProtonESRAction]
+
     public var basicTransfer: Bool {
         if let action = self.actions.first, actions.count == 1 {
-            return action.basicDisplay.actiontype == ProtonSigningRequestAction.ActionType.transfer ? true : false
+            return action.type == ProtonESRAction.ActionType.transfer ? true : false
         }
         return false
     }

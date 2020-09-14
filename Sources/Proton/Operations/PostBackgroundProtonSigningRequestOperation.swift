@@ -12,13 +12,13 @@ import WebOperations
 
 class PostBackgroundProtonSigningRequestOperation: BaseOperation {
     
-    var protonSigningRequest: ProtonSigningRequest
+    var protonESR: ProtonESR
     var sig: Signature
-    var session: ProtonSigningRequestSession
+    var session: ProtonESRSession
     var blockNum: BlockNum?
     
-    init(protonSigningRequest: ProtonSigningRequest, sig: Signature, session: ProtonSigningRequestSession, blockNum: BlockNum?) {
-        self.protonSigningRequest = protonSigningRequest
+    init(protonESR: ProtonESR, sig: Signature, session: ProtonESRSession, blockNum: BlockNum?) {
+        self.protonESR = protonESR
         self.sig = sig
         self.session = session
         self.blockNum = blockNum
@@ -28,7 +28,7 @@ class PostBackgroundProtonSigningRequestOperation: BaseOperation {
         
         super.main()
         
-        guard let resolvedSigningRequest = self.protonSigningRequest.resolvedSigningRequest else {
+        guard let resolvedSigningRequest = self.protonESR.resolvedSigningRequest else {
             self.finish(retval: nil, error: Proton.ProtonError(message: "Issue resolving ESR"))
             return
         }
@@ -41,11 +41,11 @@ class PostBackgroundProtonSigningRequestOperation: BaseOperation {
         do {
             
             guard let publicReceiveKey = try self.session.getReceiveKey()?.getPublic().stringValue else {
-                self.finish(retval: nil, error: Proton.ProtonError(message: "Issue getting psr_receive_key"))
+                self.finish(retval: nil, error: Proton.ProtonError(message: "Issue getting link_key"))
                 return
             }
             
-            let payloadData = try callback.getPayload(extra: ["psr_receive_key": publicReceiveKey, "psr_receive_channel": self.session.receiveChannel.absoluteString])
+            let payloadData = try callback.getPayload(extra: ["link_key": publicReceiveKey, "link_ch": self.session.receiveChannel.absoluteString, "link_name": Proton.config?.appDisplayName ?? ""])
             
             guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else {
                 self.finish(retval: nil, error: Proton.ProtonError(message: "Issue getting parameters from payload"))

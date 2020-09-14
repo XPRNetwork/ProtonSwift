@@ -99,3 +99,18 @@ public extension Asset {
     }
     
 }
+
+extension PrivateKey {
+    
+    func getSymmetricKey(_ publicKey: PublicKey, _ nonce: UInt64) throws -> Data {
+        let shared = try sharedSecret(for: publicKey)
+        var keyData = Data()
+        withUnsafeBytes(of: nonce) {  (bfptr) in
+            guard let baseAddress = bfptr.baseAddress else { return }
+            keyData.append(baseAddress.assumingMemoryBound(to: UInt8.self), count: 8)
+        }
+        keyData.append(shared)
+        return keyData.sha512Digest
+    }
+    
+}

@@ -18,6 +18,7 @@ import KeychainAccess
 import WebOperations
 import LocalAuthentication
 import CommonCrypto
+import Starscream
 
 /**
  The Proton class is the heart of the ProtonSwift SDK.
@@ -37,20 +38,27 @@ public class Proton: ObservableObject {
         /// The base url used for api requests to proton sdk api's
         public var baseUrl: String
         
+        /// The name of your app. This will be used in certain places like handling Signing requests
+        public var appDisplayName: String
+        
         /**
          Use this function as your starting point to initialize the singleton class Proton
          - Parameter baseUrl: The base url used for api requests to proton sdk api's
+         - Parameter appDisplayName: The name of your app. This will be used in certain places like handling Signing requests
          */
-        public init(baseUrl: String = Environment.testnet.rawValue) {
+        public init(baseUrl: String = Environment.testnet.rawValue, appDisplayName: String = "") {
             self.baseUrl = baseUrl
+            self.appDisplayName = appDisplayName
         }
         
         /**
          Use this function as your starting point to initialize the singleton class Proton
          - Parameter environment: The environment used for api requests to proton sdk api's
+         - Parameter appDisplayName: The name of your app. This will be used in certain places like handling Signing requests
          */
-        public init(environment: Environment = Environment.testnet) {
+        public init(environment: Environment = Environment.testnet, appDisplayName: String = "") {
             self.baseUrl = environment.rawValue
+            self.appDisplayName = appDisplayName
         }
         
     }
@@ -138,14 +146,14 @@ public class Proton: ObservableObject {
         
         self.loadAll()
         
-        self.addProtonSigningRequestSocketConnections()
+        self.enableProtonESRWebSocketConnections()
         
         print("🧑‍💻 LOAD COMPLETED")
         print("ACTIVE ACCOUNT => \(String(describing: self.account?.name.stringValue))")
         print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
         print("TOKEN BALANCES => \(self.tokenBalances.count)")
         print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
-        print("SIGNING REQUEST SESSIONS => \(self.protonSigningRequestSessions.count)")
+        print("SIGNING REQUEST SESSIONS => \(self.protonESRSessions.count)")
         
     }
     
@@ -219,18 +227,35 @@ public class Proton: ObservableObject {
     }
     
     /**
-     Live updated array of protonSigningRequestSessions.
+     Live updated array of protonESRSessions.
      */
-    @Published public var protonSigningRequestSessions: [ProtonSigningRequestSession] = [] {
+    @Published public var protonESRSessions: [ProtonESRSession] = [] {
         willSet {
             self.objectWillChange.send()
         }
     }
     
     /**
-     Live updated protonSigningRequest.
+     Live updated protonESR.
      */
-    @Published public var protonSigningRequest: ProtonSigningRequest? = nil {
+    @Published public var protonESR: ProtonESR? = nil {
+        willSet {
+            if newValue == nil {
+                self.protonESRAvailable = false
+            }
+            self.objectWillChange.send()
+        }
+        didSet {
+            if self.protonESR != nil {
+                self.protonESRAvailable = true
+            }
+        }
+    }
+    
+    /**
+     Live updated protonESR.
+     */
+    @Published public var protonESRAvailable: Bool = false {
         willSet {
             self.objectWillChange.send()
         }
@@ -254,6 +279,8 @@ public class Proton: ObservableObject {
         }
     }
     
+    private var protonESRSessionWebSocketWrappers: Set<ProtonESRSessionWebSocketWrapper> = []
+    
     // MARK: - Data Functions
     
     /**
@@ -266,7 +293,7 @@ public class Proton: ObservableObject {
         self.tokenContracts = self.storage.getDefaultsItem([TokenContract].self, forKey: "tokenContracts") ?? []
         self.tokenBalances = self.storage.getDefaultsItem([TokenBalance].self, forKey: "tokenBalances") ?? []
         self.tokenTransferActions = self.storage.getDefaultsItem([String: [TokenTransferAction]].self, forKey: "tokenTransferActions") ?? [:]
-        self.protonSigningRequestSessions = self.storage.getDefaultsItem([ProtonSigningRequestSession].self, forKey: "protonSigningRequestSessions") ?? []
+        self.protonESRSessions = self.storage.getDefaultsItem([ProtonESRSession].self, forKey: "protonESRSessions") ?? []
         self.contacts = self.storage.getDefaultsItem([Contact].self, forKey: "contacts") ?? []
         self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
         self.globalsXPR = self.storage.getDefaultsItem(GlobalsXPR.self, forKey: "globalsXPR") ?? nil
@@ -283,45 +310,72 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.tokenContracts, forKey: "tokenContracts")
         self.storage.setDefaultsItem(self.tokenBalances, forKey: "tokenBalances")
         self.storage.setDefaultsItem(self.tokenTransferActions, forKey: "tokenTransferActions")
-        self.storage.setDefaultsItem(self.protonSigningRequestSessions, forKey: "protonSigningRequestSessions")
+        self.storage.setDefaultsItem(self.protonESRSessions, forKey: "protonESRSessions")
         self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
         self.storage.setDefaultsItem(self.producers, forKey: "producers")
         self.storage.setDefaultsItem(self.globalsXPR, forKey: "globalsXPR")
         
     }
     
-    private func addProtonSigningRequestSocketConnections() {
+    /**
+     Connects/Reconnects websocket connections needed for ESR requests
+     */
+    public func enableProtonESRWebSocketConnections() {
         
-        for protonSigingRequestSession in self.protonSigningRequestSessions {
+        for protonESRSession in self.protonESRSessions {
             
-            if let receiveChannel = URL(string: protonSigingRequestSession.receiveChannel.absoluteString.replacingOccurrences(of: "https://", with: "wss://")) {
+            if let _ = self.protonESRSessionWebSocketWrappers.firstIndex(where: { $0.id == protonESRSession.id }) {
+                continue
+            }
+            
+            var request = URLRequest(url: protonESRSession.receiveChannel)
+            request.timeoutInterval = 5
+            
+            let socket = WebSocket(request: request)
+            socket.onData = { [weak self] data in
                 
-                WebOperations.shared.addSocket(withURL: receiveChannel) { [weak self] result in
-                    switch result {
-                    case .success(let response):
-                        
-                        switch response.message {
-                        case .string(let text):
-                            print(text)
-                            if let url = URL(string: text) {
-                                self?.decodeAndPrepareProtonSigningRequest(withURL: url, completion: { result in })
+                if let url = URL(string: String(decoding: data, as: UTF8.self)) {
+                    self?.decodeAndPrepareProtonSigningRequest(withURL: url,
+                                                               sessionId: protonESRSession.id, completion: { result in })
+                } else {
+
+                    do {
+                        let sealedMessage = try ABIDecoder().decode(SealedMessage.self, from: data)
+                        self?.decryptProtonSigningRequest(withSealedMessage: sealedMessage, andSession: protonESRSession, completion: { result in
+                            switch result {
+                            case .success(let url):
+                                if let url = url {
+                                    self?.decodeAndPrepareProtonSigningRequest(withURL: url,
+                                                                               sessionId: protonESRSession.id, completion: { result in })
+                                }
+                            case .failure(let error):
+                                print(error)
                             }
-                        case .data(let data):
-                            print(data)
-                            if let url = URL(string: String(decoding: data, as: UTF8.self)) {
-                                self?.decodeAndPrepareProtonSigningRequest(withURL: url, completion: { result in })
-                            }
-                        @unknown default:
-                            print("uknown")
-                        }
-                        
-                    case .failure(let error):
+                        })
+                    } catch {
                         print(error)
                     }
+                    
                 }
                 
             }
+            socket.onConnect = {
+                print("CONNECTED SOCKET \(socket.currentURL)")
+            }
+            socket.onDisconnect = { error in
+                if let error = error {
+                    print("DISCONNECT SOCKET \(socket.currentURL) for reason: \(error)")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        socket.connect()
+                    }
+                }
+            }
             
+            socket.connect()
+            
+            let protonESRSessionWrapper = ProtonESRSessionWebSocketWrapper(id: protonESRSession.id, socket: socket)
+            self.protonESRSessionWebSocketWrappers.insert(protonESRSessionWrapper)
+
         }
         
     }
@@ -1565,8 +1619,8 @@ public class Proton: ObservableObject {
             self.account = account
             self.tokenBalances.removeAll()
             self.tokenTransferActions.removeAll()
-            self.protonSigningRequestSessions.removeAll()
-            self.protonSigningRequest = nil
+            self.protonESRSessions.removeAll()
+            self.protonESR = nil
             self.contacts.removeAll()
         }
 
@@ -2003,7 +2057,12 @@ public class Proton: ObservableObject {
     
     // MARK: - ESR Functions 🚧 UNDER CONSTRUCTION. DO NOT USE YET
     
-    public func decodeAndPrepareProtonSigningRequest(withURL url: URL, completion: @escaping ((Result<ProtonSigningRequest?, Error>) -> Void)) {
+    public func getChainIdFromSigningRequest(withURL url: URL) -> String? {
+        guard let chainId = try? SigningRequest(url.absoluteString).chainId else { return nil }
+        return String(chainId)
+    }
+    
+    public func decodeAndPrepareProtonSigningRequest(withURL url: URL, sessionId: String?, completion: @escaping ((Result<ProtonESR?, Error>) -> Void)) {
 
         do {
             
@@ -2022,16 +2081,28 @@ public class Proton: ObservableObject {
             var requestAccount: Account?
             var requestKey: PublicKey?
             
-            if let psr_request_account = signingRequest.getInfo("psr_request_account", as: String.self) {
+            if let sessionId = sessionId, let session = self.protonESRSessions.first(where: { $0.id == sessionId }) {
+                requestAccount = session.requestor
+                requestKey = session.getRequestKey()
+            } else if let psr_request_account = signingRequest.getInfo("req_account", as: String.self) {
                 requestAccount = Account(chainId: account.chainId, name: psr_request_account)
             }
             
-            if let psr_request_key = signingRequest.getInfo("psr_request_key", as: String.self) {
-                requestKey = PublicKey(stringLiteral: psr_request_key)
+            if signingRequest.isIdentity {
+                
+                struct AnchorLinkCreateInfo: ABIDecodable {
+                    let session_name: Name
+                    let request_key: PublicKey
+                }
+                
+                if let link = signingRequest.getInfo("link", as: AnchorLinkCreateInfo.self) {
+                    requestKey = link.request_key
+                }
+
             }
             
             if requestKey == nil {
-                completion(.failure(ProtonError.init(message: "Expected psr_request_key")))
+                completion(.failure(ProtonError.init(message: "Expected request link object with request key")))
                 return
             }
 
@@ -2048,16 +2119,16 @@ public class Proton: ObservableObject {
                         
                         if signingRequest.isIdentity {
                             
-                            self.protonSigningRequest = ProtonSigningRequest(requestKey: requestKey!, signer: account, signingRequest: signingRequest, requestor: requestAccount, actions: [])
-                            completion(.success(self.protonSigningRequest))
+                            self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, requestor: requestAccount, actions: [])
+                            completion(.success(self.protonESR))
                             
                         } else {
 
                             self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, requestAccount: requestAccount) { result in
                                 switch result {
-                                case .success(let protonSigningRequest):
-                                    self.protonSigningRequest = protonSigningRequest
-                                    completion(.success(protonSigningRequest))
+                                case .success(let protonESR):
+                                    self.protonESR = protonESR
+                                    completion(.success(protonESR))
                                 case .failure(let error):
                                     completion(.failure(error))
                                 }
@@ -2075,16 +2146,16 @@ public class Proton: ObservableObject {
                 
                 if signingRequest.isIdentity {
                     
-                    self.protonSigningRequest = ProtonSigningRequest(requestKey: requestKey!, signer: account, signingRequest: signingRequest, actions: [])
-                    completion(.success(self.protonSigningRequest))
+                    self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, actions: [])
+                    completion(.success(self.protonESR))
                     
                 } else {
                     
                     self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, requestAccount: requestAccount) { result in
                         switch result {
-                        case .success(let protonSigningRequest):
-                            self.protonSigningRequest = protonSigningRequest
-                            completion(.success(protonSigningRequest))
+                        case .success(let protonESR):
+                            self.protonESR = protonESR
+                            completion(.success(protonESR))
                         case .failure(let error):
                             completion(.failure(error))
                         }
@@ -2106,7 +2177,7 @@ public class Proton: ObservableObject {
     private func prepareActionsforSigningRequest(_ signingRequest: SigningRequest,
                                                  requestKey: PublicKey,
                                                  requestAccount: Account?,
-                                                 completion: @escaping ((Result<ProtonSigningRequest?, Error>) -> Void)) {
+                                                 completion: @escaping ((Result<ProtonESR?, Error>) -> Void)) {
         
         let chainId = signingRequest.chainId
         
@@ -2119,7 +2190,7 @@ public class Proton: ObservableObject {
             return
         }
 
-        let abiAccounts = signingRequest.actions.map { $0.account }.unique()
+        let abiAccounts = signingRequest.requiredAbis
         var abiAccountsProcessed = 0
         var rawAbis: [String: API.V1.Chain.GetRawAbi.Response] = [:]
 
@@ -2149,48 +2220,19 @@ public class Proton: ObservableObject {
                 
                 if abiAccountsProcessed == abiAccounts.count && abiAccounts.count == rawAbis.count {
 
-                    let actions: [ProtonSigningRequestAction] = signingRequest.actions.compactMap {
-
-                        let account = $0.account
-
-                        if let abi = rawAbis[account.stringValue]?.decodedAbi { // TODO
-
-                            if let transferActionABI = try? abidecoder.decode(TransferActionABI.self, from: $0.data) {
-
-                                let symbol = transferActionABI.quantity.symbol
-
-                                if let tokenContract = self.tokenContracts.first(where: { $0.chainId == String(chainId)
-                                                                                            && $0.symbol == symbol && $0.contract == account }) {
-
-                                    let quantityAsset = Asset(transferActionABI.quantity.value * tokenContract.getRate(forCurrencyCode: "USD"), tokenContract.symbol)
-
-                                    let basicDisplay = ProtonSigningRequestAction.BasicDisplay(actiontype: .transfer, name: tokenContract.name,
-                                                                              secondary: transferActionABI.quantity.stringValue,
-                                                                              extra: "-\(quantityAsset.formattedAsCurrency())", tokenContract: tokenContract)
-
-                                    return ProtonSigningRequestAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay, abi: abi)
-
-                                }
-
+                    let actions: [ProtonESRAction] = signingRequest.actions.compactMap {
+                        if let abi = rawAbis[$0.account.stringValue]?.decodedAbi {
+                            if let _ = try? abidecoder.decode(TransferActionABI.self, from: $0.data) {
+                                return ProtonESRAction(type: .transfer, account: $0.account, name: $0.name, chainId: chainId, abi: abi, data: $0.data)
                             } else {
-
-                                let basicDisplay = ProtonSigningRequestAction.BasicDisplay(actiontype: .custom, name: $0.name.stringValue.uppercased(),
-                                                                          secondary: nil, extra: nil, tokenContract: nil)
-
-                                return ProtonSigningRequestAction(account: $0.account, name: $0.name, chainId: String(chainId), basicDisplay: basicDisplay, abi: abi)
-
+                                return ProtonESRAction(type: .custom, account: $0.account, name: $0.name, chainId: chainId, abi: abi, data: $0.data)
                             }
-
                         }
-
                         return nil
-
                     }
 
-                    print("ESR ACTIONS => \(actions.count)")
-
                     if actions.count > 0 {
-                        completion(.success(ProtonSigningRequest(requestKey: requestKey, signer: account, signingRequest: signingRequest, requestor: requestAccount, actions: actions)))
+                        completion(.success(ProtonESR(requestKey: requestKey, signer: account, signingRequest: signingRequest, requestor: requestAccount, actions: actions)))
                     } else {
                         completion(.failure(ProtonError.init(message: "No actions to sign")))
                     }
@@ -2206,59 +2248,86 @@ public class Proton: ObservableObject {
     /**
      🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
      */
-    private func decryptProtonSigningRequest(withData: Data, completion: @escaping ((Result<URL?, Error>) -> Void)) {
+    private func decryptProtonSigningRequest(withSealedMessage sealedMessage: SealedMessage, andSession session: ProtonESRSession, completion: @escaping ((Result<URL?, Error>) -> Void)) {
         
-        
-        
-    }
-    
-    /**
-     🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
-     */
-    public func declineProtonSigningRequest(completion: @escaping () -> ()) {
-        self.protonSigningRequest = nil
-        completion()
-    }
-    
-    /**
-     🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
-     */
-    public func acceptProtonSigningRequest(privateKey: PrivateKey, completion: @escaping ((Result<URL?, Error>) -> Void)) {
+        do {
 
-        guard let protonSigningRequest = self.protonSigningRequest else {
+            guard let key = try session.getReceiveKey()?.getSymmetricKey(sealedMessage.from, sealedMessage.nonce) else {
+                completion(.failure(ProtonError.init(message: "Unable to get shared secret")))
+                return
+            }
+            
+            let esr = try aesCBCDecrypt(data: sealedMessage.ciphertext, key: key[0..<32], iv: key[32..<48])
+            completion(.success(URL(string: (esr))))
+
+        } catch {
+            print(error)
+            completion(.failure(error))
+            return
+        }
+        
+    }
+
+    /**
+     🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
+     */
+    public func declineProtonSigningRequest() {
+        self.protonESR = nil
+    }
+    /**
+     🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
+     */
+    public func completeProtonSigningRequest() {
+        self.protonESR = nil
+    }
+    
+    /**
+     🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
+     */
+    public func acceptProtonSigningRequest(privateKey: PrivateKey, autoCompleteRequest: Bool = true, completion: @escaping ((Result<URL?, Error>) -> Void)) {
+
+        guard let protonESR = self.protonESR else {
             completion(.failure(ProtonError.init(message: "No proton siging request found")))
             return
         }
 
-        if protonSigningRequest.signingRequest.isIdentity {
+        if protonESR.signingRequest.isIdentity {
 
             self.handleIdentityProtonSigningRequest(withPrivateKey: privateKey) { result in
                 switch result {
                 case .success(let url):
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.protonSigningRequest = nil
+                    if autoCompleteRequest {
+                        self.completeProtonSigningRequest()
+                        completion(.success(url))
+                    } else {
                         completion(.success(url))
                     }
                 case .failure(let error):
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.protonSigningRequest = nil
+                    if autoCompleteRequest {
+                        self.completeProtonSigningRequest()
+                        completion(.failure(error))
+                    } else {
                         completion(.failure(error))
                     }
                 }
             }
 
-        } else if protonSigningRequest.signingRequest.actions.count > 0 {
+        } else if protonESR.signingRequest.actions.count > 0 {
             
             self.handleActionsProtonSigningRequest(withPrivateKey: privateKey) { result in
                 switch result {
                 case .success(let url):
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.protonSigningRequest = nil
+                    if autoCompleteRequest {
+                        self.completeProtonSigningRequest()
+                        completion(.success(url))
+                    } else {
                         completion(.success(url))
                     }
                 case .failure(let error):
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.protonSigningRequest = nil
+                    if autoCompleteRequest {
+                        self.completeProtonSigningRequest()
+                        completion(.failure(error))
+                    } else {
                         completion(.failure(error))
                     }
                 }
@@ -2266,8 +2335,8 @@ public class Proton: ObservableObject {
 
         } else { // TODO: Need to handle full transaction type ESR
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.protonSigningRequest = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.protonESR = nil
                 completion(.failure(ProtonError.init(message: "Unable to accept signing request")))
             }
 
@@ -2280,32 +2349,24 @@ public class Proton: ObservableObject {
      */
     private func handleActionsProtonSigningRequest(withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<URL?, Error>) -> Void)) {
         
-        guard let protonSigningRequest = self.protonSigningRequest else {
+        guard var protonESR = self.protonESR else {
             completion(.failure(ProtonError.init(message: "No proton siging request found")))
             return
         }
 
-        let chainId = protonSigningRequest.signingRequest.chainId
+        let chainId = protonESR.signingRequest.chainId
         
-        guard let chainProvider = protonSigningRequest.signer.chainProvider else {
+        guard let chainProvider = protonESR.signer.chainProvider else {
             completion(.failure(ProtonError.init(message: "No chainprovider found")))
             return
         }
         
-        guard let session = self.protonSigningRequestSessions.first(where: { $0.id == protonSigningRequest.requestKey.stringValue }) else {
+        guard let session = self.protonESRSessions.first(where: { $0.id == protonESR.requestKey.stringValue }) else {
             completion(.failure(ProtonError.init(message: "Unable to find session")))
             return
         }
 
-        let actions = protonSigningRequest.actions
-
-        var abis: [Name: ABI] = [:]
-
-        for action in actions {
-            if let abi = action.abi {
-                abis[action.account] = abi
-            }
-        }
+        let abis = protonESR.actions.reduce(into: [Name: ABI]()) { $0[$1.account] = $1.abi }
 
         if abis.count == 0 {
             completion(.failure(ProtonError.init(message: "No action abi's")))
@@ -2328,16 +2389,17 @@ public class Proton: ObservableObject {
                 
                 do {
                     
-                    guard let resolvedSigningRequest = try? protonSigningRequest.signingRequest.resolve(using: PermissionLevel(protonSigningRequest.signer.name, Name("active")),
-                                                                                                        abis: abis, tapos: header) else
+                    guard let resolvedSigningRequest = try? protonESR.signingRequest.resolve(using: PermissionLevel(protonESR.signer.name, Name("active")),
+                                                                                             abis: abis, tapos: protonESR.signingRequest.requiresTapos ? header : nil) else
                     { completion(.failure(ProtonError.init(message: "Unable to resolve signing request"))); return }
 
-                    self.protonSigningRequest?.resolvedSigningRequest = resolvedSigningRequest
+                    self.protonESR?.resolvedSigningRequest = resolvedSigningRequest
+                    protonESR.resolvedSigningRequest = resolvedSigningRequest
 
                     let sig = try privateKey.sign(resolvedSigningRequest.transaction.digest(using: chainId))
                     let signedTransaction = SignedTransaction(resolvedSigningRequest.transaction, signatures: [sig])
                     
-                    if protonSigningRequest.signingRequest.broadcast {
+                    if protonESR.signingRequest.broadcast {
                         
                         WebOperations.shared.add(PushTransactionOperation(chainProvider: chainProvider, signedTransaction: signedTransaction),
                                                  toCustomQueueNamed: Proton.operationQueueSeq) { result in
@@ -2359,23 +2421,13 @@ public class Proton: ObservableObject {
 
                                 if callback.background {
                                     
-                                    WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonSigningRequest: protonSigningRequest, sig: sig, session: session, blockNum: UInt32(blockNum)), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                                    WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonESR: protonESR, sig: sig, session: session, blockNum: UInt32(blockNum)), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                                         completion(.success(nil))
                                     }
 
                                 } else {
                                     
-                                    var newPath = callback.url
-                                    
-                                    guard let publicReceiveKey = try? session.getReceiveKey()?.getPublic().stringValue else {
-                                        completion(.failure(ProtonError.init(message: "Unable to get psr_receive_key")))
-                                        return
-                                    }
-
-                                    newPath = newPath.replacingOccurrences(of: "{{psr_request_key}}", with: publicReceiveKey)
-                                    newPath = newPath.replacingOccurrences(of: "{{psr_receive_key}}", with: session.id)
-                                    
-                                    completion(.success(URL(string: newPath)))
+                                    completion(.success(URL(string: callback.url)))
 
                                 }
 
@@ -2394,23 +2446,13 @@ public class Proton: ObservableObject {
                         
                         if callback.background {
                             
-                            WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonSigningRequest: protonSigningRequest, sig: sig, session: session, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                            WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonESR: protonESR, sig: sig, session: session, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
                                 completion(.success(nil))
                             }
                             
                         } else {
-                            
-                            var newPath = callback.url
-                            
-                            guard let publicReceiveKey = try? session.getReceiveKey()?.getPublic().stringValue else {
-                                completion(.failure(ProtonError.init(message: "Unable to get psr_receive_key")))
-                                return
-                            }
 
-                            newPath = newPath.replacingOccurrences(of: "{{psr_request_key}}", with: publicReceiveKey)
-                            newPath = newPath.replacingOccurrences(of: "{{psr_receive_key}}", with: session.id)
-                            
-                            completion(.success(URL(string: newPath)))
+                            completion(.success(URL(string: callback.url)))
                         }
                         
                     }
@@ -2432,29 +2474,27 @@ public class Proton: ObservableObject {
      */
     private func handleIdentityProtonSigningRequest(withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<URL?, Error>) -> Void)) {
 
-        guard let protonSigningRequest = self.protonSigningRequest else {
+        guard var protonESR = self.protonESR else {
             completion(.failure(ProtonError.init(message: "No proton siging request found")))
             return
         }
 
-        let chainId = protonSigningRequest.signingRequest.chainId
+        let chainId = protonESR.signingRequest.chainId
 
         do {
 
-            guard let resolvedSigningRequest = try? protonSigningRequest.signingRequest.resolve(using: PermissionLevel(protonSigningRequest.signer.name, Name("active"))) else {             completion(.failure(ProtonError.init(message: "Unable to resolve signing request")))
+            guard let resolvedSigningRequest = try? protonESR.signingRequest.resolve(using: PermissionLevel(protonESR.signer.name, Name("active"))) else {             completion(.failure(ProtonError.init(message: "Unable to resolve signing request")))
                 return
             }
 
-            self.protonSigningRequest?.resolvedSigningRequest = resolvedSigningRequest
+            protonESR.resolvedSigningRequest = resolvedSigningRequest
+            self.protonESR?.resolvedSigningRequest = resolvedSigningRequest
 
             let sig = try privateKey.sign(resolvedSigningRequest.transaction.digest(using: chainId))
             guard let callback = resolvedSigningRequest.getCallback(using: [sig], blockNum: nil) else {
                 completion(.failure(ProtonError.init(message: "Unable to resolve callback")))
                 return
             }
-
-            print(callback.url)
-            print(sig)
             
             guard let sessionKey = generatePrivateKey() else {
                 completion(.failure(ProtonError.init(message: "Unable to resolve callback")))
@@ -2466,27 +2506,29 @@ public class Proton: ObservableObject {
                 return
             }
             
-            let session = ProtonSigningRequestSession(id: protonSigningRequest.requestKey.stringValue,
-                                                      signer: protonSigningRequest.signer.name,
+            let session = ProtonESRSession(id: protonESR.requestKey.stringValue,
+                                                      signer: protonESR.signer.name,
                                                       callbackUrlString: callback.url,
                                                       receiveKeyString: sessionKey.stringValue,
                                                       receiveChannel: sessionChannel,
-                                                      requestor: protonSigningRequest.requestor)
+                                                      requestor: protonESR.requestor)
 
             if callback.background {
 
-                WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonSigningRequest: protonSigningRequest, sig: sig, session: session, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonESR: protonESR, sig: sig, session: session, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
 
                     switch result {
                     case .success:
 
-                        if let idx = self.protonSigningRequestSessions.firstIndex(of: session) {
-                            self.protonSigningRequestSessions[idx] = session
+                        if let idx = self.protonESRSessions.firstIndex(of: session) {
+                            self.protonESRSessions[idx] = session
                         } else {
-                            self.protonSigningRequestSessions.append(session)
+                            self.protonESRSessions.append(session)
                         }
                         
-                        self.addProtonSigningRequestSocketConnections()
+                        self.enableProtonESRWebSocketConnections()
+                        
+                        self.saveAll()
 
                         completion(.success(nil))
 
@@ -2500,23 +2542,15 @@ public class Proton: ObservableObject {
 
             } else {
 
-                var newPath = callback.url
-                
-                guard let publicReceiveKey = try session.getReceiveKey()?.getPublic().stringValue else {
-                    completion(.failure(ProtonError.init(message: "Unable to get psr_receive_key")))
-                    return
-                }
-
-                newPath = newPath.replacingOccurrences(of: "{{psr_request_key}}", with: publicReceiveKey)
-                newPath = newPath.replacingOccurrences(of: "{{psr_receive_key}}", with: session.id)
-
-                if let idx = self.protonSigningRequestSessions.firstIndex(of: session) {
-                    self.protonSigningRequestSessions[idx] = session
+                if let idx = self.protonESRSessions.firstIndex(of: session) {
+                    self.protonESRSessions[idx] = session
                 } else {
-                    self.protonSigningRequestSessions.append(session)
+                    self.protonESRSessions.append(session)
                 }
+                
+                self.saveAll()
 
-                completion(.success(URL(string: newPath)))
+                completion(.success(URL(string: callback.url)))
 
             }
 
@@ -2524,6 +2558,40 @@ public class Proton: ObservableObject {
             completion(.failure(error))
         }
 
+    }
+    
+    enum AESError: Error {
+        case KeyError((String, Int))
+        case IVError((String, Int))
+        case CryptorError((String, Int))
+    }
+    
+    private func aesCBCDecrypt(data: Data, key: Data, iv: Data) throws -> String {
+        
+        var buffer = [UInt8](repeating: 0, count: data.count + kCCBlockSizeAES128)
+        var bufferLen: Int = 0
+
+        let status = CCCrypt(
+            CCOperation(kCCDecrypt),
+            CCAlgorithm(kCCAlgorithmAES),
+            CCOptions(kCCOptionPKCS7Padding),
+            [UInt8](key), kCCKeySizeAES256,
+            [UInt8](iv),
+            [UInt8](data),
+            data.count,
+            &buffer,
+            buffer.count,
+            &bufferLen
+        )
+
+        guard status == kCCSuccess,
+            let str = String(data: Data(bytes: buffer, count: bufferLen),
+                             encoding: .utf8) else {
+                                throw NSError(domain: "AES", code: -1, userInfo: nil)
+        }
+
+        return str
+        
     }
 
 }

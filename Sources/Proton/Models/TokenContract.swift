@@ -15,7 +15,7 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     /// This is used as the primary key for storing the account
     public var id: String { return "\(self.contract.stringValue):\(self.symbol.name)" }
     /// The chainId associated with the TokenBalance
-    public let chainId: String
+    public var chainId: String
     /// The Name of the contract. You can get the string value via contract.stringValue
     public var contract: Name
     /// The Name of the issuer. You can get the string value via issuer.stringValue
