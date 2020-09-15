@@ -17,6 +17,8 @@ public struct ProtonESRSession: Codable, Identifiable, Hashable {
     public var callbackUrlString: String
     public var receiveKeyString: String
     public var receiveChannel: URL
+    public var createdAt: Date
+    public var updatedAt: Date
     public var requestor: Account?
     
     public static func == (lhs: ProtonESRSession, rhs: ProtonESRSession) -> Bool {

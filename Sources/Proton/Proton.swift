@@ -41,27 +41,44 @@ public class Proton: ObservableObject {
         /// The name of your app. This will be used in certain places like handling Signing requests
         public var appDisplayName: String
         
+        /// Custom uri schemes that your app has registered
+        public var signingRequestSchemes: [String]
+        
         /**
          Use this function as your starting point to initialize the singleton class Proton
          - Parameter baseUrl: The base url used for api requests to proton sdk api's
          - Parameter appDisplayName: The name of your app. This will be used in certain places like handling Signing requests
+         - Parameter signingRequestSchemes: An array of custom schemes that your app has registered for siging requests
          */
-        public init(baseUrl: String = Environment.testnet.rawValue, appDisplayName: String = "") {
+        public init(baseUrl: String = Environment.testnet.rawValue, appDisplayName: String = "", signingRequestSchemes: [String]) {
             self.baseUrl = baseUrl
             self.appDisplayName = appDisplayName
+            self.signingRequestSchemes = signingRequestSchemes
         }
         
         /**
          Use this function as your starting point to initialize the singleton class Proton
          - Parameter environment: The environment used for api requests to proton sdk api's
          - Parameter appDisplayName: The name of your app. This will be used in certain places like handling Signing requests
+         - Parameter signingRequestSchemes: An array of custom schemes that your app has registered for siging requests
          */
-        public init(environment: Environment = Environment.testnet, appDisplayName: String = "") {
+        public init(environment: Environment = Environment.testnet, appDisplayName: String = "", signingRequestSchemes: [String]) {
             self.baseUrl = environment.rawValue
             self.appDisplayName = appDisplayName
+            self.signingRequestSchemes = signingRequestSchemes
         }
         
     }
+    
+    private static let disallowedActions: [Name] = [
+        Name("updateauth"),
+        Name("deleteauth"),
+        Name("linkauth"),
+        Name("unlinkauth"),
+        Name("setabi"),
+        Name("setcode"),
+        Name("newaccount")
+    ]
     
     /**
      Proton typealias of the EOSIO.Name
@@ -2057,16 +2074,43 @@ public class Proton: ObservableObject {
     
     // MARK: - ESR Functions 🚧 UNDER CONSTRUCTION. DO NOT USE YET
     
-    public func getChainIdFromSigningRequest(withURL url: URL) -> String? {
-        guard let chainId = try? SigningRequest(url.absoluteString).chainId else { return nil }
-        return String(chainId)
+    public func isSigningRequest(withUrl url: URL) -> Bool {
+        
+        var sigingRequestString = url.absoluteString
+        
+        guard let prefix = sigingRequestString.popESRPrefix() else {
+            return false
+        }
+        
+        if Proton.self.config?.signingRequestSchemes.contains(prefix) == false {
+            return false
+        }
+        
+        do {
+            let _ = try SigningRequest(sigingRequestString)
+            return true
+        } catch {
+            return false
+        }
     }
-    
-    public func decodeAndPrepareProtonSigningRequest(withURL url: URL, sessionId: String?, completion: @escaping ((Result<ProtonESR?, Error>) -> Void)) {
+
+    public func decodeAndPrepareProtonSigningRequest(withURL url: URL, sessionId: String?, completion: @escaping ((Result<Bool, Error>) -> Void)) {
 
         do {
             
-            let signingRequest = try SigningRequest(url.absoluteString)
+            var sigingRequestString = url.absoluteString
+            
+            guard let prefix = sigingRequestString.popESRPrefix() else {
+                completion(.failure(ProtonError.init(message: "Unable to determine ESR prefix")))
+                return
+            }
+            
+            if Proton.self.config?.signingRequestSchemes.contains(prefix) == false {
+                completion(.failure(ProtonError.init(message: "ESR prefix not registered in proton config")))
+                return
+            }
+            
+            let signingRequest = try SigningRequest(sigingRequestString)
             let chainId = signingRequest.chainId
 
             guard let account = self.account, account.chainId == String(chainId) else {
@@ -2119,16 +2163,16 @@ public class Proton: ObservableObject {
                         
                         if signingRequest.isIdentity {
                             
-                            self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, requestor: requestAccount, actions: [])
-                            completion(.success(self.protonESR))
+                            self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, initialPrefix: prefix, requestor: requestAccount, actions: [])
+                            completion(.success(true))
                             
                         } else {
 
-                            self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, requestAccount: requestAccount) { result in
+                            self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, initialPrefix: prefix, requestAccount: requestAccount) { result in
                                 switch result {
                                 case .success(let protonESR):
                                     self.protonESR = protonESR
-                                    completion(.success(protonESR))
+                                    completion(.success(true))
                                 case .failure(let error):
                                     completion(.failure(error))
                                 }
@@ -2146,16 +2190,16 @@ public class Proton: ObservableObject {
                 
                 if signingRequest.isIdentity {
                     
-                    self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, actions: [])
-                    completion(.success(self.protonESR))
+                    self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, initialPrefix: prefix, actions: [])
+                    completion(.success(true))
                     
                 } else {
                     
-                    self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, requestAccount: requestAccount) { result in
+                    self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, initialPrefix: prefix, requestAccount: requestAccount) { result in
                         switch result {
                         case .success(let protonESR):
                             self.protonESR = protonESR
-                            completion(.success(protonESR))
+                            completion(.success(true))
                         case .failure(let error):
                             completion(.failure(error))
                         }
@@ -2176,6 +2220,7 @@ public class Proton: ObservableObject {
      */
     private func prepareActionsforSigningRequest(_ signingRequest: SigningRequest,
                                                  requestKey: PublicKey,
+                                                 initialPrefix: String,
                                                  requestAccount: Account?,
                                                  completion: @escaping ((Result<ProtonESR?, Error>) -> Void)) {
         
@@ -2232,7 +2277,16 @@ public class Proton: ObservableObject {
                     }
 
                     if actions.count > 0 {
-                        completion(.success(ProtonESR(requestKey: requestKey, signer: account, signingRequest: signingRequest, requestor: requestAccount, actions: actions)))
+                        
+                        // check for unauthorized actions
+                        for action in actions {
+                            if Proton.disallowedActions.contains(action.name) {
+                                completion(.failure(ProtonError.init(message: "\(action.name.stringValue) not allowed")))
+                                return
+                            }
+                        }
+                        
+                        completion(.success(ProtonESR(requestKey: requestKey, signer: account, signingRequest: signingRequest, initialPrefix: initialPrefix, requestor: requestAccount, actions: actions)))
                     } else {
                         completion(.failure(ProtonError.init(message: "No actions to sign")))
                     }
@@ -2361,7 +2415,7 @@ public class Proton: ObservableObject {
             return
         }
         
-        guard let session = self.protonESRSessions.first(where: { $0.id == protonESR.requestKey.stringValue }) else {
+        guard var session = self.protonESRSessions.first(where: { $0.id == protonESR.requestKey.stringValue }) else {
             completion(.failure(ProtonError.init(message: "Unable to find session")))
             return
         }
@@ -2418,6 +2472,13 @@ public class Proton: ObservableObject {
                                 }
 
                                 self.updateAccount { _ in }
+                                
+                                session.updatedAt = Date()
+                                
+                                if let idx = self.protonESRSessions.firstIndex(of: session) {
+                                    self.protonESRSessions[idx] = session
+                                    self.saveAll()
+                                }
 
                                 if callback.background {
                                     
@@ -2426,9 +2487,7 @@ public class Proton: ObservableObject {
                                     }
 
                                 } else {
-                                    
                                     completion(.success(URL(string: callback.url)))
-
                                 }
 
                             case .failure(let error):
@@ -2442,6 +2501,13 @@ public class Proton: ObservableObject {
                         guard let callback = resolvedSigningRequest.getCallback(using: [sig], blockNum: nil) else { // CHECK: Might need blocknum here....
                             completion(.failure(ProtonError.init(message: "Unable to get callback")))
                             return
+                        }
+                        
+                        session.updatedAt = Date()
+                        
+                        if let idx = self.protonESRSessions.firstIndex(of: session) {
+                            self.protonESRSessions[idx] = session
+                            self.saveAll()
                         }
                         
                         if callback.background {
@@ -2506,11 +2572,15 @@ public class Proton: ObservableObject {
                 return
             }
             
+            let createdAt = Date()
+            
             let session = ProtonESRSession(id: protonESR.requestKey.stringValue,
                                                       signer: protonESR.signer.name,
                                                       callbackUrlString: callback.url,
                                                       receiveKeyString: sessionKey.stringValue,
                                                       receiveChannel: sessionChannel,
+                                                      createdAt: createdAt,
+                                                      updatedAt: createdAt,
                                                       requestor: protonESR.requestor)
 
             if callback.background {

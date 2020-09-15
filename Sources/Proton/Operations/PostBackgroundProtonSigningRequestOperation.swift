@@ -47,15 +47,22 @@ class PostBackgroundProtonSigningRequestOperation: BaseOperation {
             
             let payloadData = try callback.getPayload(extra: ["link_key": publicReceiveKey, "link_ch": self.session.receiveChannel.absoluteString, "link_name": Proton.config?.appDisplayName ?? ""])
             
-            guard let parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else {
+            guard var parameters = try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else {
                 self.finish(retval: nil, error: Proton.ProtonError(message: "Issue getting parameters from payload"))
                 return
+            }
+            
+            if let req = parameters["req"] as? String {
+                parameters["req"] = req.replacingOccurrences(of: "esr:", with: protonESR.initialPrefix)
             }
             
             guard let url = URL(string: callback.url) else {
                 self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form proper URL from callback"))
                 return
             }
+            
+            print(url)
+            print(parameters)
             
             WebOperations.shared.request(method: WebOperations.RequestMethod.post, url: url, parameters: parameters, errorModel: NilErrorModel.self) { result in
                 

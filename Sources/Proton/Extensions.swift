@@ -76,6 +76,28 @@ public extension String {
         return true
     }
     
+    mutating func popESRPrefix() -> String? {
+
+        if let firstIdx = firstIndex(of: ":") {
+            
+            var prefix = String(self[self.startIndex...firstIdx])
+            var remainder = String(self[self.index(firstIdx, offsetBy: 1)..<self.endIndex])
+            
+            if remainder.hasPrefix("//") {
+                prefix += "//"
+                remainder = remainder.replacingOccurrences(of: "//", with: "")
+            }
+            
+            self = remainder
+            
+            return prefix
+            
+        }
+    
+        return nil
+        
+    }
+    
 }
 
 public extension Asset {
@@ -113,4 +135,11 @@ extension PrivateKey {
         return keyData.sha512Digest
     }
     
+}
+
+extension URL {
+    
+    func fixCallbackUrl() -> URL? {
+        return nil
+    }
 }

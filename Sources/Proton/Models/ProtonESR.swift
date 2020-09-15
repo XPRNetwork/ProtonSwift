@@ -14,6 +14,7 @@ public struct ProtonESR: Equatable {
     public var requestKey: PublicKey
     public var signer: Account
     public var signingRequest: SigningRequest
+    public var initialPrefix: String
     public var resolvedSigningRequest: ResolvedSigningRequest?
     public var requestor: Account?
     public var actions: [ProtonESRAction]
