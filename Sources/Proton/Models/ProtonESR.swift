@@ -17,6 +17,7 @@ public struct ProtonESR: Equatable {
     public var initialPrefix: String
     public var resolvedSigningRequest: ResolvedSigningRequest?
     public var requestor: Account?
+    public var returnPath: URL?
     public var actions: [ProtonESRAction]
 
     public var basicTransfer: Bool {

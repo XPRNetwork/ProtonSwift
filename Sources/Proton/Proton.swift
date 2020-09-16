@@ -2145,6 +2145,13 @@ public class Proton: ObservableObject {
 
             }
             
+            var returnPath: URL?
+            
+            // used when doing same device
+            if let return_path = signingRequest.getInfo("return_path", as: String.self) {
+                returnPath = URL(string: return_path)
+            }
+            
             if requestKey == nil {
                 completion(.failure(ProtonError.init(message: "Expected request link object with request key")))
                 return
@@ -2163,12 +2170,12 @@ public class Proton: ObservableObject {
                         
                         if signingRequest.isIdentity {
                             
-                            self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, initialPrefix: prefix, requestor: requestAccount, actions: [])
+                            self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, initialPrefix: prefix, requestor: requestAccount, returnPath: returnPath, actions: [])
                             completion(.success(true))
                             
                         } else {
 
-                            self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, initialPrefix: prefix, requestAccount: requestAccount) { result in
+                            self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, initialPrefix: prefix, requestAccount: requestAccount, returnPath: returnPath) { result in
                                 switch result {
                                 case .success(let protonESR):
                                     self.protonESR = protonESR
@@ -2190,12 +2197,12 @@ public class Proton: ObservableObject {
                 
                 if signingRequest.isIdentity {
                     
-                    self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, initialPrefix: prefix, actions: [])
+                    self.protonESR = ProtonESR(requestKey: requestKey!, signer: account, signingRequest: signingRequest, initialPrefix: prefix, returnPath: returnPath, actions: [])
                     completion(.success(true))
                     
                 } else {
                     
-                    self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, initialPrefix: prefix, requestAccount: requestAccount) { result in
+                    self.prepareActionsforSigningRequest(signingRequest, requestKey: requestKey!, initialPrefix: prefix, requestAccount: requestAccount, returnPath: returnPath) { result in
                         switch result {
                         case .success(let protonESR):
                             self.protonESR = protonESR
@@ -2222,6 +2229,7 @@ public class Proton: ObservableObject {
                                                  requestKey: PublicKey,
                                                  initialPrefix: String,
                                                  requestAccount: Account?,
+                                                 returnPath: URL?,
                                                  completion: @escaping ((Result<ProtonESR?, Error>) -> Void)) {
         
         let chainId = signingRequest.chainId
@@ -2286,7 +2294,7 @@ public class Proton: ObservableObject {
                             }
                         }
                         
-                        completion(.success(ProtonESR(requestKey: requestKey, signer: account, signingRequest: signingRequest, initialPrefix: initialPrefix, requestor: requestAccount, actions: actions)))
+                        completion(.success(ProtonESR(requestKey: requestKey, signer: account, signingRequest: signingRequest, initialPrefix: initialPrefix, requestor: requestAccount, returnPath: returnPath, actions: actions)))
                     } else {
                         completion(.failure(ProtonError.init(message: "No actions to sign")))
                     }
@@ -2483,7 +2491,7 @@ public class Proton: ObservableObject {
                                 if callback.background {
                                     
                                     WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonESR: protonESR, sig: sig, session: session, blockNum: UInt32(blockNum)), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                                        completion(.success(nil))
+                                        completion(.success(protonESR.returnPath))
                                     }
 
                                 } else {
@@ -2513,7 +2521,7 @@ public class Proton: ObservableObject {
                         if callback.background {
                             
                             WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonESR: protonESR, sig: sig, session: session, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-                                completion(.success(nil))
+                                completion(.success(protonESR.returnPath))
                             }
                             
                         } else {
@@ -2600,7 +2608,7 @@ public class Proton: ObservableObject {
                         
                         self.saveAll()
 
-                        completion(.success(nil))
+                        completion(.success(protonESR.returnPath))
 
                     case .failure(let error):
 
