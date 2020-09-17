@@ -2333,8 +2333,59 @@ public class Proton: ObservableObject {
     /**
      🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
      */
-    public func declineProtonSigningRequest() {
-        self.protonESR = nil
+    public func declineProtonSigningRequest(autoCompleteRequest: Bool = true, completion: @escaping ((Result<URL?, Error>) -> Void)) {
+        
+        guard let protonESR = self.protonESR else {
+            completion(.failure(ProtonError.init(message: "No proton siging request found")))
+            return
+        }
+        
+        guard let unresolvedCallback = self.protonESR?.signingRequest.unresolvedCallback else {
+            if autoCompleteRequest {
+                self.protonESR = nil
+            }
+            completion(.failure(ProtonError.init(message: "No unresolved callback")))
+            return
+        }
+        
+        if unresolvedCallback.background {
+            
+            WebOperations.shared.add(PostBackgroundCancelProtonSigningRequestOperation(protonESR: protonESR), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                
+                switch result {
+                case .success:
+                    
+                    if autoCompleteRequest {
+                        self.completeProtonSigningRequest()
+                        completion(.success(protonESR.returnPath))
+                    } else {
+                        completion(.success(protonESR.returnPath))
+                    }
+                    
+                case .failure(let error):
+                    
+                    if autoCompleteRequest {
+                        self.completeProtonSigningRequest()
+                        completion(.failure(error))
+                    } else {
+                        completion(.failure(error))
+                    }
+                    
+                }
+
+            }
+            
+        } else {
+            
+            if autoCompleteRequest {
+                self.completeProtonSigningRequest()
+                completion(.success(URL(string: unresolvedCallback.url)))
+            } else {
+                completion(.success(URL(string: unresolvedCallback.url)))
+            }
+            
+        }
+        
     }
     /**
      🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET
