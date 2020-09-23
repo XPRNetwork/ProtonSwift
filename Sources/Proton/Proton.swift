@@ -2628,12 +2628,7 @@ public class Proton: ObservableObject {
                 return
             }
             
-            guard let baseUrl = Proton.config?.baseUrl else {
-                completion(.failure(ProtonError.init(message: "Unable to get base url")))
-                return
-            }
-            
-            guard let sessionChannel = URL(string: "\(baseUrl)/v1/esr-forwarder/\(UUID())") else {
+            guard let sessionChannel = URL(string: "https://cb.anchor.link/\(UUID())") else {
                 completion(.failure(ProtonError.init(message: "Unable to generate session channel")))
                 return
             }
