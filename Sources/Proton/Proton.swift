@@ -403,14 +403,15 @@ public class Proton: ObservableObject {
      - Parameter chainId: chainId for the account
      - Parameter completion: Closure returning Result
      */
-    public func store(privateKey: PrivateKey,
+    public func store(privateKey: PrivateKey, synchronizable: Bool = false,
                       completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
         do {
             
             let publicKey = try privateKey.getPublic()
             
-            self.storage.setKeychainItem(privateKey.stringValue, forKey: publicKey.stringValue) { result in
+            self.storage.setKeychainItem(privateKey.stringValue, forKey: publicKey.stringValue,
+                                         synchronizable: synchronizable) { result in
                 
                 switch result {
                 case .success:
@@ -462,7 +463,7 @@ public class Proton: ObservableObject {
      - Parameter chainId: chainId for the account
      - Parameter completion: Closure returning Result
      */
-    public func setAccount(withName accountName: String, chainId: String,
+    public func setAccount(withName accountName: String, chainId: String, synchronizable: Bool = false,
                            completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         self.setAccount(Account(chainId: chainId, name: accountName)) { result in
@@ -482,7 +483,8 @@ public class Proton: ObservableObject {
      - Parameter withPrivateKeyString: Wif formated private key
      - Parameter completion: Closure returning Result
      */
-    public func setAccount(_ account: Account, withPrivateKeyString privateKey: String, completion: @escaping ((Result<Account, Error>) -> Void)) {
+    public func setAccount(_ account: Account, withPrivateKeyString privateKey: String, synchronizable: Bool = false,
+                           completion: @escaping ((Result<Account, Error>) -> Void)) {
         
         do {
             
@@ -491,7 +493,7 @@ public class Proton: ObservableObject {
             
             if account.isKeyAssociated(publicKey: publicKey) {
                 
-                self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue) { result in
+                self.storage.setKeychainItem(privateKey, forKey: publicKey.stringValue, synchronizable: synchronizable) { result in
                     
                     switch result {
                     case .success:
@@ -1122,7 +1124,7 @@ public class Proton: ObservableObject {
             return
         }
         
-        guard var tokenContract = tokenBalance.tokenContract else {
+        guard let tokenContract = tokenBalance.tokenContract else {
             completion(.failure(Proton.ProtonError(message: "Account has no token balance for XPR")))
             return
         }
@@ -2626,7 +2628,12 @@ public class Proton: ObservableObject {
                 return
             }
             
-            guard let sessionChannel = URL(string: "https://cb.anchor.link/\(UUID())") else {
+            guard let baseUrl = Proton.config?.baseUrl else {
+                completion(.failure(ProtonError.init(message: "Unable to get base url")))
+                return
+            }
+            
+            guard let sessionChannel = URL(string: "\(baseUrl)/v1/esr-forwarder/\(UUID())") else {
                 completion(.failure(ProtonError.init(message: "Unable to generate session channel")))
                 return
             }
