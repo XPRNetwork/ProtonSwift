@@ -198,6 +198,14 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         let stakingRefundAmount = self.stakingRefund?.quantity.value ?? 0.0
         return Asset(stakingAmount+stakingRefundAmount+systemBalance, Asset.Symbol(stringLiteral: "4,XPR"))
     }
+    /// Returns the first tokenBalance that has more than zero balance. System balance always takes precedence.
+    public var firstAvailableTokenBalance: TokenBalance? {
+        if self.availableSystemBalance().value > 0 {
+            return self.systemTokenBalance
+        } else {
+            return self.tokenBalances.first(where: { $0.amount.value > 0 })
+        }
+    }
     
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> String {
         

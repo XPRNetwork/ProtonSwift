@@ -523,6 +523,28 @@ public class Proton: ObservableObject {
     
     /**
      Fetchs all required data objects from external data sources. This should be done at startup
+     - Parameter removingPrivateKey: NOT WORKING YET
+     */
+    public func clearAccount(removingPrivateKey: Bool = false) {
+        
+        self.account = nil
+        self.contacts.removeAll()
+        self.tokenBalances.removeAll()
+        self.tokenTransferActions.removeAll()
+        
+        DispatchQueue.global().async {
+            _ = self.protonESRSessionWebSocketWrappers.map({ $0.socket.disconnect() })
+        }
+
+        self.protonESRSessions.removeAll()
+        self.protonESR = nil
+        
+        self.saveAll()
+        
+    }
+    
+    /**
+     Fetchs all required data objects from external data sources. This should be done at startup
      - Parameter completion: Closure returning Result
      */
     public func updateDataRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {

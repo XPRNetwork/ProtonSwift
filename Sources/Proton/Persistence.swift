@@ -110,7 +110,7 @@ class Persistence {
 
     }
     
-    func deleteKeychainItem<T: Codable>(_ object: T.Type, forKey key: String, service: String = pkService,
+    func deleteKeychainItem(forKey key: String, service: String = pkService,
                                         completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
         if Proton.shared.authenticationEnabled() {
