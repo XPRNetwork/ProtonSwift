@@ -755,7 +755,7 @@ public class Proton: ObservableObject {
                                                         
                                                         if tokenTransferActions.count > 0 {
                                                             tokenTransferActions.sort(by: {  $0.date > $1.date })
-                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
+                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(50))
                                                         }
 
                                                     case .failure: break
@@ -1551,6 +1551,29 @@ public class Proton: ObservableObject {
     }
     
     /**
+     Fetches a single contact's info without saving to contacts
+     - Parameter withAccountName: String
+     - Parameter completion: Closure returning Result
+     */
+    public func fetchContact(withAccountName accountName: String, completion: @escaping ((Result<Contact?, Error>) -> Void)) {
+
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Missing chainProvider")))
+            return
+        }
+        
+        WebOperations.shared.add(FetchContactInfoOperation(contactName: accountName, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            switch result {
+            case .success(let contact):
+                completion(.success(contact as? Contact))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+
+    }
+    
+    /**
      :nodoc:
     Creates signature for updating avatar and userdefined name
      - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
@@ -1919,7 +1942,7 @@ public class Proton: ObservableObject {
         
         for contactName in contactNames {
             
-            WebOperations.shared.add(FetchContactInfoOperation(account: account, contactName: contactName, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            WebOperations.shared.add(FetchContactInfoOperation(contactName: contactName, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
                 switch result {
                 case .success(let contact):

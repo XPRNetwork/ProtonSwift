@@ -12,12 +12,10 @@ import WebOperations
 
 class FetchContactInfoOperation: BaseOperation {
 
-    var account: Account
     var contactName: String
     var chainProvider: ChainProvider
 
-    init(account: Account, contactName: String, chainProvider: ChainProvider) {
-        self.account = account
+    init(contactName: String, chainProvider: ChainProvider) {
         self.contactName = contactName
         self.chainProvider = chainProvider
     }
