@@ -2619,10 +2619,23 @@ public class Proton: ObservableObject {
                         if callback.background {
                             
                             WebOperations.shared.add(PostBackgroundProtonSigningRequestOperation(protonESR: protonESR, sig: sig, session: session, blockNum: nil), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                                
+                                // TODO: This is arbitrary wait since we arent sure how long it will take for the originator to push the request
+                                // in the future we will just be listening on a hyperion websocket for this.
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    self.updateAccount { _ in }
+                                }
+                                
                                 completion(.success(protonESR.returnPath))
                             }
                             
                         } else {
+                            
+                            // TODO: This is arbitrary wait since we arent sure how long it will take for the originator to push the request
+                            // in the future we will just be listening on a hyperion websocket for this.
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                self.updateAccount { _ in }
+                            }
 
                             completion(.success(URL(string: callback.url)))
                         }
