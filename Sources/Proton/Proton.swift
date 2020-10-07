@@ -648,18 +648,18 @@ public class Proton: ObservableObject {
             
             switch result {
                 
-            case .success(let tokens):
+            case .success(let exchangeRates):
                 
-                if let tokens = tokens as? [[String: Any]] {
+                if let exchangeRates = exchangeRates as? [ExchangeRate] {
                     
-                    for token in tokens {
+                    for exchangeRate in exchangeRates {
                         
-                        guard let contract = token["contract"] as? String else { return }
-                        guard let symbol = token["symbol"] as? String else { return }
-                        guard let rates = token["rates"] as? [String: Double] else { return }
-                        if let idx = self.tokenContracts.firstIndex(where: { $0.id == "\(contract):\(symbol)" }) {
-                            self.tokenContracts[idx].rates = rates
-                            if let iid = self.tokenBalances.firstIndex(where: { $0.tokenContractId == "\(contract):\(symbol)" }) {
+                        let tokenContractId = "\(exchangeRate.contract):\(exchangeRate.symbol)"
+
+                        if let idx = self.tokenContracts.firstIndex(where: { $0.id == tokenContractId }) {
+                            self.tokenContracts[idx].rates = exchangeRate.rates
+                            self.tokenContracts[idx].priceChangePercent = exchangeRate.priceChangePercent
+                            if let iid = self.tokenBalances.firstIndex(where: { $0.tokenContractId == tokenContractId }) {
                                 self.tokenBalances[iid].updatedAt = self.tokenContracts[idx].updatedAt
                             }
                         }
@@ -1159,7 +1159,7 @@ public class Proton: ObservableObject {
         let availableBalance = account.availableSystemBalance().value
         
         if availableBalance < quantity {
-            completion(.failure(Proton.ProtonError(message: "Not enough availbe balance to stake \(quantity)")))
+            completion(.failure(Proton.ProtonError(message: "Not enough available balance to stake \(quantity)")))
             return
         }
         

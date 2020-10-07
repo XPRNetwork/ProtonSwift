@@ -48,11 +48,13 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
             self.updatedAt = Date()
         }
     }
+    /// 24 price change percent
+    public var priceChangePercent: Double?
     /// :nodoc:
     public init(chainId: String, contract: Name, issuer: Name, resourceToken: Bool,
                   systemToken: Bool, name: String, desc: String, iconUrl: String,
                   supply: Asset, maxSupply: Asset, symbol: Asset.Symbol, url: String, isBlacklisted: Bool,
-                  updatedAt: Date = Date(), rates: [String: Double] = ["USD": 0.0]) {
+                  updatedAt: Date = Date(), rates: [String: Double] = ["USD": 0.0], priceChangePercent: Double? = nil) {
         
         self.chainId = chainId
         self.contract = contract
@@ -89,6 +91,21 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
             return rate
         }
         return 0.0
+    }
+    /// Currency rate
+    public func currencyRateFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let rate = getRate(forCurrencyCode: locale.currencyCode ?? "USD")
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: rate) ?? "$0.00"
+    }
+    // 24hr price change formatted
+    public func priceChangePercentFormatted() -> String? {
+        if let priceChangePercent = self.priceChangePercent {
+            return "\(priceChangePercent)%"
+        }
+        return nil
     }
     
 }

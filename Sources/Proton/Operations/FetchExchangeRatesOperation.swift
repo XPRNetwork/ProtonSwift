@@ -30,11 +30,10 @@ class FetchExchangeRatesOperation: BaseOperation {
             return
         }
 
-        WebOperations.shared.request(url: url, errorModel: NilErrorModel.self) { (result: Result<Any?, WebError>) in
-
+        WebOperations.shared.request(url: url, errorModel: NilErrorModel.self) { (result: Result<[ExchangeRate], WebError>) in
             switch result {
-            case .success(let rates):
-                self.finish(retval: rates as? [[String: Any]], error: nil)
+            case .success(let exchangeRates):
+                self.finish(retval: exchangeRates, error: nil)
             case .failure(let error):
                 self.finish(retval: nil, error: Proton.ProtonError(message: "There was an issue fetching exchange rates \(error.localizedDescription)"))
             }
