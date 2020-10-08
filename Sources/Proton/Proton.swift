@@ -568,7 +568,7 @@ public class Proton: ObservableObject {
                         case .success(let tokenContracts):
                             
                             if let tokenContracts = tokenContracts as? [TokenContract] {
-                                
+
                                 for var tokenContract in tokenContracts {
                                     if let idx = self.tokenContracts.firstIndex(of: tokenContract) {
                                         tokenContract.rates = self.tokenContracts[idx].rates
@@ -576,6 +576,10 @@ public class Proton: ObservableObject {
                                     } else {
                                         self.tokenContracts.append(tokenContract)
                                     }
+                                }
+                                
+                                self.tokenContracts = self.tokenContracts.filter { tokenContract in
+                                    return tokenContracts.contains(tokenContract)
                                 }
                                 
                             }
