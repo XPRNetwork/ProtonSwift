@@ -570,7 +570,8 @@ public class Proton: ObservableObject {
                             if let tokenContracts = tokenContracts as? [TokenContract] {
 
                                 for var tokenContract in tokenContracts {
-                                    if let idx = self.tokenContracts.firstIndex(of: tokenContract) {
+                                    if let idx = self.tokenContracts.firstIndex(where: { $0.contract == tokenContract.contract
+                                                                                    && $0.symbol.name == tokenContract.symbol.name }){
                                         tokenContract.rates = self.tokenContracts[idx].rates
                                         self.tokenContracts[idx] = tokenContract
                                     } else {
@@ -579,7 +580,8 @@ public class Proton: ObservableObject {
                                 }
                                 
                                 self.tokenContracts = self.tokenContracts.filter { tokenContract in
-                                    return tokenContracts.contains(tokenContract)
+                                    return tokenContracts.contains(where: { $0.contract == tokenContract.contract
+                                                                    && $0.symbol.name == tokenContract.symbol.name })
                                 }
                                 
                             }
