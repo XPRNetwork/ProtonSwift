@@ -558,9 +558,9 @@ public class Proton: ObservableObject {
                 if let chainProvider = chainProvider as? ChainProvider {
                     
                     self.chainProvider = chainProvider
-                    let tokenContracts = chainProvider.tokenContracts
+                    self.tokenContracts = chainProvider.tokenContracts.unique()
                     
-                    WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: tokenContracts),
+                    WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: self.tokenContracts),
                                              toCustomQueueNamed: Proton.operationQueueSeq) { result in
                         
                         switch result {
@@ -568,22 +568,7 @@ public class Proton: ObservableObject {
                         case .success(let tokenContracts):
                             
                             if let tokenContracts = tokenContracts as? [TokenContract] {
-
-                                for var tokenContract in tokenContracts {
-                                    if let idx = self.tokenContracts.firstIndex(where: { $0.contract == tokenContract.contract
-                                                                                    && $0.symbol.name == tokenContract.symbol.name }){
-                                        tokenContract.rates = self.tokenContracts[idx].rates
-                                        self.tokenContracts[idx] = tokenContract
-                                    } else {
-                                        self.tokenContracts.append(tokenContract)
-                                    }
-                                }
-                                
-                                self.tokenContracts = self.tokenContracts.filter { tokenContract in
-                                    return tokenContracts.contains(where: { $0.contract == tokenContract.contract
-                                                                    && $0.symbol.name == tokenContract.symbol.name })
-                                }
-                                
+                                self.tokenContracts = tokenContracts
                             }
                             
                         case .failure: break

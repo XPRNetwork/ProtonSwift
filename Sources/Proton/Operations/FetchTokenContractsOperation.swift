@@ -42,9 +42,7 @@ class FetchTokenContractsOperation: BaseOperation {
                 
                 let systemToken = row.tcontract.stringValue == "eosio.token" && row.symbol.name == "XPR"
                 
-                if let tokenContractIndex = self.tokenContracts.firstIndex(where: { $0.contract.stringValue == row.tcontract.stringValue
-                        && $0.symbol.name == row.symbol.name && $0.chainId == self.chainProvider.chainId
-                }) {
+                if let tokenContractIndex = self.tokenContracts.firstIndex(where: { $0.id == "\(row.tcontract.stringValue):\(row.symbol.name)" }) {
                     
                     var tokenContract = self.tokenContracts[tokenContractIndex]
                     
