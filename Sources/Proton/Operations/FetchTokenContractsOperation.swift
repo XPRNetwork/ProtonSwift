@@ -38,6 +38,10 @@ class FetchTokenContractsOperation: BaseOperation {
             
             let res = try client.sendSync(req).get()
             
+            tokenContracts = tokenContracts.filter({ tokenContract in
+                return res.rows.contains(where: { tokenContract.id == "\($0.tcontract.stringValue):\($0.symbol.name)"})
+            })
+            
             for row in res.rows {
                 
                 let systemToken = row.tcontract.stringValue == "eosio.token" && row.symbol.name == "XPR"
