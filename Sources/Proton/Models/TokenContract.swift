@@ -93,11 +93,12 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
         return 0.0
     }
     /// Currency rate
-    public func currencyRateFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+    public func currencyRateFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), maximumFractionDigits: Int = 2) -> String {
         let rate = getRate(forCurrencyCode: locale.currencyCode ?? "USD")
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = locale
+        formatter.maximumFractionDigits = maximumFractionDigits
         return formatter.string(for: rate) ?? "$0.00"
     }
     // 24hr price change formatted

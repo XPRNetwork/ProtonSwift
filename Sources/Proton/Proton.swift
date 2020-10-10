@@ -753,25 +753,29 @@ public class Proton: ObservableObject {
                                                     }
                                                     
                                                     if tokenBalancesProcessed == tokenBalancesCount {
-
-                                                        self.fetchContacts(forAccount: account) { result in
+                                                        
+                                                        DispatchQueue.global(qos: .background).async {
                                                             
-                                                            switch result {
-                                                            case .success(let contacts):
+                                                            self.fetchContacts(forAccount: account) { result in
                                                                 
-                                                                for contact in contacts {
-                                                                    if let idx = self.contacts.firstIndex(of: contact) {
-                                                                        self.contacts[idx] = contact
-                                                                    } else {
-                                                                        self.contacts.append(contact)
+                                                                switch result {
+                                                                case .success(let contacts):
+                                                                    
+                                                                    for contact in contacts {
+                                                                        if let idx = self.contacts.firstIndex(of: contact) {
+                                                                            self.contacts[idx] = contact
+                                                                        } else {
+                                                                            self.contacts.append(contact)
+                                                                        }
                                                                     }
+                                                                    
+                                                                case .failure: break
                                                                 }
-                                                                
-                                                            case .failure: break
-                                                            }
 
-                                                            completion(.success(account))
-                                                            self.saveAll()
+                                                                completion(.success(account))
+                                                                self.saveAll()
+                                                                
+                                                            }
                                                             
                                                         }
 
@@ -1553,7 +1557,7 @@ public class Proton: ObservableObject {
             return
         }
         
-        WebOperations.shared.add(FetchContactInfoOperation(contactName: accountName, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+        WebOperations.shared.add(FetchContactInfoOperation(contact: Contact(chainId: chainProvider.chainId, name: accountName), chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
             switch result {
             case .success(let contact):
                 completion(.success(contact as? Contact))
@@ -1918,22 +1922,32 @@ public class Proton: ObservableObject {
         }
         
         let tokenTransferActions = self.tokenTransferActions.flatMap { $0.value }
-
-        let contactNames: [String] = tokenTransferActions.map { transferAction in
-            return transferAction.other.stringValue
-        }.reduce([]) { $0.contains($1) ? $0 : $0 + [$1] }
         
+        let tempContacts: [Contact] = tokenTransferActions.map { transferAction in
+            return Contact(chainId: transferAction.chainId, name: transferAction.other.stringValue)
+        }
+        .reduce([]) {
+            $0.contains($1) ? $0 : $0 + [$1]
+        }.map { contact in
+            var contact = contact
+            if let lastTransferAction = tokenTransferActions.filter({ $0.other == contact.name }).max(by: {
+                $0.date < $1.date
+            }) {
+                contact.lastTransferDate = lastTransferAction.date
+            }
+            return contact
+        }
         
-        if contactNames.count == 0 {
+        if tempContacts.count == 0 {
             completion(.success(retval))
             return
         }
         
-        var contactNamesProcessed = 0
+        var contactsProcessed = 0
         
-        for contactName in contactNames {
+        for contact in tempContacts {
             
-            WebOperations.shared.add(FetchContactInfoOperation(contactName: contactName, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            WebOperations.shared.add(FetchContactInfoOperation(contact: contact, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
                 switch result {
                 case .success(let contact):
@@ -1943,9 +1957,9 @@ public class Proton: ObservableObject {
                 case .failure: break
                 }
                 
-                contactNamesProcessed += 1
+                contactsProcessed += 1
                 
-                if contactNamesProcessed == contactNames.count {
+                if contactsProcessed == tempContacts.count {
                     completion(.success(retval))
                 }
                 

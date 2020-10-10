@@ -12,11 +12,11 @@ import WebOperations
 
 class FetchContactInfoOperation: BaseOperation {
 
-    var contactName: String
+    var contact: Contact
     var chainProvider: ChainProvider
 
-    init(contactName: String, chainProvider: ChainProvider) {
-        self.contactName = contactName
+    init(contact: Contact, chainProvider: ChainProvider) {
+        self.contact = contact
         self.chainProvider = chainProvider
     }
 
@@ -33,14 +33,12 @@ class FetchContactInfoOperation: BaseOperation {
         var req = API.V1.Chain.GetTableRows<UserInfoABI>(code: Name(stringValue: "eosio.proton"),
                                                          table: Name(stringValue: "usersinfo"),
                                                          scope: "eosio.proton")
-        req.lowerBound = contactName
-        req.upperBound = contactName
+        req.lowerBound = contact.name.stringValue
+        req.upperBound = contact.name.stringValue
 
         do {
 
             let res = try client.sendSync(req).get()
-            
-            var contact = Contact(chainId: chainProvider.chainId, name: contactName)
 
             if let userInfo = res.rows.first {
                 contact.base64Avatar = userInfo.avatar

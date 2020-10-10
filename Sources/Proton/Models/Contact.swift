@@ -32,15 +32,19 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     public var userDefinedName: String
     /// The user modified Avatar string
     public var base64Avatar: String
+    /// The last known date of transfer
+    public var lastTransferDate: Date
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
-                userDefinedName: String = "", base64Avatar: String = "") {
+                userDefinedName: String = "", base64Avatar: String = "",
+                lastTransferDate: Date = Date.distantPast) {
         
         self.chainId = chainId
         self.name = Name(name)
         self.verified = verified
         self.userDefinedName = userDefinedName
         self.base64Avatar = base64Avatar
+        self.lastTransferDate = lastTransferDate
         
     }
     /// :nodoc:
