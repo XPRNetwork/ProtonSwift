@@ -222,15 +222,15 @@
 
         <span class="k">if</span> <span class="k">let</span> <span class="nv">account</span> <span class="o">=</span> <span class="n">accounts</span><span class="o">.</span><span class="n">first</span> <span class="p">{</span>
 
-                <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">setAccount</span><span class="p">(</span><span class="nv">withName</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">stringValue</span><span class="p">,</span> <span class="nv">andPrivateKey</span><span class="p">:</span> <span class="kt">Proton</span><span class="o">.</span><span class="kt">PrivateKey</span><span class="p">(</span><span class="s">"&lt;wif_formatted_private_key_here&gt;"</span><span class="p">))</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+        <span class="kt">Proton</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">setAccount</span><span class="p">(</span><span class="nv">withName</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">stringValue</span><span class="p">,</span> <span class="nv">andPrivateKey</span><span class="p">:</span> <span class="kt">Proton</span><span class="o">.</span><span class="kt">PrivateKey</span><span class="p">(</span><span class="s">"&lt;wif_formatted_private_key_here&gt;"</span><span class="p">))</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
 
-                    <span class="k">if</span> <span class="k">case</span> <span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="n">result</span> <span class="p">{</span>
-                            <span class="nf">print</span><span class="p">(</span><span class="s">"YAH"</span><span class="p">)</span>
-                    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">)</span> <span class="o">=</span> <span class="n">result</span> <span class="p">{</span>
-                        <span class="nf">print</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="p">)</span>
-                    <span class="p">}</span>
+            <span class="k">if</span> <span class="k">case</span> <span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"YAH"</span><span class="p">)</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">)</span> <span class="o">=</span> <span class="n">result</span> <span class="p">{</span>
+                 <span class="nf">print</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="p">)</span>
+            <span class="p">}</span>
 
-                <span class="p">}</span>
+        <span class="p">}</span>
 
         <span class="p">}</span>
 
