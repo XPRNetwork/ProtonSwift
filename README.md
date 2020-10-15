@@ -64,15 +64,15 @@ Proton.shared.findAccounts(forPrivateKey: "<wif_formatted_private_key_here>") { 
         
         if let account = accounts.first {
 
-				Proton.shared.setAccount(withName: account.name.stringValue, andPrivateKey: Proton.PrivateKey("<wif_formatted_private_key_here>")) { result in
+		Proton.shared.setAccount(withName: account.name.stringValue, andPrivateKey: Proton.PrivateKey("<wif_formatted_private_key_here>")) { result in
 				    
-				    if case .success = result {
-							print("YAH")
-				    } else if case .failure(let error) = result {
-				        print(error.localizedDescription)
-				    }
+			if case .success = result {
+				print("YAH")
+			} else if case .failure(let error) = result {
+				 print(error.localizedDescription)
+			}
 				    
-				}
+		}
             
         }
 
