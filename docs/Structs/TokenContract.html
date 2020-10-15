@@ -17,7 +17,7 @@
     <a title="TokenContract Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html"> Docs</a> (72% documented)</p>
+        <p><a href="../index.html"> Docs</a> (70% documented)</p>
         <p class="header-right">
           <form role="search" action="../search.json">
             <input type="text" placeholder="Search documentation" data-typeahead>
@@ -44,25 +44,14 @@
               <li class="nav-group-task">
                 <a href="../Classes/Proton/Config.html">– Config</a>
               </li>
-              <li class="nav-group-task">
-                <a href="../Classes/Proton/Notifications.html">– Notifications</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/ProtonObservable.html">ProtonObservable</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="../Enums.html">Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Enums/ProtonError.html">ProtonError</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
             <a href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Asset.html">Asset</a>
+              </li>
               <li class="nav-group-task">
                 <a href="../Extensions/Date.html">Date</a>
               </li>
@@ -89,22 +78,58 @@
                 <a href="../Structs/ChainProvider.html">ChainProvider</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/ClaimRewardsABI.html">ClaimRewardsABI</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/Contact.html">Contact</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESR.html">ESR</a>
+                <a href="../Structs/GlobalsXPR.html">GlobalsXPR</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction.html">ESRAction</a>
+                <a href="../Structs/Producer.html">Producer</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction/ActionType.html">– ActionType</a>
+                <a href="../Structs/ProducerOrg.html">ProducerOrg</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction/BasicDisplay.html">– BasicDisplay</a>
+                <a href="../Structs/ProducerOrgBranding.html">ProducerOrgBranding</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRSession.html">ESRSession</a>
+                <a href="../Structs/ProducerOrgLocation.html">ProducerOrgLocation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESR.html">ProtonESR</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction.html">ProtonESRAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction/ActionType.html">– ActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSession.html">ProtonESRSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSessionWebSocketWrapper.html">ProtonESRSessionWebSocketWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RefundXPRABI.html">RefundXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton13SealedMessageV">SealedMessage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakeXPRABI.html">StakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Staking.html">Staking</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakingRefund.html">StakingRefund</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton7TestERRV">TestERR</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/TokenBalance.html">TokenBalance</a>
@@ -117,6 +142,12 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/TransferActionABI.html">TransferActionABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/UnStakeXPRABI.html">UnStakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/VoteProducersABI.html">VoteProducersABI</a>
               </li>
             </ul>
           </li>
@@ -197,7 +228,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">chainId</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">chainId</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -531,6 +562,33 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:6Proton13TokenContractV9updatedAt10Foundation4DateVvp"></a>
+                    <a name="//apple_ref/swift/Property/updatedAt" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton13TokenContractV9updatedAt10Foundation4DateVvp">updatedAt</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>When the tokebalance was updated. This will also be updated after tokenContract exchange rate was updated</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">updatedAt</span><span class="p">:</span> <span class="kt">Date</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:6Proton13TokenContractV5ratesSDySSSdGvp"></a>
                     <a name="//apple_ref/swift/Property/rates" class="dashAnchor"></a>
                     <a class="token" href="#/s:6Proton13TokenContractV5ratesSDySSSdGvp">rates</a>
@@ -541,13 +599,41 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Exchange rates</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">rates</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">Double</span><span class="p">]</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">rates</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">Double</span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton13TokenContractV18priceChangePercentSdSgvp"></a>
+                    <a name="//apple_ref/swift/Property/priceChangePercent" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton13TokenContractV18priceChangePercentSdSgvp">priceChangePercent</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>24 price change percent</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">priceChangePercent</span><span class="p">:</span> <span class="kt">Double</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -608,12 +694,66 @@
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton13TokenContractV21currencyRateFormatted9forLocale21maximumFractionDigitsSS10Foundation0H0V_SitF"></a>
+                    <a name="//apple_ref/swift/Method/currencyRateFormatted(forLocale:maximumFractionDigits:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton13TokenContractV21currencyRateFormatted9forLocale21maximumFractionDigitsSS10Foundation0H0V_SitF">currencyRateFormatted(forLocale:<wbr>maximumFractionDigits:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Currency rate</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">currencyRateFormatted</span><span class="p">(</span><span class="n">forLocale</span> <span class="nv">locale</span><span class="p">:</span> <span class="kt">Locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"en_US"</span><span class="p">),</span> <span class="nv">maximumFractionDigits</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton13TokenContractV27priceChangePercentFormattedSSSgyF"></a>
+                    <a name="//apple_ref/swift/Method/priceChangePercentFormatted()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton13TokenContractV27priceChangePercentFormattedSSSgyF">priceChangePercentFormatted()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">priceChangePercentFormatted</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-07-14)</p>
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-10-15)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

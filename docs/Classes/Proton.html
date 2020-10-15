@@ -17,7 +17,7 @@
     <a title="Proton Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html"> Docs</a> (72% documented)</p>
+        <p><a href="../index.html"> Docs</a> (70% documented)</p>
         <p class="header-right">
           <form role="search" action="../search.json">
             <input type="text" placeholder="Search documentation" data-typeahead>
@@ -44,25 +44,14 @@
               <li class="nav-group-task">
                 <a href="../Classes/Proton/Config.html">– Config</a>
               </li>
-              <li class="nav-group-task">
-                <a href="../Classes/Proton/Notifications.html">– Notifications</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/ProtonObservable.html">ProtonObservable</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="../Enums.html">Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Enums/ProtonError.html">ProtonError</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
             <a href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Asset.html">Asset</a>
+              </li>
               <li class="nav-group-task">
                 <a href="../Extensions/Date.html">Date</a>
               </li>
@@ -89,22 +78,58 @@
                 <a href="../Structs/ChainProvider.html">ChainProvider</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/ClaimRewardsABI.html">ClaimRewardsABI</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/Contact.html">Contact</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESR.html">ESR</a>
+                <a href="../Structs/GlobalsXPR.html">GlobalsXPR</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction.html">ESRAction</a>
+                <a href="../Structs/Producer.html">Producer</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction/ActionType.html">– ActionType</a>
+                <a href="../Structs/ProducerOrg.html">ProducerOrg</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction/BasicDisplay.html">– BasicDisplay</a>
+                <a href="../Structs/ProducerOrgBranding.html">ProducerOrgBranding</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRSession.html">ESRSession</a>
+                <a href="../Structs/ProducerOrgLocation.html">ProducerOrgLocation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESR.html">ProtonESR</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction.html">ProtonESRAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction/ActionType.html">– ActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSession.html">ProtonESRSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSessionWebSocketWrapper.html">ProtonESRSessionWebSocketWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RefundXPRABI.html">RefundXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton13SealedMessageV">SealedMessage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakeXPRABI.html">StakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Staking.html">Staking</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakingRefund.html">StakingRefund</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton7TestERRV">TestERR</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/TokenBalance.html">TokenBalance</a>
@@ -117,6 +142,12 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/TransferActionABI.html">TransferActionABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/UnStakeXPRABI.html">UnStakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/VoteProducersABI.html">VoteProducersABI</a>
               </li>
             </ul>
           </li>
@@ -140,7 +171,7 @@
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Proton</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Proton</span> <span class="p">:</span> <span class="kt">ObservableObject</span></code></pre>
 
                 </div>
               </div>
@@ -226,6 +257,87 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">PrivateKey</span> <span class="o">=</span> <span class="kt">EOSIO</span><span class="o">.</span><span class="kt">PrivateKey</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC5Asseta"></a>
+                    <a name="//apple_ref/swift/Alias/Asset" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC5Asseta">Asset</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Proton typealias of the EOSIO.Asset</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Asset</span> <span class="o">=</span> <span class="kt">EOSIO</span><span class="o">.</span><span class="kt">Asset</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC6Symbola"></a>
+                    <a name="//apple_ref/swift/Alias/Symbol" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC6Symbola">Symbol</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Proton typealias of the EOSIO.Asset.Symbol</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">Symbol</span> <span class="o">=</span> <span class="kt">EOSIO</span><span class="o">.</span><span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC5Asseta">Asset</a></span><span class="o">.</span><span class="kt">Symbol</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC0A5Errora"></a>
+                    <a name="//apple_ref/swift/Alias/ProtonError" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC0A5Errora">ProtonError</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Proton typealias of the of WebOperations WebError</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ProtonError</span> <span class="o">=</span> <span class="kt">WebError</span></code></pre>
 
                         </div>
                       </div>
@@ -341,9 +453,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC13NotificationsO"></a>
-                    <a name="//apple_ref/swift/Enum/Notifications" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC13NotificationsO">Notifications</a>
+                    <a name="/s:6ProtonAAC21authenticationEnabledSbyF"></a>
+                    <a name="//apple_ref/swift/Method/authenticationEnabled()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC21authenticationEnabledSbyF">authenticationEnabled()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -351,17 +463,20 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Data object container notifcation names. Use these to subscribe to changes via NotificationCenter.default</p>
+                        <p>Checks if user has authentication enabled. At least passcode set is required</p>
 
-                        <a href="../Classes/Proton/Notifications.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">Notifications</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">authenticationEnabled</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Bool</p>
                       </div>
                     </section>
                   </div>
@@ -392,14 +507,15 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated chainProvider. You can observe changes via NotificaitonCenter: chainProviderWillSet, chainProviderDidSet</p>
+                        <p>Live updated chainProvider.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">chainProvider</span><span class="p">:</span> <span class="kt"><a href="../Structs/ChainProvider.html">ChainProvider</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">chainProvider</span><span class="p">:</span> <span class="kt"><a href="../Structs/ChainProvider.html">ChainProvider</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -419,14 +535,15 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated array of tokenContracts. You can observe changes via NotificaitonCenter: tokenContractsWillSet, tokenContractsDidSet</p>
+                        <p>Live updated array of tokenContracts</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">tokenContracts</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenContract.html">TokenContract</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">tokenContracts</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenContract.html">TokenContract</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -446,14 +563,15 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated array of tokenBalances. You can observe changes via NotificaitonCenter: tokenBalancesWillSet, tokenBalancesDidSet</p>
+                        <p>Live updated array of tokenBalances.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">tokenBalances</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenBalance.html">TokenBalance</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">tokenBalances</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenBalance.html">TokenBalance</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -463,9 +581,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC20tokenTransferActionsSayAA05TokenC6ActionVGvp"></a>
+                    <a name="/s:6ProtonAAC20tokenTransferActionsSDySSSayAA05TokenC6ActionVGGvp"></a>
                     <a name="//apple_ref/swift/Property/tokenTransferActions" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC20tokenTransferActionsSayAA05TokenC6ActionVGvp">tokenTransferActions</a>
+                    <a class="token" href="#/s:6ProtonAAC20tokenTransferActionsSDySSSayAA05TokenC6ActionVGGvp">tokenTransferActions</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -473,14 +591,15 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated array of tokenTransferActions. You can observe changes via NotificaitonCenter: tokenTransferActionsWillSet, tokenTransferActionsDidSet</p>
+                        <p>Live updated array of tokenTransferActions.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">tokenTransferActions</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenTransferAction.html">TokenTransferAction</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">tokenTransferActions</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/TokenTransferAction.html">TokenTransferAction</a></span><span class="p">]]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -500,14 +619,15 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated array of contacts. You can observe changes via NotificaitonCenter: contactsWillSet, contactsDidSet</p>
+                        <p>Live updated array of contacts.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">contacts</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/Contact.html">Contact</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">contacts</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/Contact.html">Contact</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -517,9 +637,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC11esrSessionsSayAA10ESRSessionVGvp"></a>
-                    <a name="//apple_ref/swift/Property/esrSessions" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC11esrSessionsSayAA10ESRSessionVGvp">esrSessions</a>
+                    <a name="/s:6ProtonAAC9producersSayAA8ProducerVGvp"></a>
+                    <a name="//apple_ref/swift/Property/producers" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC9producersSayAA8ProducerVGvp">producers</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -527,14 +647,15 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated array of esrSessions. You can observe changes via NotificaitonCenter: esrSessionsWillSet, esrSessionsDidSet</p>
+                        <p>Live updated array of producers.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">esrSessions</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/ESRSession.html">ESRSession</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">producers</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/Producer.html">Producer</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -544,9 +665,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC3esrAA3ESRVSgvp"></a>
-                    <a name="//apple_ref/swift/Property/esr" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC3esrAA3ESRVSgvp">esr</a>
+                    <a name="/s:6ProtonAAC17protonESRSessionsSayAA0A10ESRSessionVGvp"></a>
+                    <a name="//apple_ref/swift/Property/protonESRSessions" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC17protonESRSessionsSayAA0A10ESRSessionVGvp">protonESRSessions</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -554,14 +675,71 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated esr. You can observe changes via NotificaitonCenter: esrWillSet, esrDidSet</p>
+                        <p>Live updated array of protonESRSessions.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">esr</span><span class="p">:</span> <span class="kt"><a href="../Structs/ESR.html">ESR</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">protonESRSessions</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/ProtonESRSession.html">ProtonESRSession</a></span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC9protonESRAA0aC0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/protonESR" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC9protonESRAA0aC0VSgvp">protonESR</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated protonESR.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">protonESR</span><span class="p">:</span> <span class="kt"><a href="../Structs/ProtonESR.html">ProtonESR</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC18protonESRAvailableSbvp"></a>
+                    <a name="//apple_ref/swift/Property/protonESRAvailable" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC18protonESRAvailableSbvp">protonESRAvailable</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated protonESR.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">protonESRAvailable</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -581,14 +759,43 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Live updated array of accounts. You can observe changes via NotificaitonCenter: accountsWillSet, accountsDidSet</p>
+                        <p>Live updated account.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">account</span><span class="p">:</span> <span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">account</span><span class="p">:</span> <span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC10globalsXPRAA07GlobalsC0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/globalsXPR" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC10globalsXPRAA07GlobalsC0VSgvp">globalsXPR</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Live updated GlobalsXPR.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@Published</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">globalsXPR</span><span class="p">:</span> <span class="kt"><a href="../Structs/GlobalsXPR.html">GlobalsXPR</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -665,9 +872,190 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC10setAccount03forC4Name7chainId10completionySS_SSys6ResultOyAA0C0Vs5Error_pGctF"></a>
-                    <a name="//apple_ref/swift/Method/setAccount(forAccountName:chainId:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC10setAccount03forC4Name7chainId10completionySS_SSys6ResultOyAA0C0Vs5Error_pGctF">setAccount(forAccountName:<wbr>chainId:<wbr>completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC06enableA23ESRWebSocketConnectionsyyF"></a>
+                    <a name="//apple_ref/swift/Method/enableProtonESRWebSocketConnections()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC06enableA23ESRWebSocketConnectionsyyF">enableProtonESRWebSocketConnections()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Connects/Reconnects websocket connections needed for ESR requests</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">enableProtonESRWebSocketConnections</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC5store10privateKey14synchronizable10completiony5EOSIO07PrivateD0V_Sbys6ResultOySbs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/store(privateKey:synchronizable:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC5store10privateKey14synchronizable10completiony5EOSIO07PrivateD0V_Sbys6ResultOySbs5Error_pGctF">store(privateKey:<wbr>synchronizable:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Use this to force storing the key into the keychain.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">store</span><span class="p">(</span><span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">synchronizable</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+                  <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Bool</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>privateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>chainId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>chainId for the account</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC10setAccount8withName13andPrivateKey10completionySS_5EOSIO0gH0Vys6ResultOyAA0C0Vs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/setAccount(withName:andPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC10setAccount8withName13andPrivateKey10completionySS_5EOSIO0gH0Vys6ResultOyAA0C0Vs5Error_pGctF">setAccount(withName:<wbr>andPrivateKey:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Fetches the account from the chain, the stores private key and sets account active</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setAccount</span><span class="p">(</span><span class="n">withName</span> <span class="nv">accountName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">andPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span>
+                       <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Proton account name not including @</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>andPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>chainId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>chainId for the account</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC10setAccount8withName7chainId14synchronizable10completionySS_SSSbys6ResultOyAA0C0Vs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/setAccount(withName:chainId:synchronizable:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC10setAccount8withName7chainId14synchronizable10completionySS_SSSbys6ResultOyAA0C0Vs5Error_pGctF">setAccount(withName:<wbr>chainId:<wbr>synchronizable:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -683,7 +1071,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setAccount</span><span class="p">(</span><span class="n">forAccountName</span> <span class="nv">accountName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">chainId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setAccount</span><span class="p">(</span><span class="n">withName</span> <span class="nv">accountName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">chainId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">synchronizable</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
                        <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
@@ -695,7 +1083,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>forAccountName</em>
+                                <em>withName</em>
                                 </code>
                               </td>
                               <td>
@@ -737,9 +1125,80 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC17fetchRequirements10completionyys6ResultOySbs5Error_pGc_tF"></a>
-                    <a name="//apple_ref/swift/Method/fetchRequirements(completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC17fetchRequirements10completionyys6ResultOySbs5Error_pGc_tF">fetchRequirements(completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC10setAccount_20withPrivateKeyString14synchronizable10completionyAA0C0V_SSSbys6ResultOyAHs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/setAccount(_:withPrivateKeyString:synchronizable:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC10setAccount_20withPrivateKeyString14synchronizable10completionyAA0C0V_SSSbys6ResultOyAHs5Error_pGctF">setAccount(_:<wbr>withPrivateKeyString:<wbr>synchronizable:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Use this function to store the private key and set the account after finding the account you want to save via findAccounts</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setAccount</span><span class="p">(</span><span class="n">_</span> <span class="nv">account</span><span class="p">:</span> <span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="n">withPrivateKeyString</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">synchronizable</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+                       <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>account</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Account object, normally retrieved via findAccounts</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPrivateKeyString</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Wif formated private key</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC12clearAccount18removingPrivateKeyySb_tF"></a>
+                    <a name="//apple_ref/swift/Method/clearAccount(removingPrivateKey:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC12clearAccount18removingPrivateKeyySb_tF">clearAccount(removingPrivateKey:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -754,7 +1213,99 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">fetchRequirements</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Bool</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">clearAccount</span><span class="p">(</span><span class="nv">removingPrivateKey</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>removingPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>NOT WORKING YET</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC22updateDataRequirements10completionyys6ResultOySbs5Error_pGc_tF"></a>
+                    <a name="//apple_ref/swift/Method/updateDataRequirements(completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC22updateDataRequirements10completionyys6ResultOySbs5Error_pGc_tF">updateDataRequirements(completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Fetchs all required data objects from external data sources. This should be done at startup</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateDataRequirements</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Bool</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC16updateGlobalsXPR10completionyys6ResultOySbs5Error_pGc_tF"></a>
+                    <a name="//apple_ref/swift/Method/updateGlobalsXPR(completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC16updateGlobalsXPR10completionyys6ResultOySbs5Error_pGc_tF">updateGlobalsXPR(completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Updates the GlobalsXPR object. This has information like min required bp votes, staking period, etc.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateGlobalsXPR</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Bool</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -875,9 +1426,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC28updateAccountUserDefinedName04usereF010completionySS_ys6ResultOyAA0C0Vs5Error_pGctF"></a>
-                    <a name="//apple_ref/swift/Method/updateAccountUserDefinedName(userDefinedName:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC28updateAccountUserDefinedName04usereF010completionySS_ys6ResultOyAA0C0Vs5Error_pGctF">updateAccountUserDefinedName(userDefinedName:<wbr>completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC28changeAccountUserDefinedName04withdeF013andPrivateKey10completionySS_5EOSIO0iJ0Vys6ResultOyAA0C0Vs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/changeAccountUserDefinedName(withUserDefinedName:andPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC28changeAccountUserDefinedName04withdeF013andPrivateKey10completionySS_5EOSIO0iJ0Vys6ResultOyAA0C0Vs5Error_pGctF">changeAccountUserDefinedName(withUserDefinedName:<wbr>andPrivateKey:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -892,7 +1443,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateAccountUserDefinedName</span><span class="p">(</span><span class="nv">userDefinedName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">changeAccountUserDefinedName</span><span class="p">(</span><span class="n">withUserDefinedName</span> <span class="nv">userDefinedName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">andPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -909,6 +1460,18 @@ Use this for accessing functionality after initialisation of Proton</p>
                               <td>
                                 <div>
                                   <p>New user defined name</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>andPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
                                 </div>
                               </td>
                             </tr>
@@ -933,9 +1496,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC19updateAccountAvatar5image10completionySo7NSImageC_ys6ResultOyAA0C0Vs5Error_pGctF"></a>
-                    <a name="//apple_ref/swift/Method/updateAccountAvatar(image:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC19updateAccountAvatar5image10completionySo7NSImageC_ys6ResultOyAA0C0Vs5Error_pGctF">updateAccountAvatar(image:<wbr>completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC19changeAccountAvatar9withImage13andPrivateKey10completionySo7NSImageC_5EOSIO0hI0Vys6ResultOyAA0C0Vs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/changeAccountAvatar(withImage:andPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC19changeAccountAvatar9withImage13andPrivateKey10completionySo7NSImageC_5EOSIO0hI0Vys6ResultOyAA0C0Vs5Error_pGctF">changeAccountAvatar(withImage:<wbr>andPrivateKey:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -950,7 +1513,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateAccountAvatar</span><span class="p">(</span><span class="nv">image</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:6Proton11AvatarImagea">AvatarImage</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">changeAccountAvatar</span><span class="p">(</span><span class="n">withImage</span> <span class="nv">image</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:6Proton11AvatarImagea">AvatarImage</a></span><span class="p">,</span> <span class="n">andPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -961,12 +1524,24 @@ Use this for accessing functionality after initialisation of Proton</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>image</em>
+                                <em>withImage</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
                                   <p>AvatarImage which is platform dependent alias. UIImage for iOS, NSImage for macOS</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>andPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
                                 </div>
                               </td>
                             </tr>
@@ -991,9 +1566,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC37updateAccountUserDefinedNameAndAvatar04usereF05image10completionySS_So7NSImageCys6ResultOyAA0C0Vs5Error_pGctF"></a>
-                    <a name="//apple_ref/swift/Method/updateAccountUserDefinedNameAndAvatar(userDefinedName:image:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC37updateAccountUserDefinedNameAndAvatar04usereF05image10completionySS_So7NSImageCys6ResultOyAA0C0Vs5Error_pGctF">updateAccountUserDefinedNameAndAvatar(userDefinedName:<wbr>image:<wbr>completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC37changeAccountUserDefinedNameAndAvatar04withdeF05image13andPrivateKey10completionySS_So7NSImageC5EOSIO0lM0Vys6ResultOyAA0C0Vs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/changeAccountUserDefinedNameAndAvatar(withUserDefinedName:image:andPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC37changeAccountUserDefinedNameAndAvatar04withdeF05image13andPrivateKey10completionySS_So7NSImageC5EOSIO0lM0Vys6ResultOyAA0C0Vs5Error_pGctF">changeAccountUserDefinedNameAndAvatar(withUserDefinedName:<wbr>image:<wbr>andPrivateKey:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1008,7 +1583,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateAccountUserDefinedNameAndAvatar</span><span class="p">(</span><span class="nv">userDefinedName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">image</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:6Proton11AvatarImagea">AvatarImage</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">changeAccountUserDefinedNameAndAvatar</span><span class="p">(</span><span class="n">withUserDefinedName</span> <span class="nv">userDefinedName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">image</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:6Proton11AvatarImagea">AvatarImage</a></span><span class="p">,</span> <span class="n">andPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -1019,7 +1594,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>userDefinedName</em>
+                                <em>withUserDefinedName</em>
                                 </code>
                               </td>
                               <td>
@@ -1031,70 +1606,24 @@ Use this for accessing functionality after initialisation of Proton</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>completion</em>
+                                <em>image</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>Closure returning Result</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:6ProtonAAC15storePrivateKey07privateD010forAccount10completionySS_AA0G0Vys6ResultOyAHs5Error_pGctF"></a>
-                    <a name="//apple_ref/swift/Method/storePrivateKey(privateKey:forAccount:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC15storePrivateKey07privateD010forAccount10completionySS_AA0G0Vys6ResultOyAHs5Error_pGctF">storePrivateKey(privateKey:<wbr>forAccount:<wbr>completion:<wbr>)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Use this function to store the private key and set the account after finding the account you want to save via findAccounts</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">storePrivateKey</span><span class="p">(</span><span class="nv">privateKey</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">forAccount</span> <span class="nv">account</span><span class="p">:</span> <span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>privateKey</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Wif formated private key</p>
+                                  <p>AvatarImage</p>
                                 </div>
                               </td>
                             </tr>
                             <tr>
                               <td>
                                 <code>
-                                <em>forAccount</em>
+                                <em>andPrivateKey</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>Account object, normally retrieved via findAccounts</p>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
                                 </div>
                               </td>
                             </tr>
@@ -1119,9 +1648,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC12findAccounts13forPrivateKey10completionySS_ys6ResultOyShyAA7AccountVGs5Error_pGctF"></a>
-                    <a name="//apple_ref/swift/Method/findAccounts(forPrivateKey:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC12findAccounts13forPrivateKey10completionySS_ys6ResultOyShyAA7AccountVGs5Error_pGctF">findAccounts(forPrivateKey:<wbr>completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC12findAccounts19forPrivateKeyString10completionySS_ys6ResultOyShyAA7AccountVGs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/findAccounts(forPrivateKeyString:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC12findAccounts19forPrivateKeyString10completionySS_ys6ResultOyShyAA7AccountVGs5Error_pGctF">findAccounts(forPrivateKeyString:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1136,7 +1665,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">findAccounts</span><span class="p">(</span><span class="n">forPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Set</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">findAccounts</span><span class="p">(</span><span class="n">forPrivateKeyString</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Set</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Account.html">Account</a></span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -1147,7 +1676,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>forPrivateKey</em>
+                                <em>forPrivateKeyString</em>
                                 </code>
                               </td>
                               <td>
@@ -1177,9 +1706,67 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC8transfer2to8quantity13tokenContract4memo10completiony5EOSIO4NameV_SdAA05TokenF0VSSys6ResultOyAA0K14TransferActionVs5Error_pGctF"></a>
-                    <a name="//apple_ref/swift/Method/transfer(to:quantity:tokenContract:memo:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC8transfer2to8quantity13tokenContract4memo10completiony5EOSIO4NameV_SdAA05TokenF0VSSys6ResultOyAA0K14TransferActionVs5Error_pGctF">transfer(to:<wbr>quantity:<wbr>tokenContract:<wbr>memo:<wbr>completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC5chain18hasAccountWithName10completionySS_ys6ResultOySbs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/chain(hasAccountWithName:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC5chain18hasAccountWithName10completionySS_ys6ResultOySbs5Error_pGctF">chain(hasAccountWithName:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Checks the chain for presence of account by name</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">chain</span><span class="p">(</span><span class="n">hasAccountWithName</span> <span class="nv">accountName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Bool</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>hasAccountWithName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>String account name</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC8transfer14withPrivateKey2to8quantity13tokenContract4memo10completiony5EOSIO0dE0V_AJ4NameVSdAA05TokenI0VSSys6ResultOyAA0N14TransferActionVs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/transfer(withPrivateKey:to:quantity:tokenContract:memo:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC8transfer14withPrivateKey2to8quantity13tokenContract4memo10completiony5EOSIO0dE0V_AJ4NameVSdAA05TokenI0VSSys6ResultOyAA0N14TransferActionVs5Error_pGctF">transfer(withPrivateKey:<wbr>to:<wbr>quantity:<wbr>tokenContract:<wbr>memo:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1194,7 +1781,7 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">transfer</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC4Namea">Name</a></span><span class="p">,</span> <span class="nv">quantity</span><span class="p">:</span> <span class="kt">Double</span><span class="p">,</span> <span class="nv">tokenContract</span><span class="p">:</span> <span class="kt"><a href="../Structs/TokenContract.html">TokenContract</a></span><span class="p">,</span> <span class="nv">memo</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/TokenTransferAction.html">TokenTransferAction</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">transfer</span><span class="p">(</span><span class="n">withPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC4Namea">Name</a></span><span class="p">,</span> <span class="nv">quantity</span><span class="p">:</span> <span class="kt">Double</span><span class="p">,</span> <span class="nv">tokenContract</span><span class="p">:</span> <span class="kt"><a href="../Structs/TokenContract.html">TokenContract</a></span><span class="p">,</span> <span class="nv">memo</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/TokenTransferAction.html">TokenTransferAction</a></span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -1202,6 +1789,18 @@ Use this for accessing functionality after initialisation of Proton</p>
                         <h4>Parameters</h4>
                         <table class="graybox">
                           <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
+                                </div>
+                              </td>
+                            </tr>
                             <tr>
                               <td>
                                 <code>
@@ -1271,6 +1870,262 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:6ProtonAAC5stake14withPrivateKey8quantity10completiony5EOSIO0dE0V_Sdys6ResultOyypSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/stake(withPrivateKey:quantity:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC5stake14withPrivateKey8quantity10completiony5EOSIO0dE0V_Sdys6ResultOyypSgs5Error_pGctF">stake(withPrivateKey:<wbr>quantity:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Stakes XPR</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">stake</span><span class="p">(</span><span class="n">withPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">quantity</span><span class="p">:</span> <span class="kt">Double</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Any</span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>quantity</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Amount to added or removed from stake. Postive for adding stake, Negative for removing stake. Cannot be zero</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC12claimRewards14withPrivateKey10completiony5EOSIO0eF0V_ys6ResultOyypSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/claimRewards(withPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC12claimRewards14withPrivateKey10completiony5EOSIO0eF0V_ys6ResultOyypSgs5Error_pGctF">claimRewards(withPrivateKey:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Claims XPR staking rewards</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">claimRewards</span><span class="p">(</span><span class="n">withPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Any</span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC6refund14withPrivateKey10completiony5EOSIO0dE0V_ys6ResultOyypSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/refund(withPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC6refund14withPrivateKey10completiony5EOSIO0dE0V_ys6ResultOyypSgs5Error_pGctF">refund(withPrivateKey:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Refunds unstaking amount if the deferred action did not complete</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">refund</span><span class="p">(</span><span class="n">withPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Any</span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC4vote12forProducers14withPrivateKey10completionySay5EOSIO4NameVG_AG0fG0Vys6ResultOyypSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/vote(forProducers:withPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC4vote12forProducers14withPrivateKey10completionySay5EOSIO4NameVG_AG0fG0Vys6ResultOyypSgs5Error_pGctF">vote(forProducers:<wbr>withPrivateKey:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Votes for block producers</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">vote</span><span class="p">(</span><span class="n">forProducers</span> <span class="nv">producerNames</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC4Namea">Name</a></span><span class="p">],</span> <span class="n">withPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Any</span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>forProducers</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Array of producer Names</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:6ProtonAAC18generatePrivateKey5EOSIO0cD0VSgyF"></a>
                     <a name="//apple_ref/swift/Method/generatePrivateKey()" class="dashAnchor"></a>
                     <a class="token" href="#/s:6ProtonAAC18generatePrivateKey5EOSIO0cD0VSgyF">generatePrivateKey()</a>
@@ -1295,15 +2150,201 @@ Use this for accessing functionality after initialisation of Proton</p>
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC13signArbitrary6string14withPrivateKey10completionySS_5EOSIO0fG0Vys6ResultOyAG9SignatureVs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/signArbitrary(string:withPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC13signArbitrary6string14withPrivateKey10completionySS_5EOSIO0fG0Vys6ResultOyAG9SignatureVs5Error_pGctF">signArbitrary(string:<wbr>withPrivateKey:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Creates signature by signing arbitrary string</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">signArbitrary</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">withPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Signature</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC22signAndPushTransaction11withActions13andPrivateKey10completionySay5EOSIO6ActionVG_AG0iJ0Vys6ResultOyAG3APIV2V1V5ChainV0dE0V8ResponseVs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/signAndPushTransaction(withActions:andPrivateKey:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC22signAndPushTransaction11withActions13andPrivateKey10completionySay5EOSIO6ActionVG_AG0iJ0Vys6ResultOyAG3APIV2V1V5ChainV0dE0V8ResponseVs5Error_pGctF">signAndPushTransaction(withActions:<wbr>andPrivateKey:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Signs and pushes transaction</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">signAndPushTransaction</span><span class="p">(</span><span class="n">withActions</span> <span class="nv">actions</span><span class="p">:</span> <span class="p">[</span><span class="kt">Action</span><span class="p">],</span> <span class="n">andPrivateKey</span> <span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">API</span><span class="o">.</span><span class="kt">V1</span><span class="o">.</span><span class="kt">Chain</span><span class="o">.</span><span class="kt">PushTransaction</span><span class="o">.</span><span class="kt">Response</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withActions</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>[Actions]</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>andPrivateKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PrivateKey, FYI, this is used to sign on the device. Private key is never sent.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC12fetchContact15withAccountName10completionySS_ys6ResultOyAA0C0VSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/fetchContact(withAccountName:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC12fetchContact15withAccountName10completionySS_ys6ResultOyAA0C0VSgs5Error_pGctF">fetchContact(withAccountName:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Fetches a single contact&rsquo;s info without saving to contacts</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">fetchContact</span><span class="p">(</span><span class="n">withAccountName</span> <span class="nv">accountName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt"><a href="../Structs/Contact.html">Contact</a></span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withAccountName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>String</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Closure returning Result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/ESR%20Functions%20%F0%9F%9A%A7%20UNDER%20CONSTRUCTION"></a>
-                <a name="//apple_ref/swift/Section/ESR Functions 🚧 UNDER CONSTRUCTION" class="dashAnchor"></a>
+                <a name="/ESR%20Functions%20%F0%9F%9A%A7%20UNDER%20CONSTRUCTION.%20DO%20NOT%20USE%20YET"></a>
+                <a name="//apple_ref/swift/Section/ESR Functions 🚧 UNDER CONSTRUCTION. DO NOT USE YET" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/ESR%20Functions%20%F0%9F%9A%A7%20UNDER%20CONSTRUCTION"></a>
-                  <h3 class="section-name"><p>ESR Functions 🚧 UNDER CONSTRUCTION</p>
+                  <a class="section-name-link" href="#/ESR%20Functions%20%F0%9F%9A%A7%20UNDER%20CONSTRUCTION.%20DO%20NOT%20USE%20YET"></a>
+                  <h3 class="section-name"><p>ESR Functions 🚧 UNDER CONSTRUCTION. DO NOT USE YET</p>
 </h3>
                 </div>
               </div>
@@ -1311,9 +2352,9 @@ Use this for accessing functionality after initialisation of Proton</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC8parseESR7withURL10completiony10Foundation0E0V_yAA0C0VSgctF"></a>
-                    <a name="//apple_ref/swift/Method/parseESR(withURL:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC8parseESR7withURL10completiony10Foundation0E0V_yAA0C0VSgctF">parseESR(withURL:<wbr>completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC16isSigningRequest7withUrlSb10Foundation3URLV_tF"></a>
+                    <a name="//apple_ref/swift/Method/isSigningRequest(withUrl:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC16isSigningRequest7withUrlSb10Foundation3URLV_tF">isSigningRequest(withUrl:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1321,48 +2362,16 @@ Use this for accessing functionality after initialisation of Proton</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>🚧 UNDER CONSTRUCTION
-Use this to parse an esr signing request.</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">parseESR</span><span class="p">(</span><span class="n">withURL</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/ESR.html">ESR</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">isSigningRequest</span><span class="p">(</span><span class="n">withUrl</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>withURL</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>URL passed when opening from custom uri: esr://</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>completion</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Closure thats called when the function is complete. Will return object to be used for displaying request</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -1370,9 +2379,9 @@ Use this to parse an esr signing request.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC10declineESR10completionyyyc_tF"></a>
-                    <a name="//apple_ref/swift/Method/declineESR(completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC10declineESR10completionyyyc_tF">declineESR(completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC016decodeAndPrepareA14SigningRequest7withURL9sessionId10completiony10Foundation0H0V_SSSgys6ResultOySbs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/decodeAndPrepareProtonSigningRequest(withURL:sessionId:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC016decodeAndPrepareA14SigningRequest7withURL9sessionId10completiony10Foundation0H0V_SSSgys6ResultOySbs5Error_pGctF">decodeAndPrepareProtonSigningRequest(withURL:<wbr>sessionId:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1380,36 +2389,16 @@ Use this to parse an esr signing request.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>🚧 UNDER CONSTRUCTION
-Use this to decline signing request</p>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">declineESR</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">decodeAndPrepareProtonSigningRequest</span><span class="p">(</span><span class="n">withURL</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span><span class="p">,</span> <span class="nv">sessionId</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Bool</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>completion</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Closure thats called when the function is complete.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -1417,9 +2406,9 @@ Use this to decline signing request</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC9acceptESR10completionyy10Foundation3URLVSgc_tF"></a>
-                    <a name="//apple_ref/swift/Method/acceptESR(completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC9acceptESR10completionyy10Foundation3URLVSgc_tF">acceptESR(completion:<wbr>)</a>
+                    <a name="/s:6ProtonAAC07declineA14SigningRequest012autoCompleteD010completionySb_ys6ResultOy10Foundation3URLVSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/declineProtonSigningRequest(autoCompleteRequest:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC07declineA14SigningRequest012autoCompleteD010completionySb_ys6ResultOy10Foundation3URLVSgs5Error_pGctF">declineProtonSigningRequest(autoCompleteRequest:<wbr>completion:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1427,36 +2416,16 @@ Use this to decline signing request</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>🚧 UNDER CONSTRUCTION
-Use this to accept signing request</p>
+                        <p>🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">acceptESR</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">URL</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">declineProtonSigningRequest</span><span class="p">(</span><span class="nv">autoCompleteRequest</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">URL</span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>completion</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Closure thats called when the function is complete.</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -1464,9 +2433,9 @@ Use this to accept signing request</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6ProtonAAC16removeESRSession5forIdySS_tF"></a>
-                    <a name="//apple_ref/swift/Method/removeESRSession(forId:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6ProtonAAC16removeESRSession5forIdySS_tF">removeESRSession(forId:<wbr>)</a>
+                    <a name="/s:6ProtonAAC08completeA14SigningRequestyyF"></a>
+                    <a name="//apple_ref/swift/Method/completeProtonSigningRequest()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC08completeA14SigningRequestyyF">completeProtonSigningRequest()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1474,36 +2443,43 @@ Use this to accept signing request</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>🚧 UNDER CONSTRUCTION
-Use this to remove authorization</p>
+                        <p>🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">removeESRSession</span><span class="p">(</span><span class="nv">forId</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">completeProtonSigningRequest</span><span class="p">()</span></code></pre>
 
                         </div>
                       </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>forId</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>esr Session Id</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6ProtonAAC06acceptA14SigningRequest10privateKey012autoCompleteD010completiony5EOSIO07PrivateF0V_Sbys6ResultOy10Foundation3URLVSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/acceptProtonSigningRequest(privateKey:autoCompleteRequest:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6ProtonAAC06acceptA14SigningRequest10privateKey012autoCompleteD010completiony5EOSIO07PrivateF0V_Sbys6ResultOy10Foundation3URLVSgs5Error_pGctF">acceptProtonSigningRequest(privateKey:<wbr>autoCompleteRequest:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>🚧 UNDER CONSTRUCTION: WARNING, DO NOT USE YET</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">acceptProtonSigningRequest</span><span class="p">(</span><span class="nv">privateKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/Proton.html#/s:6ProtonAAC10PrivateKeya">PrivateKey</a></span><span class="p">,</span> <span class="nv">autoCompleteRequest</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">URL</span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -1513,7 +2489,7 @@ Use this to remove authorization</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-07-14)</p>
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-10-15)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

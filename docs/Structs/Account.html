@@ -17,7 +17,7 @@
     <a title="Account Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html"> Docs</a> (72% documented)</p>
+        <p><a href="../index.html"> Docs</a> (70% documented)</p>
         <p class="header-right">
           <form role="search" action="../search.json">
             <input type="text" placeholder="Search documentation" data-typeahead>
@@ -44,25 +44,14 @@
               <li class="nav-group-task">
                 <a href="../Classes/Proton/Config.html">– Config</a>
               </li>
-              <li class="nav-group-task">
-                <a href="../Classes/Proton/Notifications.html">– Notifications</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/ProtonObservable.html">ProtonObservable</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="../Enums.html">Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Enums/ProtonError.html">ProtonError</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
             <a href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Asset.html">Asset</a>
+              </li>
               <li class="nav-group-task">
                 <a href="../Extensions/Date.html">Date</a>
               </li>
@@ -89,22 +78,58 @@
                 <a href="../Structs/ChainProvider.html">ChainProvider</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/ClaimRewardsABI.html">ClaimRewardsABI</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/Contact.html">Contact</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESR.html">ESR</a>
+                <a href="../Structs/GlobalsXPR.html">GlobalsXPR</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction.html">ESRAction</a>
+                <a href="../Structs/Producer.html">Producer</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction/ActionType.html">– ActionType</a>
+                <a href="../Structs/ProducerOrg.html">ProducerOrg</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRAction/BasicDisplay.html">– BasicDisplay</a>
+                <a href="../Structs/ProducerOrgBranding.html">ProducerOrgBranding</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/ESRSession.html">ESRSession</a>
+                <a href="../Structs/ProducerOrgLocation.html">ProducerOrgLocation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESR.html">ProtonESR</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction.html">ProtonESRAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction/ActionType.html">– ActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSession.html">ProtonESRSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSessionWebSocketWrapper.html">ProtonESRSessionWebSocketWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RefundXPRABI.html">RefundXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton13SealedMessageV">SealedMessage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakeXPRABI.html">StakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Staking.html">Staking</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakingRefund.html">StakingRefund</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton7TestERRV">TestERR</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/TokenBalance.html">TokenBalance</a>
@@ -117,6 +142,12 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/TransferActionABI.html">TransferActionABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/UnStakeXPRABI.html">UnStakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/VoteProducersABI.html">VoteProducersABI</a>
               </li>
             </ul>
           </li>
@@ -140,7 +171,7 @@
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Account</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">Identifiable</span><span class="p">,</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">ChainProviderProtocol</span><span class="p">,</span> <span class="kt">TokenBalancesProtocol</span><span class="p">,</span> <span class="kt"><a href="../Protocols/AvatarProtocol.html">AvatarProtocol</a></span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Account</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">Identifiable</span><span class="p">,</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">ChainProviderProtocol</span><span class="p">,</span> <span class="kt">TokenBalancesProtocol</span><span class="p">,</span> <span class="kt"><a href="../Protocols/AvatarProtocol.html">AvatarProtocol</a></span><span class="p">,</span> <span class="kt">GlobalsXPRProtocol</span></code></pre>
 
                 </div>
               </div>
@@ -342,6 +373,87 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:6Proton7AccountV7stakingAA7StakingVSgvp"></a>
+                    <a name="//apple_ref/swift/Property/staking" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV7stakingAA7StakingVSgvp">staking</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The user modified Avatar string</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">staking</span><span class="p">:</span> <span class="kt"><a href="../Structs/Staking.html">Staking</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV13stakingRefundAA07StakingD0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/stakingRefund" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV13stakingRefundAA07StakingD0VSgvp">stakingRefund</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The user modified Avatar string</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">stakingRefund</span><span class="p">:</span> <span class="kt"><a href="../Structs/StakingRefund.html">StakingRefund</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV10globalsXPRAA07GlobalsD0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/globalsXPR" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV10globalsXPRAA07GlobalsD0VSgvp">globalsXPR</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get globalsXPR settings</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">globalsXPR</span><span class="p">:</span> <span class="kt"><a href="../Structs/GlobalsXPR.html">GlobalsXPR</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:6Proton7AccountV13chainProviderAA05ChainD0VSgvp"></a>
                     <a name="//apple_ref/swift/Property/chainProvider" class="dashAnchor"></a>
                     <a class="token" href="#/s:6Proton7AccountV13chainProviderAA05ChainD0VSgvp">chainProvider</a>
@@ -396,6 +508,33 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:6Proton7AccountV18systemTokenBalanceAA0dE0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/systemTokenBalance" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV18systemTokenBalanceAA0dE0VSgvp">systemTokenBalance</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>XPR TokenBalance associated with the Account</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">systemTokenBalance</span><span class="p">:</span> <span class="kt"><a href="../Structs/TokenBalance.html">TokenBalance</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:6Proton7AccountV17nameWithAmpersandSSvp"></a>
                     <a name="//apple_ref/swift/Property/nameWithAmpersand" class="dashAnchor"></a>
                     <a class="token" href="#/s:6Proton7AccountV17nameWithAmpersandSSvp">nameWithAmpersand</a>
@@ -423,9 +562,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6Proton7AccountV21totalBalanceFormatted9forLocaleSS10Foundation0G0V_tF"></a>
-                    <a name="//apple_ref/swift/Method/totalBalanceFormatted(forLocale:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6Proton7AccountV21totalBalanceFormatted9forLocaleSS10Foundation0G0V_tF">totalBalanceFormatted(forLocale:<wbr>)</a>
+                    <a name="/s:6Proton7AccountV017userDefinedNameOrE0SSvp"></a>
+                    <a name="//apple_ref/swift/Property/userDefinedNameOrName" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV017userDefinedNameOrE0SSvp">userDefinedNameOrName</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -433,14 +572,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Return name if not empty, else use the account name</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">totalBalanceFormatted</span><span class="p">(</span><span class="n">forLocale</span> <span class="nv">locale</span><span class="p">:</span> <span class="kt">Locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"en_US"</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">userDefinedNameOrName</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -450,9 +589,90 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6Proton7AccountV10privateKey17forPermissionName5EOSIO07PrivateD0VSgSS_tF"></a>
-                    <a name="//apple_ref/swift/Method/privateKey(forPermissionName:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6Proton7AccountV10privateKey17forPermissionName5EOSIO07PrivateD0VSgSS_tF">privateKey(forPermissionName:<wbr>)</a>
+                    <a name="/s:6Proton7AccountV24isStakingRewardQualifiedSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isStakingRewardQualified" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV24isStakingRewardQualifiedSbvp">isStakingRewardQualified</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Return true if account is qualified for rewards by staking and voting</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isStakingRewardQualified</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV16maxStakingAmount5EOSIO5AssetVvp"></a>
+                    <a name="//apple_ref/swift/Property/maxStakingAmount" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV16maxStakingAmount5EOSIO5AssetVvp">maxStakingAmount</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the max staking amount for the account.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">maxStakingAmount</span><span class="p">:</span> <span class="kt">Asset</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV26firstAvailableTokenBalanceAA0eF0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/firstAvailableTokenBalance" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV26firstAvailableTokenBalanceAA0eF0VSgvp">firstAvailableTokenBalance</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the first tokenBalance that has more than zero balance. System balance always takes precedence.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">firstAvailableTokenBalance</span><span class="p">:</span> <span class="kt"><a href="../Structs/TokenBalance.html">TokenBalance</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV29totalCurrencyBalanceFormatted9forLocale13withStakedXPRSS10Foundation0H0V_SbtF"></a>
+                    <a name="//apple_ref/swift/Method/totalCurrencyBalanceFormatted(forLocale:withStakedXPR:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV29totalCurrencyBalanceFormatted9forLocale13withStakedXPRSS10Foundation0H0V_SbtF">totalCurrencyBalanceFormatted(forLocale:<wbr>withStakedXPR:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -467,7 +687,142 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">privateKey</span><span class="p">(</span><span class="nv">forPermissionName</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">PrivateKey</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">totalCurrencyBalanceFormatted</span><span class="p">(</span><span class="n">forLocale</span> <span class="nv">locale</span><span class="p">:</span> <span class="kt">Locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"en_US"</span><span class="p">),</span> <span class="nv">withStakedXPR</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV31availableSystemBalanceFormatted9forLocale10withSymbol12andPrecisionSS10Foundation0H0V_S2btF"></a>
+                    <a name="//apple_ref/swift/Method/availableSystemBalanceFormatted(forLocale:withSymbol:andPrecision:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV31availableSystemBalanceFormatted9forLocale10withSymbol12andPrecisionSS10Foundation0H0V_S2btF">availableSystemBalanceFormatted(forLocale:<wbr>withSymbol:<wbr>andPrecision:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">availableSystemBalanceFormatted</span><span class="p">(</span><span class="n">forLocale</span> <span class="nv">locale</span><span class="p">:</span> <span class="kt">Locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"en_US"</span><span class="p">),</span> <span class="n">withSymbol</span> <span class="nv">symbol</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="n">andPrecision</span> <span class="nv">precision</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV27totalSystemBalanceFormatted9forLocale10withSymbol12andPrecisionSS10Foundation0H0V_S2btF"></a>
+                    <a name="//apple_ref/swift/Method/totalSystemBalanceFormatted(forLocale:withSymbol:andPrecision:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV27totalSystemBalanceFormatted9forLocale10withSymbol12andPrecisionSS10Foundation0H0V_S2btF">totalSystemBalanceFormatted(forLocale:<wbr>withSymbol:<wbr>andPrecision:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">totalSystemBalanceFormatted</span><span class="p">(</span><span class="n">forLocale</span> <span class="nv">locale</span><span class="p">:</span> <span class="kt">Locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"en_US"</span><span class="p">),</span> <span class="n">withSymbol</span> <span class="nv">symbol</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="n">andPrecision</span> <span class="nv">precision</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV22availableSystemBalance5EOSIO5AssetVyF"></a>
+                    <a name="//apple_ref/swift/Method/availableSystemBalance()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV22availableSystemBalance5EOSIO5AssetVyF">availableSystemBalance()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">availableSystemBalance</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Asset</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV18totalSystemBalance5EOSIO5AssetVyF"></a>
+                    <a name="//apple_ref/swift/Method/totalSystemBalance()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV18totalSystemBalance5EOSIO5AssetVyF">totalSystemBalance()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">totalSystemBalance</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Asset</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV10privateKey17forPermissionName10completionySS_ys6ResultOy5EOSIO07PrivateD0VSgs5Error_pGctF"></a>
+                    <a name="//apple_ref/swift/Method/privateKey(forPermissionName:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV10privateKey17forPermissionName10completionySS_ys6ResultOy5EOSIO07PrivateD0VSgs5Error_pGctF">privateKey(forPermissionName:<wbr>completion:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">privateKey</span><span class="p">(</span><span class="nv">forPermissionName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">PrivateKey</span><span class="p">?,</span> <span class="kt">Error</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -527,9 +882,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:6Proton7AccountV15isKeyAssociated06publicD0SbSS_tF"></a>
+                    <a name="/s:6Proton7AccountV15isKeyAssociated06publicD0Sb5EOSIO06PublicD0V_tF"></a>
                     <a name="//apple_ref/swift/Method/isKeyAssociated(publicKey:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:6Proton7AccountV15isKeyAssociated06publicD0SbSS_tF">isKeyAssociated(publicKey:<wbr>)</a>
+                    <a class="token" href="#/s:6Proton7AccountV15isKeyAssociated06publicD0Sb5EOSIO06PublicD0V_tF">isKeyAssociated(publicKey:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -544,7 +899,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">isKeyAssociated</span><span class="p">(</span><span class="nv">publicKey</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">isKeyAssociated</span><span class="p">(</span><span class="nv">publicKey</span><span class="p">:</span> <span class="kt">PublicKey</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
                       </div>
@@ -560,7 +915,69 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>Wif formated public key</p>
+                                  <p>PublicKey</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Bool</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton7AccountV15isKeyAssociated18withPermissionName09forPublicD0SbSS_5EOSIO0jD0VtF"></a>
+                    <a name="//apple_ref/swift/Method/isKeyAssociated(withPermissionName:forPublicKey:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton7AccountV15isKeyAssociated18withPermissionName09forPublicD0SbSS_5EOSIO0jD0VtF">isKeyAssociated(withPermissionName:<wbr>forPublicKey:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Check if the publickey is associated with the Account</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">isKeyAssociated</span><span class="p">(</span><span class="n">withPermissionName</span> <span class="nv">permissionName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">forPublicKey</span> <span class="nv">publicKey</span><span class="p">:</span> <span class="kt">PublicKey</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>withPermissionName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The permission name. ex: active</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>publicKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PublicKey</p>
                                 </div>
                               </td>
                             </tr>
@@ -610,7 +1027,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-07-14)</p>
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-10-15)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

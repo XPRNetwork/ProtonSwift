@@ -27,7 +27,7 @@ The main class that you will need to interface with is `Proton` which encapsulat
 ```swift
 import Proton
 
-Proton.initialize(Proton.Config(environment: .testnet)).updateDataRequirements { result in
+Proton.initialize(Proton.Config()).updateDataRequirements { result in
     Proton.shared.update { result in }
 }
 ```
@@ -64,16 +64,15 @@ Proton.shared.findAccounts(forPrivateKey: "<wif_formatted_private_key_here>") { 
         
         if let account = accounts.first {
 
-            // store private key in keychain & set active account on Proton library
-            Proton.shared.storePrivateKey(privateKey: "<wif_formatted_private_key_here>", 
-            							  forAccount: account) { result in
-                
-                switch result {
-                case .success: break
-                case .failure(let error):
-                    print(error)
-                }
-            }
+				Proton.shared.setAccount(withName: account.name.stringValue, andPrivateKey: Proton.PrivateKey("<wif_formatted_private_key_here>")) { result in
+				    
+				    if case .success = result {
+							print("YAH")
+				    } else if case .failure(let error) = result {
+				        print(error.localizedDescription)
+				    }
+				    
+				}
             
         }
 
@@ -92,7 +91,7 @@ Now that you have an active `Account` stored, you can access it at `Proton.share
 You can easily fetch the latest actions and other updates about your active account by simply calling `Proton.shared.updateAccount`
 
 ```swift
-Proton.shared.update { result in }
+Proton.shared.updateAccount { result in }
 ```
 
 > This will fetch the lates `TokenTransferAction` items, `Account` info, etc. It will automatically update these on the shared `Proton` singleton.

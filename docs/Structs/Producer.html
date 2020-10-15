@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Producer Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/Producer" class="dashAnchor"></a>
+    <a title="Producer Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (70% documented)</p>
+        <p class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        Producer Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Proton.html">Proton</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Proton/Config.html">– Config</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Asset.html">Asset</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Date.html">Date</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/String.html">String</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/AvatarProtocol.html">AvatarProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Account.html">Account</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ChainProvider.html">ChainProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ClaimRewardsABI.html">ClaimRewardsABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Contact.html">Contact</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/GlobalsXPR.html">GlobalsXPR</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Producer.html">Producer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProducerOrg.html">ProducerOrg</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProducerOrgBranding.html">ProducerOrgBranding</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProducerOrgLocation.html">ProducerOrgLocation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESR.html">ProtonESR</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction.html">ProtonESRAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRAction/ActionType.html">– ActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSession.html">ProtonESRSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ProtonESRSessionWebSocketWrapper.html">ProtonESRSessionWebSocketWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RefundXPRABI.html">RefundXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton13SealedMessageV">SealedMessage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakeXPRABI.html">StakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Staking.html">Staking</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/StakingRefund.html">StakingRefund</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:6Proton7TestERRV">TestERR</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TokenBalance.html">TokenBalance</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TokenContract.html">TokenContract</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TokenTransferAction.html">TokenTransferAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TransferActionABI.html">TransferActionABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/UnStakeXPRABI.html">UnStakeXPRABI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/VoteProducersABI.html">VoteProducersABI</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/AvatarImage">AvatarImage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:6Proton11AvatarImagea">AvatarImage</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Producer</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Producer</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">Identifiable</span><span class="p">,</span> <span class="kt">Hashable</span><span class="p">,</span> <span class="kt">ChainProviderProtocol</span><span class="p">,</span> <span class="kt"><a href="../Protocols/AvatarProtocol.html">AvatarProtocol</a></span></code></pre>
+
+                </div>
+              </div>
+            <p>A Producer is basically an Account object, but with some extra info.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV2idSSvp"></a>
+                    <a name="//apple_ref/swift/Property/id" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV2idSSvp">id</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>This is used as the primary key for storing the contact</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV7chainIdSSvp"></a>
+                    <a name="//apple_ref/swift/Property/chainId" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV7chainIdSSvp">chainId</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The chainId associated with the account</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">chainId</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV4name5EOSIO4NameVvp"></a>
+                    <a name="//apple_ref/swift/Property/name" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV4name5EOSIO4NameVvp">name</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The Name of the account. You can get the string value via name.stringValue</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">Name</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV8verifiedSbvp"></a>
+                    <a name="//apple_ref/swift/Property/verified" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV8verifiedSbvp">verified</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Is the account KYC verified</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">verified</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV15userDefinedNameSSvp"></a>
+                    <a name="//apple_ref/swift/Property/userDefinedName" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV15userDefinedNameSSvp">userDefinedName</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The user defined name</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">userDefinedName</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV12base64AvatarSSvp"></a>
+                    <a name="//apple_ref/swift/Property/base64Avatar" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV12base64AvatarSSvp">base64Avatar</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The user modified Avatar string</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">base64Avatar</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV8isActiveSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isActive" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV8isActiveSbvp">isActive</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Whether or no the producer is active</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isActive</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV10totalVotes5EOSIO7Float64Vvp"></a>
+                    <a name="//apple_ref/swift/Property/totalVotes" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV10totalVotes5EOSIO7Float64Vvp">totalVotes</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Total votes accumulated by producer</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">totalVotes</span><span class="p">:</span> <span class="kt">Float64</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV3urlSSvp"></a>
+                    <a name="//apple_ref/swift/Property/url" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV3urlSSvp">url</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The url string which makes up base url for fetching bp.json,chains.json</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV3orgAA0B3OrgVSgvp"></a>
+                    <a name="//apple_ref/swift/Property/org" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV3orgAA0B3OrgVSgvp">org</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The meta info returned by bp.json</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">org</span><span class="p">:</span> <span class="kt"><a href="../Structs/ProducerOrg.html">ProducerOrg</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV13chainProviderAA05ChainD0VSgvp"></a>
+                    <a name="//apple_ref/swift/Property/chainProvider" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV13chainProviderAA05ChainD0VSgvp">chainProvider</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>ChainProvider associated with the Account</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">chainProvider</span><span class="p">:</span> <span class="kt"><a href="../Structs/ChainProvider.html">ChainProvider</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:6Proton8ProducerV017userDefinedNameOrE0SSvp"></a>
+                    <a name="//apple_ref/swift/Property/userDefinedNameOrName" class="dashAnchor"></a>
+                    <a class="token" href="#/s:6Proton8ProducerV017userDefinedNameOrE0SSvp">userDefinedNameOrName</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Return name if not empty, else use the account name</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">userDefinedNameOrName</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-10-15)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

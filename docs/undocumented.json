@@ -1,6 +1,649 @@
 {
   "warnings": [
-
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Extensions.swift",
+      "line": 25,
+      "symbol": "Date.dateFromAction(timeStamp:tz:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Extensions.swift",
+      "line": 79,
+      "symbol": "String.popESRPrefix()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Extensions.swift",
+      "line": 105,
+      "symbol": "Asset.formatted(forLocale:withSymbol:andPrecision:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Extensions.swift",
+      "line": 116,
+      "symbol": "Asset.formattedAsCurrency(forLocale:withRate:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/ClaimRewardsABI.swift",
+      "line": 12,
+      "symbol": "ClaimRewardsABI",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/ClaimRewardsABI.swift",
+      "line": 14,
+      "symbol": "ClaimRewardsABI.owner",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/ClaimRewardsABI.swift",
+      "line": 16,
+      "symbol": "ClaimRewardsABI.init(owner:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/RefundXPRABI.swift",
+      "line": 11,
+      "symbol": "RefundXPRABI",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/RefundXPRABI.swift",
+      "line": 13,
+      "symbol": "RefundXPRABI.owner",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/RefundXPRABI.swift",
+      "line": 15,
+      "symbol": "RefundXPRABI.init(owner:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/StakeXPRABI.swift",
+      "line": 12,
+      "symbol": "StakeXPRABI",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/StakeXPRABI.swift",
+      "line": 14,
+      "symbol": "StakeXPRABI.from",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/StakeXPRABI.swift",
+      "line": 15,
+      "symbol": "StakeXPRABI.receiver",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/StakeXPRABI.swift",
+      "line": 16,
+      "symbol": "StakeXPRABI.stake_xpr_quantity",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/StakeXPRABI.swift",
+      "line": 18,
+      "symbol": "StakeXPRABI.init(from:stake_xpr_quantity:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/TransferActionABI.swift",
+      "line": 12,
+      "symbol": "TransferActionABI",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/TransferActionABI.swift",
+      "line": 14,
+      "symbol": "TransferActionABI.from",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/TransferActionABI.swift",
+      "line": 15,
+      "symbol": "TransferActionABI.to",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/TransferActionABI.swift",
+      "line": 16,
+      "symbol": "TransferActionABI.quantity",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/TransferActionABI.swift",
+      "line": 17,
+      "symbol": "TransferActionABI.memo",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/TransferActionABI.swift",
+      "line": 19,
+      "symbol": "TransferActionABI.init(from:to:quantity:memo:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/UnStakeXPRABI.swift",
+      "line": 13,
+      "symbol": "UnStakeXPRABI",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/UnStakeXPRABI.swift",
+      "line": 15,
+      "symbol": "UnStakeXPRABI.from",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/UnStakeXPRABI.swift",
+      "line": 16,
+      "symbol": "UnStakeXPRABI.receiver",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/UnStakeXPRABI.swift",
+      "line": 17,
+      "symbol": "UnStakeXPRABI.unstake_xpr_quantity",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/UnStakeXPRABI.swift",
+      "line": 19,
+      "symbol": "UnStakeXPRABI.init(from:unstake_xpr_quantity:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/VoteProducersABI.swift",
+      "line": 12,
+      "symbol": "VoteProducersABI",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/VoteProducersABI.swift",
+      "line": 14,
+      "symbol": "VoteProducersABI.voter",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/VoteProducersABI.swift",
+      "line": 15,
+      "symbol": "VoteProducersABI.proxy",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/VoteProducersABI.swift",
+      "line": 16,
+      "symbol": "VoteProducersABI.producers",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ABI/VoteProducersABI.swift",
+      "line": 18,
+      "symbol": "VoteProducersABI.init(voter:proxy:producers:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
+      "line": 38,
+      "symbol": "Staking.producers",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
+      "line": 210,
+      "symbol": "Account.totalCurrencyBalanceFormatted(forLocale:withStakedXPR:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
+      "line": 245,
+      "symbol": "Account.availableSystemBalanceFormatted(forLocale:withSymbol:andPrecision:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
+      "line": 249,
+      "symbol": "Account.totalSystemBalanceFormatted(forLocale:withSymbol:andPrecision:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
+      "line": 253,
+      "symbol": "Account.availableSystemBalance()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
+      "line": 257,
+      "symbol": "Account.totalSystemBalance()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/Account.swift",
+      "line": 264,
+      "symbol": "Account.privateKey(forPermissionName:completion:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/GlobalsXPR.swift",
+      "line": 9,
+      "symbol": "GlobalsXPR",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/GlobalsXPR.swift",
+      "line": 11,
+      "symbol": "GlobalsXPR.requiredBPVotes",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/GlobalsXPR.swift",
+      "line": 12,
+      "symbol": "GlobalsXPR.unstakePeriod",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/GlobalsXPR.swift",
+      "line": 13,
+      "symbol": "GlobalsXPR.claimInterval",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/GlobalsXPR.swift",
+      "line": 14,
+      "symbol": "GlobalsXPR.processInterval",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 12,
+      "symbol": "ProtonESR",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 14,
+      "symbol": "ProtonESR.requestKey",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 15,
+      "symbol": "ProtonESR.signer",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 16,
+      "symbol": "ProtonESR.signingRequest",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 17,
+      "symbol": "ProtonESR.initialPrefix",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 18,
+      "symbol": "ProtonESR.resolvedSigningRequest",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 19,
+      "symbol": "ProtonESR.requestor",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 20,
+      "symbol": "ProtonESR.returnPath",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 21,
+      "symbol": "ProtonESR.actions",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESR.swift",
+      "line": 23,
+      "symbol": "ProtonESR.basicTransfer",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 12,
+      "symbol": "ProtonESRAction",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 14,
+      "symbol": "ProtonESRAction.ActionType",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 15,
+      "symbol": "ProtonESRAction.ActionType.custom",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 15,
+      "symbol": "ProtonESRAction.ActionType.transfer",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 20,
+      "symbol": "ProtonESRAction.type",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 21,
+      "symbol": "ProtonESRAction.account",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 22,
+      "symbol": "ProtonESRAction.name",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 23,
+      "symbol": "ProtonESRAction.chainId",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 24,
+      "symbol": "ProtonESRAction.abi",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 25,
+      "symbol": "ProtonESRAction.data",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 35,
+      "symbol": "ProtonESRAction.tokenContract",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRAction.swift",
+      "line": 42,
+      "symbol": "ProtonESRAction.transferActionABI",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 13,
+      "symbol": "ProtonESRSession",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 16,
+      "symbol": "ProtonESRSession.signer",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 17,
+      "symbol": "ProtonESRSession.callbackUrlString",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 18,
+      "symbol": "ProtonESRSession.receiveKeyString",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 19,
+      "symbol": "ProtonESRSession.receiveChannel",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 20,
+      "symbol": "ProtonESRSession.createdAt",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 21,
+      "symbol": "ProtonESRSession.updatedAt",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 22,
+      "symbol": "ProtonESRSession.requestor",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 42,
+      "symbol": "SealedMessage",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/ProtonESRSession.swift",
+      "line": 49,
+      "symbol": "ProtonESRSessionWebSocketWrapper",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/TokenBalance.swift",
+      "line": 73,
+      "symbol": "TokenBalance.getRate(forCurrencyCode:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/TokenContract.swift",
+      "line": 89,
+      "symbol": "TokenContract.getRate(forCurrencyCode:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Models/TokenContract.swift",
+      "line": 105,
+      "symbol": "TokenContract.priceChangePercentFormatted()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Operations/ChangeUserAccountAvatarOperation.swift",
+      "line": 14,
+      "symbol": "AvatarImage",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Operations/FetchChainProviderOperation.swift",
+      "line": 42,
+      "symbol": "TestERR",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
+      "line": 35,
+      "symbol": "AvatarProtocol",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
+      "line": 36,
+      "symbol": "AvatarProtocol.defaultBase64Avatar",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
+      "line": 37,
+      "symbol": "AvatarProtocol.base64Avatar",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
+      "line": 62,
+      "symbol": "AvatarProtocol",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
+      "line": 63,
+      "symbol": "AvatarProtocol.defaultBase64Avatar",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
+      "line": 67,
+      "symbol": "AvatarProtocol.avatarImage",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Protocols.swift",
+      "line": 83,
+      "symbol": "AvatarProtocol.avatarNSImage",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 33,
+      "symbol": "Proton.Config.Environment",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 34,
+      "symbol": "Proton.Config.Environment.testnet",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 35,
+      "symbol": "Proton.Config.Environment.mainnet",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 2129,
+      "symbol": "Proton.isSigningRequest(withUrl:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jdavis/Development/Work/ProtonSwift/Sources/Proton/Proton.swift",
+      "line": 2149,
+      "symbol": "Proton.decodeAndPrepareProtonSigningRequest(withURL:sessionId:completion:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    }
   ],
   "source_directory": "/Users/jdavis/Development/Work/ProtonSwift"
 }
