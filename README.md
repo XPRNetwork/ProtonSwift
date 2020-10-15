@@ -28,7 +28,7 @@ The main class that you will need to interface with is `Proton` which encapsulat
 import Proton
 
 Proton.initialize(Proton.Config()).updateDataRequirements { result in
-    Proton.shared.update { result in }
+    Proton.shared.updateAccount { result in }
 }
 ```
 
