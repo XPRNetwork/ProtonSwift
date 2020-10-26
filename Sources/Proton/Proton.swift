@@ -2304,7 +2304,7 @@ public class Proton: ObservableObject {
             return
         }
 
-        let abidecoder = ABIDecoder()
+        //let abidecoder = ABIDecoder()
         
         for abiAccount in abiAccounts {
             
@@ -2326,12 +2326,8 @@ public class Proton: ObservableObject {
                 if abiAccountsProcessed == abiAccounts.count && abiAccounts.count == rawAbis.count {
 
                     let actions: [ProtonESRAction] = signingRequest.actions.compactMap {
-                        if let abi = rawAbis[$0.account.stringValue]?.decodedAbi {
-                            if let _ = try? abidecoder.decode(TransferActionABI.self, from: $0.data) {
-                                return ProtonESRAction(type: .transfer, account: $0.account, name: $0.name, chainId: chainId, abi: abi, data: $0.data)
-                            } else {
-                                return ProtonESRAction(type: .custom, account: $0.account, name: $0.name, chainId: chainId, abi: abi, data: $0.data)
-                            }
+                        if let abi = rawAbis[$0.account.stringValue]?.decodedAbi { // TODO: Figure out a better way to determine transfer or not...
+                            return ProtonESRAction(type: $0.name.stringValue == "transfer" ? .transfer : .custom, account: $0.account, name: $0.name, chainId: chainId, abi: abi, data: $0.data)
                         }
                         return nil
                     }

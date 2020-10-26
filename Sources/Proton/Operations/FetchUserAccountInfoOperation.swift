@@ -44,6 +44,9 @@ class FetchUserAccountInfoOperation: BaseOperation {
                 account.base64Avatar = userInfo.avatar
                 account.userDefinedName = userInfo.name
                 account.verified = userInfo.verified
+                account.kyc = userInfo.kyc.compactMap({
+                    KYC(provider: $0.kyc_provider, date: Date(timeIntervalSince1970: TimeInterval($0.kyc_date)), level: $0.kyc_level)
+                })
             }
 
             finish(retval: account, error: nil)

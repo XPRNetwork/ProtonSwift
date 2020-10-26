@@ -20,6 +20,12 @@ struct UserInfoABI: ABICodable {
         let field_0: Name
         let field_1: String
     }
+    
+    struct kyc_prov: ABICodable {
+        let kyc_provider: Name
+        let kyc_level: String
+        let kyc_date: UInt64
+    }
 
     let acc: Name
     let name: String
@@ -31,5 +37,6 @@ struct UserInfoABI: ABICodable {
     let raccs: [Name]
     let accts: [acct]
     let ac: [ac]
+    let kyc: [kyc_prov]
 
 }

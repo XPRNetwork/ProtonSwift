@@ -21,6 +21,11 @@ class FetchProducerOrgOperation: BaseOperation {
         
         super.main()
         
+        if !self.producer.isActive {
+            self.finish(retval: self.producer, error: nil)
+            return
+        }
+        
         let urlString = producer.url.last == "/" ? String(producer.url.dropLast()) : producer.url
         
         guard let url = URL(string: "\(urlString)/bp.json") else {

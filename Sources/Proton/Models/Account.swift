@@ -70,6 +70,18 @@ public struct StakingRefund: Codable, GlobalsXPRProtocol {
 }
 
 /**
+KYC is a entry provided by a kyc provider
+*/
+public struct KYC: Codable {
+    /// The account name of the kyc provider
+    public var provider: Name
+    /// The time which this kyc was last updated
+    public var date: Date
+    /// Comma seperated list of kyc'd items. prefixed with source:
+    public var level: String
+}
+
+/**
 Account is the Proton chain account object.
 */
 public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, TokenBalancesProtocol, AvatarProtocol, GlobalsXPRProtocol {
@@ -91,10 +103,12 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var staking: Staking?
     /// The user modified Avatar string
     public var stakingRefund: StakingRefund?
+    /// The KYC entries
+    public var kyc: [KYC]?
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
                 userDefinedName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = [],
-                staking: Staking? = nil, stakingRefund: StakingRefund? = nil) {
+                staking: Staking? = nil, stakingRefund: StakingRefund? = nil, kyc: [KYC]? = nil) {
         
         self.chainId = chainId
         self.name = Name(name)
