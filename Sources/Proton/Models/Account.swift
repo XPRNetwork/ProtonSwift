@@ -287,7 +287,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             return
         }
         
-        DispatchQueue.main.async {
+        DispatchQueue.global().async {
             if let privateKey = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
                 completion(.success(try? PrivateKey(stringValue: privateKey)))
             } else {
