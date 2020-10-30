@@ -2193,6 +2193,8 @@ public class Proton: ObservableObject {
                 
                 if let link = signingRequest.getInfo("link", as: AnchorLinkCreateInfo.self) {
                     requestKey = link.request_key
+                    let blah = link.session_name
+                    print(blah.stringValue)
                 }
 
             }
