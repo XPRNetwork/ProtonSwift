@@ -30,9 +30,10 @@ class FetchTokenContractsOperation: BaseOperation {
         }
         
         let client = Client(address: url)
-        let req = API.V1.Chain.GetTableRows<TokenContractABI>(code: Name(stringValue: "token.proton"),
+        var req = API.V1.Chain.GetTableRows<TokenContractABI>(code: Name(stringValue: "token.proton"),
                                                               table: Name(stringValue: "tokens"),
                                                               scope: "token.proton")
+        req.limit = 100
         
         do {
             

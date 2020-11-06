@@ -358,6 +358,9 @@ public class Proton: ObservableObject {
 
                     do {
                         let sealedMessage = try ABIDecoder().decode(SealedMessage.self, from: data)
+                        
+                        print(data.hexEncodedString())
+                        
                         self?.decryptProtonSigningRequest(withSealedMessage: sealedMessage, andSession: protonESRSession, completion: { result in
                             switch result {
                             case .success(let url):
@@ -539,7 +542,11 @@ public class Proton: ObservableObject {
         self.protonESRSessions.removeAll()
         self.protonESR = nil
         
-        self.saveAll()
+        self.storage.deleteDefaultsItem(forKey: "account")
+        self.storage.deleteDefaultsItem(forKey: "tokenBalances")
+        self.storage.deleteDefaultsItem(forKey: "tokenTransferActions")
+        self.storage.deleteDefaultsItem(forKey: "protonESRSessions")
+        self.storage.deleteDefaultsItem(forKey: "contacts")
         
     }
     
