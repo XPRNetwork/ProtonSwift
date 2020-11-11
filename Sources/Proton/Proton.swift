@@ -721,28 +721,24 @@ public class Proton: ObservableObject {
                                                     
                                                     if tokenBalancesProcessed == tokenBalancesCount {
                                                         
-                                                        DispatchQueue.global(qos: .background).async {
+                                                        self.fetchContacts(forAccount: account) { result in
                                                             
-                                                            self.fetchContacts(forAccount: account) { result in
+                                                            switch result {
+                                                            case .success(let contacts):
                                                                 
-                                                                switch result {
-                                                                case .success(let contacts):
-                                                                    
-                                                                    for contact in contacts {
-                                                                        if let idx = self.contacts.firstIndex(of: contact) {
-                                                                            self.contacts[idx] = contact
-                                                                        } else {
-                                                                            self.contacts.append(contact)
-                                                                        }
+                                                                for contact in contacts {
+                                                                    if let idx = self.contacts.firstIndex(of: contact) {
+                                                                        self.contacts[idx] = contact
+                                                                    } else {
+                                                                        self.contacts.append(contact)
                                                                     }
-                                                                    
-                                                                case .failure: break
                                                                 }
-
-                                                                completion(.success(account))
-                                                                self.saveAll()
                                                                 
+                                                            case .failure: break
                                                             }
+
+                                                            completion(.success(account))
+                                                            self.saveAll()
                                                             
                                                         }
 
