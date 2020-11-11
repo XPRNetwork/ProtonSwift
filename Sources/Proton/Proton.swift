@@ -192,65 +192,37 @@ public class Proton: ObservableObject {
     /**
      Live updated chainProvider.
      */
-    @Published public var chainProvider: ChainProvider? = nil {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var chainProvider: ChainProvider? = nil
 
     /**
      Live updated array of tokenContracts
      */
-    @Published public var tokenContracts: [TokenContract] = [] {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var tokenContracts: [TokenContract] = []
     
     /**
      Live updated array of tokenBalances.
      */
-    @Published public var tokenBalances: [TokenBalance] = [] {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var tokenBalances: [TokenBalance] = []
     
     /**
      Live updated array of tokenTransferActions.
      */
-    @Published public var tokenTransferActions: [String: [TokenTransferAction]] = [:] {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var tokenTransferActions: [String: [TokenTransferAction]] = [:]
     
     /**
      Live updated array of contacts.
      */
-    @Published public var contacts: [Contact] = [] {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var contacts: [Contact] = []
     
     /**
      Live updated array of producers.
      */
-    @Published public var producers: [Producer] = [] {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var producers: [Producer] = []
     
     /**
      Live updated array of protonESRSessions.
      */
-    @Published public var protonESRSessions: [ProtonESRSession] = [] {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var protonESRSessions: [ProtonESRSession] = []
     
     /**
      Live updated protonESR.
@@ -272,29 +244,17 @@ public class Proton: ObservableObject {
     /**
      Live updated protonESR.
      */
-    @Published public var protonESRAvailable: Bool = false {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var protonESRAvailable: Bool = false
     
     /**
      Live updated account.
      */
-    @Published public var account: Account? = nil {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var account: Account? = nil
     
     /**
      Live updated GlobalsXPR.
      */
-    @Published public var globalsXPR: GlobalsXPR? = nil {
-        willSet {
-            self.objectWillChange.send()
-        }
-    }
+    @Published public var globalsXPR: GlobalsXPR? = nil
     
     private var protonESRSessionWebSocketWrappers: Set<ProtonESRSessionWebSocketWrapper> = []
     
