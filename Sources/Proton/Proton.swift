@@ -518,41 +518,45 @@ public class Proton: ObservableObject {
         
         WebOperations.shared.add(FetchChainProviderOperation(), toCustomQueueNamed: Proton.operationQueueSeq) { result in
             
+            var chainProvider = self.chainProvider
+            var error: Error?
+            
             switch result {
+            case .success(let returnChainProvider):
+                chainProvider = returnChainProvider as? ChainProvider
+            case .failure(let err):
+                error = err
+            }
+            
+            if let chainProvider = chainProvider {
                 
-            case .success(let chainProvider):
+                self.chainProvider = chainProvider
+                self.tokenContracts = chainProvider.tokenContracts.unique()
                 
-                if let chainProvider = chainProvider as? ChainProvider {
+                WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: self.tokenContracts),
+                                         toCustomQueueNamed: Proton.operationQueueSeq) { result in
                     
-                    self.chainProvider = chainProvider
-                    self.tokenContracts = chainProvider.tokenContracts.unique()
-                    
-                    WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: self.tokenContracts),
-                                             toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                    switch result {
                         
-                        switch result {
-                            
-                        case .success(let tokenContracts):
-                            
-                            if let tokenContracts = tokenContracts as? [TokenContract] {
-                                self.tokenContracts = tokenContracts
-                            }
-                            
-                        case .failure: break
+                    case .success(let tokenContracts):
+                        
+                        if let tokenContracts = tokenContracts as? [TokenContract] {
+                            self.tokenContracts = tokenContracts
                         }
                         
-                        self.updateExchangeRates { _ in }
-                        self.updateProducers { _ in }
-                        self.updateGlobalsXPR { _ in }
-                        
-                        completion(.success(true))
-                        
+                    case .failure: break
                     }
+                    
+                    self.updateExchangeRates { _ in }
+                    self.updateProducers { _ in }
+                    self.updateGlobalsXPR { _ in }
+                    
+                    completion(.success(true))
                     
                 }
                 
-            case .failure(let error):
-                completion(.failure(error))
+            } else {
+                completion(.failure(error ?? ProtonError.init(message: "An error occured fetching config")))
             }
             
         }
