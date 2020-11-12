@@ -1843,7 +1843,7 @@ public class Proton: ObservableObject {
                                                                          resourceToken: false, systemToken: false, name: tokenBalance.amount.symbol.name,
                                                                          desc: "", iconUrl: "", supply: Asset(0.0, tokenBalance.amount.symbol),
                                                                          maxSupply: Asset(0.0, tokenBalance.amount.symbol),
-                                                                         symbol: tokenBalance.amount.symbol, url: "", isBlacklisted: true)
+                                                                         symbol: tokenBalance.amount.symbol, url: "", isBlacklisted: false)
                                 
                                 self.tokenContracts.append(unknownTokenContract)
                                 

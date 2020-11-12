@@ -33,15 +33,15 @@ class FetchTokenContractsOperation: BaseOperation {
         var req = API.V1.Chain.GetTableRows<TokenContractABI>(code: Name(stringValue: "token.proton"),
                                                               table: Name(stringValue: "tokens"),
                                                               scope: "token.proton")
-        req.limit = 100
+        req.limit = 250
         
         do {
             
             let res = try client.sendSync(req).get()
-            
-            tokenContracts = tokenContracts.filter({ tokenContract in
-                return res.rows.contains(where: { tokenContract.id == "\($0.tcontract.stringValue):\($0.symbol.name)"})
-            })
+
+//            tokenContracts = tokenContracts.filter({ tokenContract in
+//                return res.rows.contains(where: { tokenContract.id == "\($0.tcontract.stringValue):\($0.symbol.name)"})
+//            })
             
             for row in res.rows {
                 
