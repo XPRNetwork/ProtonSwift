@@ -16,10 +16,6 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     public var id: String { return chainId }
     /// The chainId associated with the ChainProvider
     public let chainId: String
-    /// The base url to the public Proton chain rpc provider
-    public var chainUrl: String
-    /// The base url to the public Proton chain Hyperion history provider
-    public var hyperionHistoryUrl: String
     /// The url to the icon image for the Proton chain. (Mainnet/Testnet)
     public let iconUrl: String
     /// The human readable name of the Proton chain. (Mainnet/Testnet)
@@ -39,19 +35,16 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     /// The default explorer url
     public let explorerUrl: String
     /// List of chain urls
-    public var chainUrls: [String]?
+    public var chainUrls: [String]
     /// List of hyperion history urls
-    public var hyperionHistoryUrls: [String]?
+    public var hyperionHistoryUrls: [String]
     /// :nodoc:
-    public init(chainId: String, chainUrl: String, hyperionHistoryUrl: String,
-                iconUrl: String, name: String, systemTokenSymbol: String,
+    public init(chainId: String, iconUrl: String, name: String, systemTokenSymbol: String,
                 systemTokenContract: String, isTestnet: Bool, updateAccountAvatarPath: String,
                 updateAccountNamePath: String, exchangeRatePath: String, explorerUrl: String,
-                chainUrls: [String]? = nil, hyperionHistoryUrls: [String]? = nil) {
+                chainUrls: [String], hyperionHistoryUrls: [String]) {
         
         self.chainId = chainId
-        self.chainUrl = chainUrl
-        self.hyperionHistoryUrl = hyperionHistoryUrl
         self.iconUrl = iconUrl
         self.name = name
         self.systemTokenSymbol = systemTokenSymbol
@@ -76,6 +69,14 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     /// TokenContracts associated with this chainProvider
     public var tokenContracts: [TokenContract] {
         return Proton.shared.tokenContracts.filter { $0.chainId == self.chainId }
+    }
+    /// The base url to the public Proton chain rpc provider
+    public var chainUrl: String {
+        return chainUrls.first ?? ""
+    }
+    /// The base url to the public Proton hyperion provider
+    public var hyperionHistoryUrl: String {
+        return hyperionHistoryUrls.first ?? ""
     }
     
 }

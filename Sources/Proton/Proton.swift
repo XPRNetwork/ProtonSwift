@@ -579,8 +579,8 @@ public class Proton: ObservableObject {
             return
         }
         
-        var chainUrls = chainProvider.chainUrls ?? []
-        var historyUrls = chainProvider.hyperionHistoryUrls ?? []
+        var chainUrls = chainProvider.chainUrls
+        var historyUrls = chainProvider.hyperionHistoryUrls
         
         var chainUrlResponses = [URLRepsonseTimeCheck]()
         var historyUrlResponses = [URLRepsonseTimeCheck]()
@@ -590,7 +590,7 @@ public class Proton: ObservableObject {
         
         for chainUrl in chainUrls {
             
-            WebOperations.shared.add(CheckResponseTimeOperation(chainUrl: chainUrl, path: ""), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            WebOperations.shared.add(CheckChainResponseTimeOperation(chainUrl: chainUrl, path: "/v1/chain/get_info"), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 switch result {
                 case .success(let urlRepsonseTimeCheck):
                     if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? URLRepsonseTimeCheck {
@@ -608,7 +608,7 @@ public class Proton: ObservableObject {
         
         for historyUrl in historyUrls {
             
-            WebOperations.shared.add(CheckResponseTimeOperation(chainUrl: historyUrl, path: ""), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            WebOperations.shared.add(CheckHyperionHistoryResponseTimeOperation(historyUrl: historyUrl, path: "/v2/health"), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 switch result {
                 case .success(let urlRepsonseTimeCheck):
                     if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? URLRepsonseTimeCheck {
@@ -635,14 +635,14 @@ public class Proton: ObservableObject {
             self.chainProvider?.chainUrls = chainUrls
             self.chainProvider?.hyperionHistoryUrls = historyUrls
             
-            if let firstChainUrl = chainUrls.first {
-                self.chainProvider?.chainUrl = firstChainUrl
+            for c in chainUrlResponses {
+                print("\(c.url) \(c.time)")
             }
             
-            if let firstHistorynUrl = historyUrls.first {
-                self.chainProvider?.hyperionHistoryUrl = firstHistorynUrl
+            for c in historyUrlResponses {
+                print("\(c.url) \(c.time)")
             }
-            
+
             completion()
             
         }
