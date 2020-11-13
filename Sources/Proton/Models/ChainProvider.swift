@@ -17,9 +17,9 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     /// The chainId associated with the ChainProvider
     public let chainId: String
     /// The base url to the public Proton chain rpc provider
-    public let chainUrl: String
+    public var chainUrl: String
     /// The base url to the public Proton chain Hyperion history provider
-    public let hyperionHistoryUrl: String
+    public var hyperionHistoryUrl: String
     /// The url to the icon image for the Proton chain. (Mainnet/Testnet)
     public let iconUrl: String
     /// The human readable name of the Proton chain. (Mainnet/Testnet)
@@ -38,11 +38,16 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     public let exchangeRatePath: String
     /// The default explorer url
     public let explorerUrl: String
+    /// List of chain urls
+    public var chainUrls: [String]?
+    /// List of hyperion history urls
+    public var hyperionHistoryUrls: [String]?
     /// :nodoc:
     public init(chainId: String, chainUrl: String, hyperionHistoryUrl: String,
                 iconUrl: String, name: String, systemTokenSymbol: String,
                 systemTokenContract: String, isTestnet: Bool, updateAccountAvatarPath: String,
-                updateAccountNamePath: String, exchangeRatePath: String, explorerUrl: String) {
+                updateAccountNamePath: String, exchangeRatePath: String, explorerUrl: String,
+                chainUrls: [String]? = nil, hyperionHistoryUrls: [String]? = nil) {
         
         self.chainId = chainId
         self.chainUrl = chainUrl
@@ -56,6 +61,8 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
         self.updateAccountNamePath = updateAccountNamePath
         self.exchangeRatePath = exchangeRatePath
         self.explorerUrl = explorerUrl
+        self.chainUrls = chainUrls
+        self.hyperionHistoryUrls = hyperionHistoryUrls
         
     }
     /// :nodoc:

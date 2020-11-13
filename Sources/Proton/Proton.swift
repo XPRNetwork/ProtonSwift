@@ -533,31 +533,117 @@ public class Proton: ObservableObject {
                 self.chainProvider = chainProvider
                 self.tokenContracts = chainProvider.tokenContracts.unique()
                 
-                WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: self.tokenContracts),
-                                         toCustomQueueNamed: Proton.operationQueueSeq) { result in
+                self.optimizeChainProvider {
                     
-                    switch result {
+                    WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: self.tokenContracts),
+                                             toCustomQueueNamed: Proton.operationQueueSeq) { result in
                         
-                    case .success(let tokenContracts):
-                        
-                        if let tokenContracts = tokenContracts as? [TokenContract] {
-                            self.tokenContracts = tokenContracts
+                        switch result {
+                            
+                        case .success(let tokenContracts):
+                            
+                            if let tokenContracts = tokenContracts as? [TokenContract] {
+                                self.tokenContracts = tokenContracts
+                            }
+                            
+                        case .failure: break
                         }
                         
-                    case .failure: break
+                        self.updateExchangeRates { _ in }
+                        self.updateProducers { _ in }
+                        self.updateGlobalsXPR { _ in }
+                        
+                        completion(.success(true))
+                        
                     }
                     
-                    self.updateExchangeRates { _ in }
-                    self.updateProducers { _ in }
-                    self.updateGlobalsXPR { _ in }
-                    
-                    completion(.success(true))
-                    
                 }
-                
+
             } else {
                 completion(.failure(error ?? ProtonError.init(message: "An error occured fetching config")))
             }
+            
+        }
+        
+    }
+    
+    /**
+    Checks latency of all chainUrls & hyperionHistoryUrls to determing the best endpoint
+     - Parameter completion: Closure returning Result
+     */
+    private func optimizeChainProvider(completion: @escaping (() -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            print("Missing ChainProvider")
+            completion()
+            return
+        }
+        
+        var chainUrls = chainProvider.chainUrls ?? []
+        var historyUrls = chainProvider.hyperionHistoryUrls ?? []
+        
+        var chainUrlResponses = [URLRepsonseTimeCheck]()
+        var historyUrlResponses = [URLRepsonseTimeCheck]()
+        
+        var chainUrlOperationsCompleted = 0
+        var historyUrlOperationsCompleted = 0
+        
+        for chainUrl in chainUrls {
+            
+            WebOperations.shared.add(CheckResponseTimeOperation(chainUrl: chainUrl, path: ""), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                switch result {
+                case .success(let urlRepsonseTimeCheck):
+                    if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? URLRepsonseTimeCheck {
+                        chainUrlResponses.append(urlRepsonseTimeCheck)
+                    }
+                case .failure: ()
+                }
+                chainUrlOperationsCompleted += 1
+                if chainUrlOperationsCompleted == chainUrls.count && historyUrlOperationsCompleted == historyUrls.count {
+                    completeAndReturn()
+                }
+            }
+            
+        }
+        
+        for historyUrl in historyUrls {
+            
+            WebOperations.shared.add(CheckResponseTimeOperation(chainUrl: historyUrl, path: ""), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                switch result {
+                case .success(let urlRepsonseTimeCheck):
+                    if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? URLRepsonseTimeCheck {
+                        historyUrlResponses.append(urlRepsonseTimeCheck)
+                    }
+                case .failure: ()
+                }
+                historyUrlOperationsCompleted += 1
+                if chainUrlOperationsCompleted == chainUrls.count && historyUrlOperationsCompleted == historyUrls.count {
+                    completeAndReturn()
+                }
+            }
+            
+        }
+        
+        func completeAndReturn() {
+            
+            chainUrlResponses.sort(by: { $0.time < $1.time })
+            chainUrls = chainUrlResponses.map({ $0.url })
+            
+            historyUrlResponses.sort(by: { $0.time < $1.time })
+            historyUrls = historyUrlResponses.map({ $0.url })
+            
+            self.chainProvider?.chainUrls = chainUrls
+            self.chainProvider?.hyperionHistoryUrls = historyUrls
+            
+            if let firstChainUrl = chainUrls.first {
+                self.chainProvider?.chainUrl = firstChainUrl
+            }
+            
+            if let firstHistorynUrl = historyUrls.first {
+                self.chainProvider?.hyperionHistoryUrl = firstHistorynUrl
+            }
+            
+            completion()
             
         }
         
