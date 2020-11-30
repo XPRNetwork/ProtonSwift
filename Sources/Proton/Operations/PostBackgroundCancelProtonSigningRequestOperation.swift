@@ -29,7 +29,7 @@ class PostBackgroundCancelProtonSigningRequestOperation: BaseOperation {
             return
         }
         
-        let parameters: [String: String] = ["error": "User canceled request"]
+        let parameters: [String: String] = ["rejected": "User canceled request"]
         
         guard let url = URL(string: callback.url) else {
             self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form proper URL from callback"))
