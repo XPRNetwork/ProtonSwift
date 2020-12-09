@@ -51,6 +51,7 @@ class FetchTokenTransferActionsOperation: BaseOperation {
         req.filter = "\(self.tokenContract.contract.stringValue):transfer"
         req.transferSymbol = self.tokenContract.symbol.name
         req.limit = UInt(self.limt)
+        req.sort = .desc
 
         do {
 
@@ -59,8 +60,8 @@ class FetchTokenTransferActionsOperation: BaseOperation {
             var tokenTranfsers = Set<TokenTransferAction>()
 
             for action in res.actions {
-
-                let transferAction = TokenTransferAction(chainId: account.chainId, accountId: account.id,
+            
+                let transferAction = TokenTransferAction(globalSequence: action.globalSequence ?? 0, chainId: account.chainId, accountId: account.id,
                                                          tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id,
                                                          name: "transfer", contract: tokenContract.contract,
                                                          trxId: String(action.trxId), date: action.timestamp.date,

@@ -19,7 +19,7 @@ import UIKit
 /**
 The TokenContract object provides chain information about a token contract from the Proton chain
 */
-public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol {
+public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProtocol, TokenBalanceProtocol {
     /// This is used as the primary key for storing the account
     public var id: String { return "\(self.contract.stringValue):\(self.symbol.name)" }
     /// The chainId associated with the TokenBalance
@@ -92,6 +92,13 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     /// ChainProvider associated with the Account
     public var chainProvider: ChainProvider? {
         return Proton.shared.chainProvider?.chainId == self.chainId ? Proton.shared.chainProvider : nil
+    }
+    /// TokenBalance associated with the Account
+    public var tokenBalance: TokenBalance? {
+        if let account = Proton.shared.account {
+            return Proton.shared.tokenBalances.first(where: { $0.accountId == account.id && $0.tokenContractId == self.id })
+        }
+        return nil
     }
     
     public func getRate(forCurrencyCode currencyCode: String = "USD") -> Double {

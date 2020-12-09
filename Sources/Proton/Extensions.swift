@@ -122,6 +122,27 @@ public extension Asset {
     
 }
 
+public extension Double {
+
+    func formatted(forLocale locale: Locale = Locale(identifier: "en_US"), withPrecision precision: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = locale
+        formatter.minimumIntegerDigits = 1
+        formatter.minimumFractionDigits = precision
+        formatter.maximumFractionDigits = precision
+        let retval = formatter.string(for: self) ?? "0.0"
+        return retval
+    }
+    
+    /// Rounds the double to decimal places value
+    func roundTo(places: Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded(.down) / divisor
+    }
+
+}
+
 extension PrivateKey {
     
     func getSymmetricKey(_ publicKey: PublicKey, _ nonce: UInt64) throws -> Data {

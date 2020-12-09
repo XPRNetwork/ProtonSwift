@@ -1,5 +1,5 @@
 //
-//  ClaimRewardsABI.swift
+//  VoterClaimABI.swift
 //  Proton
 //
 //  Created by Jacob Davis on 4/20/20.
@@ -9,7 +9,7 @@
 import EOSIO
 import Foundation
 
-public struct ClaimRewardsABI: ABICodable {
+public struct VoterClaimABI: ABICodable {
 
     public let owner: Name
 
@@ -19,11 +19,11 @@ public struct ClaimRewardsABI: ABICodable {
 
     static let abi = ABI(
         structs: [
-            ["claimrewards": [
+            ["voterclaim": [
                 ["owner", "name"],
             ]],
         ],
-        actions: ["claimrewards"]
+        actions: ["voterclaim"]
     )
 
 }

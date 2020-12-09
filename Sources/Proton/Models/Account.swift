@@ -232,18 +232,16 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             return self.tokenBalances.first(where: { $0.amount.value > 0 })
         }
     }
+    /// Returns the first tokenBalance that has more than zero balance. System balance always takes precedence.
+    public var firstSwappableAvailableTokenBalance: TokenBalance? {
+        if self.availableSystemBalance().value > 0 {
+            return self.systemTokenBalance
+        } else {
+            return self.tokenBalances.first(where: { $0.amount.value > 0 && $0.tokenContract?.contract.stringValue == "xtokens" })
+        }
+    }
     
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> String {
-        
-//        let tokenBalances = self.tokenBalances
-//        let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in
-//            value + (tokenBalance.amount.value * tokenBalance.getRate(forCurrencyCode: locale.currencyCode ?? "USD"))
-//        }
-//
-//        let formatter = NumberFormatter()
-//        formatter.numberStyle = .currency
-//        formatter.locale = locale
-//        return formatter.string(for: amount) ?? "$0.00"
         
         let tokenBalances = self.tokenBalances
         let amount: Double = tokenBalances.reduce(0.0) { value, tokenBalance in

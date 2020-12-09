@@ -13,7 +13,9 @@ The TokenTransferAction object provide information about a transfer action
 */
 public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProtocol, TokenContractProtocol {
     /// This is used as the primary key for storing the account
-    public var id: String { return "\(accountId):\(name):\(contract.stringValue):\(trxId)" }
+    public var id: String { return "\(trxId):\(globalSequence)" }
+    /// The global sequence of this action
+    public let globalSequence: UInt64
     /// The chainId associated with the TokenTransferAction
     public let chainId: String
     /// accountId is used to link Account. It is the chainId + ":" + name.stringValue.
@@ -56,6 +58,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
     public init?(account: Account, tokenBalance: TokenBalance,
                  dictionary: [String: Any]) {
 
+        guard let globalSequence = dictionary["global_sequence"] as? UInt64 else { return nil }
         guard let act = dictionary["act"] as? [String: Any] else { return nil }
         guard let name = act["name"] as? String else { return nil }
         guard let contract = act["account"] as? String else { return nil }
@@ -69,7 +72,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
         guard let quantityString = data["quantity"] as? String else { return nil }
         guard let quantity = try? Asset(stringValue: quantityString) else { return nil }
 
-        self.init(chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
+        self.init(globalSequence: globalSequence, chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
                   tokenContractId: tokenBalance.tokenContractId, name: name, contract: Name(contract), trxId: trxId,
                   date: date, sent: account.name.stringValue == from ? true : false,
                   from: Name(from), to: Name(to), quantity: quantity, memo: memo)
@@ -80,6 +83,7 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
                  tokenContract: TokenContract, transferActionABI: TransferActionABI,
                  dictionary: [String: Any]) {
 
+        guard let globalSequence = dictionary["global_sequence"] as? UInt64 else { return nil }
         guard let act = dictionary["act"] as? [String: Any] else { return nil }
         guard let name = act["name"] as? String else { return nil }
         guard let contract = act["account"] as? String else { return nil }
@@ -87,17 +91,18 @@ public struct TokenTransferAction: Codable, Identifiable, Hashable, ContactProto
         guard let timestamp = dictionary["@timestamp"] as? String,
             let date = Date.dateFromAction(timeStamp: timestamp) else { return nil }
 
-        self.init(chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
+        self.init(globalSequence: globalSequence, chainId: account.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id,
                   tokenContractId: tokenContract.id, name: name, contract: Name(contract), trxId: trxId,
                   date: date, sent: account.name.stringValue == transferActionABI.from.stringValue ? true : false,
                   from: transferActionABI.from, to: transferActionABI.to, quantity: transferActionABI.quantity, memo: transferActionABI.memo)
 
     }
     /// :nodoc:
-    init(chainId: String, accountId: String, tokenBalanceId: String, tokenContractId: String,
+    init(globalSequence: UInt64, chainId: String, accountId: String, tokenBalanceId: String, tokenContractId: String,
          name: String, contract: Name, trxId: String, date: Date, sent: Bool,
          from: Name, to: Name, quantity: Asset, memo: String) {
 
+        self.globalSequence = globalSequence
         self.chainId = chainId
         self.accountId = accountId
         self.tokenBalanceId = tokenBalanceId

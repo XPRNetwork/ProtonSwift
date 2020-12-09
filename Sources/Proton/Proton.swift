@@ -220,6 +220,11 @@ public class Proton: ObservableObject {
     @Published public var producers: [Producer] = []
     
     /**
+     Live updated array of producers.
+    */
+    @Published public var swapPools: [SwapPool] = []
+    
+    /**
      Live updated array of protonESRSessions.
      */
     @Published public var protonESRSessions: [ProtonESRSession] = []
@@ -273,6 +278,7 @@ public class Proton: ObservableObject {
         self.protonESRSessions = self.storage.getDefaultsItem([ProtonESRSession].self, forKey: "protonESRSessions") ?? []
         self.contacts = self.storage.getDefaultsItem([Contact].self, forKey: "contacts") ?? []
         self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
+        self.swapPools = self.storage.getDefaultsItem([SwapPool].self, forKey: "swapPools") ?? []
         self.globalsXPR = self.storage.getDefaultsItem(GlobalsXPR.self, forKey: "globalsXPR") ?? nil
         
     }
@@ -290,6 +296,7 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.protonESRSessions, forKey: "protonESRSessions")
         self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
         self.storage.setDefaultsItem(self.producers, forKey: "producers")
+        self.storage.setDefaultsItem(self.swapPools, forKey: "swapPools")
         self.storage.setDefaultsItem(self.globalsXPR, forKey: "globalsXPR")
         
     }
@@ -552,6 +559,7 @@ public class Proton: ObservableObject {
                         self.updateExchangeRates { _ in }
                         self.updateProducers { _ in }
                         self.updateGlobalsXPR { _ in }
+                        self.updateSwapPools { _ in }
                         
                         completion(.success(true))
                         
@@ -792,6 +800,12 @@ public class Proton: ObservableObject {
                                                         var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
 
                                                         for transferAction in transferActions {
+                                                        
+                                                            // remove any actions that where adding using 0 as globalSequence. This
+                                                            // happens when manually adding action after transfer, etc.
+                                                            if let zeroIdx = tokenTransferActions.firstIndex(where: { $0.trxId == transferAction.trxId && $0.globalSequence == 0 }) {
+                                                                tokenTransferActions.remove(at: zeroIdx)
+                                                            }
                                                             
                                                             if let idx = tokenTransferActions.firstIndex(of: transferAction) {
                                                                 tokenTransferActions[idx] = transferAction
@@ -1140,7 +1154,7 @@ public class Proton: ObservableObject {
                     switch result {
                     case .success(let response):
                         
-                        let tokenTransferAction = TokenTransferAction(chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
+                        let tokenTransferAction = TokenTransferAction(globalSequence: 0, chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
                         
                         var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
                         
@@ -1292,7 +1306,7 @@ public class Proton: ObservableObject {
      - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func claimRewards(withPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<Any?, Error>) -> Void)) {
+    public func claimRewards(withPrivateKey privateKey: PrivateKey, restake: Bool, completion: @escaping ((Result<Any?, Error>) -> Void)) {
         
         guard let account = self.account else {
             completion(.failure(Proton.ProtonError(message: "No active account")))
@@ -1313,18 +1327,26 @@ public class Proton: ObservableObject {
             completion(.failure(Proton.ProtonError(message: "Account has no rewards to claim")))
             return
         }
-        
+
         do {
             
             let publicKey = try privateKey.getPublic()
             if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
 
-                let claim = ClaimRewardsABI(owner: account.name)
+                var abiData: Data?
                 
-                guard let action = try? Action(account: Name("eosio"), name: "voterclaim", authorization: [PermissionLevel(account.name, "active")], value: claim) else {
+                if restake {
+                    abiData = try ABIEncoder().encode(VoterClaimstABI(owner: account.name))
+                } else {
+                    abiData = try ABIEncoder().encode(VoterClaimABI(owner: account.name))
+                }
+                
+                guard let data = abiData else {
                     completion(.failure(Proton.ProtonError(message: "Unable to create action")))
                     return
                 }
+                
+                let action = Action(account: Name("eosio"), name: restake ? "voterclaimst" : "voterclaim", authorization: [PermissionLevel(account.name, "active")], data: data)
                 
                 self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
                     
@@ -2101,6 +2123,34 @@ public class Proton: ObservableObject {
             
         } else {
             completion(.failure(Proton.ProtonError(message: "Account missing chainProvider")))
+        }
+        
+    }
+    
+    /**
+     Fetches and updates the swap pools
+     - Parameter completion: Closure returning Result
+    */
+    public func updateSwapPools(completion: @escaping ((Result<[SwapPool]?, Error>) -> Void)) {
+
+        if let chainProvider = self.chainProvider {
+            
+            WebOperations.shared.add(FetchSwapPoolsOperation(chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                
+                switch result {
+                case .success(let swapPools):
+                    
+                    self.swapPools = swapPools as? [SwapPool] ?? []
+                    completion(.success(self.swapPools))
+                    
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+                
+            }
+            
+        } else {
+            completion(.failure(Proton.ProtonError(message: "Missing chainProvider")))
         }
         
     }
