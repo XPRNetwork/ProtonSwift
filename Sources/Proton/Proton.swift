@@ -165,12 +165,7 @@ public class Proton: ObservableObject {
         
         self.enableProtonESRWebSocketConnections()
         
-        print("🧑‍💻 LOAD COMPLETED")
-        print("ACTIVE ACCOUNT => \(String(describing: self.account?.name.stringValue))")
-        print("TOKEN CONTRACTS => \(self.tokenContracts.count)")
-        print("TOKEN BALANCES => \(self.tokenBalances.count)")
-        print("TOKEN TRANSFER ACTIONS => \(self.tokenTransferActions.count)")
-        print("SIGNING REQUEST SESSIONS => \(self.protonESRSessions.count)")
+        print("⚛️ [ACTIVE ACCOUNT - \(self.account?.name.stringValue ?? "No active account")]")
         
     }
     
@@ -347,11 +342,11 @@ public class Proton: ObservableObject {
                 
             }
             socket.onConnect = {
-                print("CONNECTED SOCKET \(socket.currentURL)")
+                print("⚛️ [PSR SOCKET SESSION CONNECTED - \(socket.currentURL)]")
             }
             socket.onDisconnect = { error in
                 if let error = error {
-                    print("DISCONNECT SOCKET \(socket.currentURL) for reason: \(error)")
+                    print("⚛️ [PSR SOCKET SESSION DISSCONNECTED - \(socket.currentURL), for reason: \(error)]")
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         socket.connect()
                     }
@@ -643,13 +638,8 @@ public class Proton: ObservableObject {
             self.chainProvider?.chainUrls = chainUrls
             self.chainProvider?.hyperionHistoryUrls = historyUrls
             
-            for c in chainUrlResponses {
-                print("\(c.url) \(c.time)")
-            }
-            
-            for c in historyUrlResponses {
-                print("\(c.url) \(c.time)")
-            }
+            print("⚛️ [CHAIN ENDPOINT - \(chainUrlResponses.first?.url ?? "None...")]")
+            print("⚛️ [HISTORY ENDPOINT - \(historyUrlResponses.first?.url ?? "None...")]")
 
             completion()
             
