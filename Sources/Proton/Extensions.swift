@@ -135,11 +135,17 @@ public extension Double {
         return retval
     }
     
-    /// Rounds the double to decimal places value
-    func roundTo(places: Int) -> Double {
-        let divisor = pow(10.0, Double(places))
+    func rounded(withPrecision precision: Int) -> Double {
+        let divisor = pow(10.0, Double(precision))
         return (self * divisor).rounded(.down) / divisor
     }
+    
+//    func rounded(withPrecision precision: Int) -> String? {
+//        let formatter = NumberFormatter()
+//        formatter.numberStyle = .decimal
+//        formatter.maximumFractionDigits = precision
+//        return formatter.string(from: self as NSNumber)
+//    }
 
 }
 
@@ -156,11 +162,4 @@ extension PrivateKey {
         return keyData.sha512Digest
     }
     
-}
-
-extension URL {
-    
-    func fixCallbackUrl() -> URL? {
-        return nil
-    }
 }

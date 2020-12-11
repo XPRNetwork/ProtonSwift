@@ -84,16 +84,25 @@ public struct SwapPool: Codable, Identifiable, Hashable {
         return self.pool2.quantity.value / self.pool1.quantity.value
     }
     
-    /**
- * XPR<>XUSDT (XPR -> XUSDT)
- *
- *                     pool1 * pool2
- *  term =  pool2  -  --------------
- *                     pool1 + swap
- *
- *  result = term - (term * fee)
- */
-//export const compute_transfer = (pool1, pool2, swap, fee, precision) => {
+    public func contains(tokenContract: TokenContract?) -> Bool {
+        if let tokenContract = tokenContract {
+            return tokenContract == pool1TokenContract || tokenContract == pool2TokenContract
+        }
+        return false
+    }
+    
+    public func opposingTokenContract(fromOther tokenContract: TokenContract?) -> TokenContract? {
+        if let tokenContract = tokenContract {
+            if tokenContract == pool1TokenContract {
+                return pool2TokenContract
+            } else if tokenContract == pool2TokenContract {
+                return pool1TokenContract
+            }
+        }
+        return nil
+    }
+    
+//    export const compute_transfer = (pool1, pool2, swap, fee, precision) => {
 //  fee = BN(fee).dividedBy(FEE_PRECISION * 100)
 //  const term1 = BN(pool2)
 //  const term2a = BN(pool1).multipliedBy(pool2)
@@ -104,23 +113,28 @@ public struct SwapPool: Codable, Identifiable, Hashable {
 //  return result.toFixed(precision, BN.ROUND_DOWN)
 //}
 
-    public func compute(fromAmount amount: Double, fromSymbol: Asset.Symbol) -> Double {
+    public func toAmount(fromAmount amount: Double, fromSymbol: Asset.Symbol) -> Double {
         let flipped = self.pool1.quantity.symbol != fromSymbol
         let fee = Double(self.fee.exchangeFee) / 10000.0
         let term1 = !flipped ? self.pool2.quantity.value : self.pool1.quantity.value
-        let term2a = !flipped ? (self.pool1.quantity.value * self.pool2.quantity.value) : (self.pool2.quantity.value * self.pool1.quantity.value)
+        let term2a = self.pool1.quantity.value * self.pool2.quantity.value
         let term2b = !flipped ? (self.pool1.quantity.value + amount) : (self.pool2.quantity.value + amount)
         let term2 = term2a / term2b
         let term = term1 - term2
         let result = term - (term * fee)
-        return result.roundTo(places: Int(!flipped ? self.pool2.quantity.symbol.precision : self.pool1.quantity.symbol.precision))
+        return result.rounded(withPrecision: Int(!flipped ? self.pool2.quantity.symbol.precision : self.pool1.quantity.symbol.precision))
     }
 
     public func priceImpact(fromAmount amount: Double, toSymbol: Asset.Symbol) -> Double {
         let flipped = self.pool2.quantity.symbol != toSymbol
         let expectedAmount = amount * (!flipped ? self.pool2Rate : self.pool1Rate)
-        let actualAmount = compute(fromAmount: amount, fromSymbol: !flipped ? self.pool1.quantity.symbol : self.pool2.quantity.symbol)
-        return ((1.0 - (actualAmount / expectedAmount)) * 100).roundTo(places: 2)
+        let actualAmount = toAmount(fromAmount: amount, fromSymbol: !flipped ? self.pool1.quantity.symbol : self.pool2.quantity.symbol)
+        return ((1.0 - (actualAmount / expectedAmount)) * 100).rounded(withPrecision: 2)
+    }
+    
+    public func minimumReceived(toAmount amount: Double, toSymbol: Asset.Symbol) -> Double {
+        let flipped = self.pool2.quantity.symbol != toSymbol
+        return (amount - (amount * SwapPool.slippage)).rounded(withPrecision: Int(!flipped ? self.pool2.quantity.symbol.precision : self.pool1.quantity.symbol.precision))
     }
     
 }

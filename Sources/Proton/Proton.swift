@@ -1115,19 +1115,14 @@ public class Proton: ObservableObject {
      - Parameter memo: The memo for the transfer
      - Parameter completion: Closure returning Result
      */
-    public func transfer(withPrivateKey privateKey: PrivateKey, to: Name, quantity: Double, tokenContract: TokenContract, memo: String = "", completion: @escaping ((Result<TokenTransferAction, Error>) -> Void)) {
+    public func transfer(withPrivateKey privateKey: PrivateKey, to: Name, quantity: Double, tokenContract: TokenContract, memo: String = "", completion: @escaping ((Result<Any?, Error>) -> Void)) {
         
         guard let account = self.account else {
             completion(.failure(Proton.ProtonError(message: "No active account")))
             return
         }
         
-        guard let chainProvider = account.chainProvider else {
-            completion(.failure(Proton.ProtonError(message: "Unable to find chain provider")))
-            return
-        }
-        
-        guard var tokenBalance = self.tokenBalances.first(where: { $0.tokenContractId == tokenContract.id }) else {
+        guard let tokenBalance = self.tokenBalances.first(where: { $0.tokenContractId == tokenContract.id }) else {
             completion(.failure(Proton.ProtonError(message: "Account has no token balance for \(tokenContract.name)")))
             return
         }
@@ -1153,26 +1148,12 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let response):
-                        
-                        let tokenTransferAction = TokenTransferAction(globalSequence: 0, chainId: chainProvider.chainId, accountId: account.id, tokenBalanceId: tokenBalance.id, tokenContractId: tokenContract.id, name: action.name.stringValue, contract: action.account, trxId: String(response.transactionId), date: Date(), sent: true, from: account.name, to: to, quantity: transfer.quantity, memo: transfer.memo)
-                        
-                        var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
-                        
-                        tokenTransferActions.append(tokenTransferAction)
-                        tokenTransferActions.sort(by: {  $0.date > $1.date })
-                        self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
-                        
-                        if tokenTransferAction.sent {
-                            tokenBalance.amount -= tokenTransferAction.quantity
-                        } else {
-                            tokenBalance.amount += tokenTransferAction.quantity
-                        }
-                        
-                        if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
-                            self.tokenBalances[index] = tokenBalance
+                    
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.updateAccount { _ in }
                         }
 
-                        completion(.success(tokenTransferAction))
+                        completion(.success(response))
                         
                     case .failure(let error):
                         completion(.failure(error))
@@ -1203,7 +1184,7 @@ public class Proton: ObservableObject {
             return
         }
         
-        guard var tokenBalance = account.systemTokenBalance else {
+        guard let tokenBalance = account.systemTokenBalance else {
             completion(.failure(Proton.ProtonError(message: "Account has no token balance for XPR")))
             return
         }
@@ -1246,43 +1227,10 @@ public class Proton: ObservableObject {
                     switch result {
                     case .success(let response):
                         
-                        if let actions = response.processed["actions"] as? [[String: Any]] {
-                            
-                            for action in actions {
-                                
-                                print(action)
-                                
-                                if let act = action["act"] as? [String: Any], let name = act["name"] as? String, let acc = act["account"] as? String {
-                                    
-                                    if name == "transfer" && acc == "eosio.token" {
-                                        
-                                        if let stakeAction = TokenTransferAction(account: account, tokenBalance: tokenBalance, dictionary: action) {
-                                            
-                                            var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
-                                            tokenTransferActions.append(stakeAction)
-                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
-                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
-                                            
-                                            if quantity > 0 {
-                                                tokenBalance.amount -= stakeAction.quantity
-                                            } else {
-                                                tokenBalance.amount += stakeAction.quantity
-                                            }
-                                            
-                                            if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
-                                                self.tokenBalances[index] = tokenBalance
-                                            }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.updateAccount { _ in }
                         }
-                        
+
                         completion(.success(response))
                         
                     case .failure(let error):
@@ -1318,11 +1266,6 @@ public class Proton: ObservableObject {
             return
         }
         
-        guard var tokenBalance = self.tokenBalances.first(where: { $0.tokenContract?.systemToken == true }) else {
-            completion(.failure(Proton.ProtonError(message: "Unable to find chain provider")))
-            return
-        }
-        
         if staking.claimAmount.value == .zero {
             completion(.failure(Proton.ProtonError(message: "Account has no rewards to claim")))
             return
@@ -1352,40 +1295,11 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let response):
-                        
-                        if let actions = response.processed["actions"] as? [[String: Any]] {
-                            
-                            for action in actions {
-                                
-                                print(action)
-                                
-                                if let act = action["act"] as? [String: Any], let name = act["name"] as? String, let acc = act["account"] as? String {
-                                    
-                                    if name == "transfer" && acc == "eosio.token" {
-                                        
-                                        if let claimReceivedAction = TokenTransferAction(account: account, tokenBalance: tokenBalance, dictionary: action) {
-                                            
-                                            var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
-                                            tokenTransferActions.append(claimReceivedAction)
-                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
-                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
-                                            
-                                            tokenBalance.amount += claimReceivedAction.quantity
-                                            
-                                            if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
-                                                self.tokenBalances[index] = tokenBalance
-                                            }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.updateAccount { _ in }
                         }
-                        
+
                         completion(.success(response))
                         
                     case .failure(let error):
@@ -1416,11 +1330,6 @@ public class Proton: ObservableObject {
             return
         }
         
-        guard var tokenBalance = self.tokenBalances.first(where: { $0.tokenContract?.systemToken == true }) else {
-            completion(.failure(Proton.ProtonError(message: "Unable to find chain provider")))
-            return
-        }
-        
         do {
             
             let publicKey = try privateKey.getPublic()
@@ -1438,39 +1347,10 @@ public class Proton: ObservableObject {
                     switch result {
                     case .success(let response):
                         
-                        if let actions = response.processed["actions"] as? [[String: Any]] {
-                            
-                            for action in actions {
-                                
-                                print(action)
-                                
-                                if let act = action["act"] as? [String: Any], let name = act["name"] as? String, let acc = act["account"] as? String {
-                                    
-                                    if name == "transfer" && acc == "eosio.token" {
-                                        
-                                        if let claimReceivedAction = TokenTransferAction(account: account, tokenBalance: tokenBalance, dictionary: action) {
-                                            
-                                            var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
-                                            tokenTransferActions.append(claimReceivedAction)
-                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
-                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
-                                            
-                                            tokenBalance.amount += claimReceivedAction.quantity
-                                            
-                                            if let index = self.tokenBalances.firstIndex(of: tokenBalance) {
-                                                self.tokenBalances[index] = tokenBalance
-                                            }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.updateAccount { _ in }
                         }
-                        
+
                         completion(.success(response))
                         
                     case .failure(let error):
@@ -1520,7 +1400,71 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let response):
+                    
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.updateAccount { _ in }
+                        }
+
                         completion(.success(response))
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            } else {
+                completion(.failure(Proton.ProtonError(message: "Key not associated with active permissions for account")))
+            }
+            
+        } catch {
+            completion(.failure(Proton.ProtonError(message: "Key not valid for transaction")))
+        }
+
+    }
+    
+        /**
+     Swaps tokens
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter quantity: Amount
+     - Parameter completion: Closure returning Result
+     */
+    public func swap(withPrivateKey privateKey: PrivateKey, swapPool: SwapPool,
+                     fromTokenContract: TokenContract, toTokenContract: TokenContract,
+                     quantity: Double, completion: @escaping ((Result<Any?, Error>) -> Void)) {
+    
+        guard let account = self.account else {
+            completion(.failure(Proton.ProtonError(message: "No active account")))
+            return
+        }
+
+        let min = swapPool.minimumReceived(toAmount: swapPool.toAmount(fromAmount: quantity, fromSymbol: fromTokenContract.symbol), toSymbol: toTokenContract.symbol)
+        let minAsset = Asset(min, toTokenContract.symbol)
+        let memo = "\(swapPool.liquidityTokenSymbol.name),\(minAsset.units)"
+        
+        do {
+            
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
+                let transfer = TransferActionABI(from: account.name, to: Name("swaptest2"), quantity: Asset(quantity, fromTokenContract.symbol), memo: memo)
+                
+                guard let action = try? Action(account: fromTokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
+                    completion(.failure(Proton.ProtonError(message: "Unable to create action")))
+                    return
+                }
+                
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
+                    
+                    switch result {
+                    case .success(let response):
+                    
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.updateAccount { _ in }
+                        }
+
+                        completion(.success(response))
+                        
                     case .failure(let error):
                         completion(.failure(error))
                     }
