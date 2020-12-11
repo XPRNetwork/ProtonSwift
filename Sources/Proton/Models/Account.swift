@@ -232,13 +232,9 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             return self.tokenBalances.first(where: { $0.amount.value > 0 })
         }
     }
-    /// Returns the first tokenBalance that has more than zero balance. System balance always takes precedence.
-    public var firstSwappableAvailableTokenBalance: TokenBalance? {
-        if self.availableSystemBalance().value > 0 {
-            return self.systemTokenBalance
-        } else {
-            return self.tokenBalances.first(where: { $0.amount.value > 0 && $0.tokenContract?.contract.stringValue == "xtokens" })
-        }
+    
+    public var canSwap: Bool {
+        return Proton.shared.swapPools.first(where: { $0.balanceAvailableToSwap == true }) != nil
     }
     
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> String {

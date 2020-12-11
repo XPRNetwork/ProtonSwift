@@ -101,17 +101,6 @@ public struct SwapPool: Codable, Identifiable, Hashable {
         }
         return nil
     }
-    
-//    export const compute_transfer = (pool1, pool2, swap, fee, precision) => {
-//  fee = BN(fee).dividedBy(FEE_PRECISION * 100)
-//  const term1 = BN(pool2)
-//  const term2a = BN(pool1).multipliedBy(pool2)
-//  const term2b = BN(pool1).plus(swap)
-//  const term2 = term2a.dividedBy(term2b)
-//  const term = term1.minus(term2)
-//  const result = term.minus(term.multipliedBy(fee))
-//  return result.toFixed(precision, BN.ROUND_DOWN)
-//}
 
     public func toAmount(fromAmount amount: Double, fromSymbol: Asset.Symbol) -> Double {
         let flipped = self.pool1.quantity.symbol != fromSymbol

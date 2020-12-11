@@ -1437,7 +1437,7 @@ public class Proton: ObservableObject {
             let publicKey = try privateKey.getPublic()
             if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
 
-                let transfer = TransferActionABI(from: account.name, to: Name("swaptest2"), quantity: Asset(quantity, fromTokenContract.symbol), memo: memo)
+                let transfer = TransferActionABI(from: account.name, to: Name("proton.swaps"), quantity: Asset(quantity, fromTokenContract.symbol), memo: memo)
                 
                 guard let action = try? Action(account: fromTokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
                     completion(.failure(Proton.ProtonError(message: "Unable to create action")))

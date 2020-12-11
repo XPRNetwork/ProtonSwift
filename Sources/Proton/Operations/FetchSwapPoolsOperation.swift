@@ -31,9 +31,9 @@ class FetchSwapPoolsOperation: BaseOperation {
         func makeRequest(lowerBound: String?) {
         
             let client = Client(address: url)
-            var req = API.V1.Chain.GetTableRows<SwapPoolsABI>(code: Name(stringValue: "swaptest2"),
+            var req = API.V1.Chain.GetTableRows<SwapPoolsABI>(code: Name(stringValue: "proton.swaps"),
                                                                   table: Name(stringValue: "pools"),
-                                                                  scope: "swaptest2")
+                                                                  scope: "proton.swaps")
             req.limit = 250
             req.lowerBound = lowerBound
         

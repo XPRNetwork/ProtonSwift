@@ -30,10 +30,10 @@
       },
       {
         "package": "swift-eosio",
-        "repositoryURL": "https://github.com/greymass/swift-eosio.git",
+        "repositoryURL": "https://github.com/ProtonProtocol/swift-eosio.git",
         "state": {
-          "branch": "master",
-          "revision": "fc6e3d11014cb59d43a7c8f8142893cf7c420e26",
+          "branch": "feature/hyperion-get-transaction",
+          "revision": "bcbfa06ae931ee528fa9e92dc21e34b9c99127f6",
           "version": null
         }
       },
