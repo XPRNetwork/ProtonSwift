@@ -25,51 +25,60 @@ class CheckChainResponseTimeOperation: BaseOperation {
         
         super.main()
         
+        var retval = URLRepsonseTimeCheck(url: self.chainUrl, headBlock: 0, blockDiff: 0, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: 0.0)
+        
         guard let url = URL(string: "\(chainUrl)\(path)") else {
-            self.finish(retval: URLRepsonseTimeCheck(url: chainUrl, time: Date.distantPast.timeIntervalSinceNow * -1), error: nil)
+            self.finish(retval: retval, error: nil)
             return
         }
-        
+
         let start = Date()
-        
+
         let urlRequest = URLRequest(url: url, timeoutInterval: 5.0)
-        
+
         let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
-            
+
             if let _ = error {
-                self.finish(retval: URLRepsonseTimeCheck(url: self.chainUrl, time: Date.distantPast.timeIntervalSinceNow * -1), error: nil)
+                self.finish(retval: retval, error: nil)
             }
             guard let data = data, let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                self.finish(retval: URLRepsonseTimeCheck(url: self.chainUrl, time: Date.distantPast.timeIntervalSinceNow * -1), error: nil)
+                self.finish(retval: retval, error: nil)
                 return
             }
-            
-            var end = Date().timeIntervalSince(start)
+
+            let end = Date().timeIntervalSince(start)
             var blockDiff: BlockNum?
-            
+
             do {
                 let res = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any]
                 if let hb = res["head_block_num"] as? BlockNum, let lib = res["last_irreversible_block_num"] as? BlockNum {
                     blockDiff = hb - lib
+                    retval.blockDiff = blockDiff ?? 0
+                    retval.headBlock = hb
+                    retval.adjustedResponseTime = end
+                    retval.rawResponseTime = end
                 }
             } catch {
                 print(error)
             }
-            
+
             if let blockDiff = blockDiff, blockDiff > 350 {
-                end = Date.distantPast.timeIntervalSinceNow * -1
+                retval.adjustedResponseTime = Date.distantPast.timeIntervalSinceNow * -1
             }
-            
-            self.finish(retval: URLRepsonseTimeCheck(url: self.chainUrl, time: end), error: nil)
-            
+
+            self.finish(retval: retval, error: nil)
+
         }
         task.resume()
-        
+
     }
     
 }
 
 struct URLRepsonseTimeCheck {
     let url: String
-    let time: TimeInterval
+    var headBlock: BlockNum
+    var blockDiff: BlockNum
+    var adjustedResponseTime: TimeInterval
+    var rawResponseTime: TimeInterval
 }

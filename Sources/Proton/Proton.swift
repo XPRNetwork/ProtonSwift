@@ -592,7 +592,7 @@ public class Proton: ObservableObject {
         var historyUrlOperationsCompleted = 0
         
         for chainUrl in chainUrls {
-            
+
             WebOperations.shared.add(CheckChainResponseTimeOperation(chainUrl: chainUrl, path: "/v1/chain/get_info"), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 switch result {
                 case .success(let urlRepsonseTimeCheck):
@@ -608,9 +608,9 @@ public class Proton: ObservableObject {
             }
             
         }
-        
+
         for historyUrl in historyUrls {
-            
+
             WebOperations.shared.add(CheckHyperionHistoryResponseTimeOperation(historyUrl: historyUrl, path: "/v2/health"), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 switch result {
                 case .success(let urlRepsonseTimeCheck):
@@ -629,17 +629,32 @@ public class Proton: ObservableObject {
         
         func completeAndReturn() {
             
-            chainUrlResponses.sort(by: { $0.time < $1.time })
+            chainUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
             chainUrls = chainUrlResponses.map({ $0.url })
-            
-            historyUrlResponses.sort(by: { $0.time < $1.time })
+
+            historyUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
             historyUrls = historyUrlResponses.map({ $0.url })
+            
+// DEBUG
+//            print("[⚛️ CHECK CHAIN ENDPOINTS]")
+//
+//            chainUrlResponses.forEach { responseCheck in
+//                print("  \(responseCheck.url)]")
+//                print("  - BLOCKS BEHIND => \(responseCheck.blockDiff), HEAD => \(responseCheck.headBlock), ADJUSTED RESPONSE TIME => \(responseCheck.adjustedResponseTime)")
+//            }
+//
+//            print("[⚛️ CHECK HISTORY ENDPOINTS]")
+//
+//            historyUrlResponses.forEach { responseCheck in
+//                print("  \(responseCheck.url)]")
+//                print("  - BLOCKS BEHIND => \(responseCheck.blockDiff), HEAD => \(responseCheck.headBlock), ADJUSTED RESPONSE TIME => \(responseCheck.adjustedResponseTime)")
+//            }
             
             self.chainProvider?.chainUrls = chainUrls
             self.chainProvider?.hyperionHistoryUrls = historyUrls
             
-            print("⚛️ [CHAIN ENDPOINT - \(chainUrlResponses.first?.url ?? "None...")]")
-            print("⚛️ [HISTORY ENDPOINT - \(historyUrlResponses.first?.url ?? "None...")]")
+            print("⚛️ [CHAIN ENDPOINT SELECTED - \(chainUrlResponses.first?.url ?? "None..."), IN SYNC => \(chainUrlResponses.first?.blockDiff ?? 0 < 350), TIME => \(chainUrlResponses.first?.adjustedResponseTime ?? 0.0)]")
+            print("⚛️ [HISTORY ENDPOINT SELECTED - \(historyUrlResponses.first?.url ?? "None..."), IN SYNC => \(historyUrlResponses.first?.blockDiff ?? 0 < 30), TIME => \(historyUrlResponses.first?.adjustedResponseTime ?? 0.0)]")
 
             completion()
             
