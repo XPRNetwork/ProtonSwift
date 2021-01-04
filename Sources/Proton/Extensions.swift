@@ -139,13 +139,6 @@ public extension Double {
         let divisor = pow(10.0, Double(precision))
         return (self * divisor).rounded(.down) / divisor
     }
-    
-//    func rounded(withPrecision precision: Int) -> String? {
-//        let formatter = NumberFormatter()
-//        formatter.numberStyle = .decimal
-//        formatter.maximumFractionDigits = precision
-//        return formatter.string(from: self as NSNumber)
-//    }
 
 }
 
