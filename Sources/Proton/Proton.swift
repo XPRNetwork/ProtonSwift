@@ -822,7 +822,7 @@ public class Proton: ObservableObject {
                                                         
                                                         if tokenTransferActions.count > 0 {
                                                             tokenTransferActions.sort(by: {  $0.date > $1.date })
-                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(50))
+                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
                                                         }
 
                                                     case .failure: break

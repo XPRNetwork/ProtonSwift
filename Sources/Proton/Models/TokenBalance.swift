@@ -80,7 +80,8 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     public func currencyBalance(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> Double {
         let rate = getRate(forCurrencyCode: locale.currencyCode ?? "USD")
         if self.tokenContractId == "eosio.token:XPR" && withStakedXPR {
-            return self.account?.totalSystemBalance().value ?? 0.0 * rate
+            let totalSystemBalance = self.account?.totalSystemBalance().value ?? 0.0
+            return totalSystemBalance * rate
         }
         return self.amount.value * rate
     }
