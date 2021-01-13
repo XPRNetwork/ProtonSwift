@@ -256,7 +256,7 @@ public class Proton: ObservableObject {
      */
     @Published public var globalsXPR: GlobalsXPR? = nil
     /**
-     Live updated protonESR.
+     Live updated autoSelectChainEndpoints flag which indicates whether or not the sdk should auto choose the best endpoints.
      */
     @Published public var autoSelectChainEndpoints: Bool = true
     
@@ -560,6 +560,7 @@ public class Proton: ObservableObject {
                 
                 self.chainProvider = chainProvider
                 self.tokenContracts = chainProvider.tokenContracts.unique()
+                
                 
                 self.optimizeChainProvider {
                     
