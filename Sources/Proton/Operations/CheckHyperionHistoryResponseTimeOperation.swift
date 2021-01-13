@@ -25,7 +25,7 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
         
         super.main()
         
-        var retval = URLRepsonseTimeCheck(url: self.historyUrl, headBlock: 0, blockDiff: 0, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: 0.0)
+        var retval = ChainURLRepsonseTime(url: self.historyUrl, headBlock: 0, blockDiff: 0, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: 0.0)
         
         guard let url = URL(string: "\(historyUrl)\(path)") else {
             self.finish(retval: retval, error: nil)

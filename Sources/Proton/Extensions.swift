@@ -142,6 +142,12 @@ public extension Double {
 
 }
 
+public extension TimeInterval {
+    var milliseconds: Int {
+        return Int((truncatingRemainder(dividingBy: 1)) * 1000)
+    }
+}
+
 extension PrivateKey {
     
     func getSymmetricKey(_ publicKey: PublicKey, _ nonce: UInt64) throws -> Data {

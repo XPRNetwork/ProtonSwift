@@ -24,11 +24,42 @@ class FetchChainProviderOperation: BaseOperation {
             return
         }
 
-        WebOperations.shared.request(url: url, errorModel: TestERR.self) { (result: Result<ChainProvider, WebError>) in
+        WebOperations.shared.request(url: url, errorModel: ProtonServiceError.self) { (result: Result<Data?, WebError>) in
 
             switch result {
-            case .success(let chainProvider):
-                self.finish(retval: chainProvider, error: nil)
+            case .success(let data):
+                
+                if let data = data {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                            
+                            let chainId = json["chainId"] as? String ?? ""
+                            let iconUrl = json["iconUrl"] as? String ?? ""
+                            let name = json["name"] as? String ?? ""
+                            let systemTokenSymbol = json["systemTokenSymbol"] as? String ?? ""
+                            let systemTokenContract = json["systemTokenContract"] as? String ?? ""
+                            let isTestnet = json["isTestnet"] as? Bool ?? false
+                            let updateAccountAvatarPath = json["updateAccountAvatarPath"] as? String ?? ""
+                            let updateAccountNamePath = json["updateAccountNamePath"] as? String ?? ""
+                            let exchangeRatePath = json["exchangeRatePath"] as? String ?? ""
+                            let explorerUrl = json["explorerUrl"] as? String ?? ""
+                            let chainUrls = json["chainUrls"] as? [String] ?? []
+                            let hyperionHistoryUrls = json["hyperionHistoryUrls"] as? [String] ?? []
+                            
+                            let chainProvider = ChainProvider(chainId: chainId, iconUrl: iconUrl, name: name, systemTokenSymbol: systemTokenSymbol, systemTokenContract: systemTokenContract, isTestnet: isTestnet, updateAccountAvatarPath: updateAccountAvatarPath, updateAccountNamePath: updateAccountNamePath, exchangeRatePath: exchangeRatePath, explorerUrl: explorerUrl, chainUrls: chainUrls, hyperionHistoryUrls: hyperionHistoryUrls)
+                            
+                            self.finish(retval: chainProvider, error: nil)
+
+                        } else {
+                            self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to decode ChainProvider Data"))
+                        }
+                    } catch {
+                        self.finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
+                    }
+                } else {
+                    self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to decode ChainProvider Data"))
+                }
+
             case .failure:
                 self.finish(retval: nil, error: Proton.ProtonError(message: "There was an issue fetching chainProviders config object"))
             }
@@ -39,6 +70,3 @@ class FetchChainProviderOperation: BaseOperation {
     
 }
 
-public struct TestERR: Codable {
-    let message: String
-}

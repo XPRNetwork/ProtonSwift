@@ -255,6 +255,10 @@ public class Proton: ObservableObject {
      Live updated GlobalsXPR.
      */
     @Published public var globalsXPR: GlobalsXPR? = nil
+    /**
+     Live updated protonESR.
+     */
+    @Published public var autoSelectChainEndpoints: Bool = true
     
     private var protonESRSessionWebSocketWrappers: Set<ProtonESRSessionWebSocketWrapper> = []
     
@@ -275,6 +279,7 @@ public class Proton: ObservableObject {
         self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
         self.swapPools = self.storage.getDefaultsItem([SwapPool].self, forKey: "swapPools") ?? []
         self.globalsXPR = self.storage.getDefaultsItem(GlobalsXPR.self, forKey: "globalsXPR") ?? nil
+        self.autoSelectChainEndpoints = self.storage.getDefaultsItem(Bool.self, forKey: "autoSelectChainEndpoints") ?? true
         
     }
     
@@ -293,6 +298,7 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.producers, forKey: "producers")
         self.storage.setDefaultsItem(self.swapPools, forKey: "swapPools")
         self.storage.setDefaultsItem(self.globalsXPR, forKey: "globalsXPR")
+        self.storage.setDefaultsItem(self.autoSelectChainEndpoints, forKey: "autoSelectChainEndpoints")
         
     }
     
@@ -525,7 +531,27 @@ public class Proton: ObservableObject {
             
             switch result {
             case .success(let returnChainProvider):
-                chainProvider = returnChainProvider as? ChainProvider
+                
+                if var returnChainProvider = returnChainProvider as? ChainProvider {
+
+                    // remove any chain endpoints that arent in the return chain provider
+                    // append any that arent in local chain provider
+                    var chainUrls = chainProvider?.chainUrls.filter({ returnChainProvider.chainUrls.contains($0) })
+                    let remainingChainUrls = returnChainProvider.chainUrls.filter({ chainUrls?.contains($0) == false })
+                    chainUrls?.append(contentsOf: remainingChainUrls)
+                    
+                    // remove any history endpoints that arent in the return chain provider
+                    // append any that arent in local chain provider
+                    var hyperionHistoryUrls = chainProvider?.hyperionHistoryUrls.filter({ returnChainProvider.hyperionHistoryUrls.contains($0) })
+                    let remaininghyperionHistoryUrls = returnChainProvider.hyperionHistoryUrls.filter({ hyperionHistoryUrls?.contains($0) == false })
+                    hyperionHistoryUrls?.append(contentsOf: remaininghyperionHistoryUrls)
+                    
+                    returnChainProvider.chainUrls = chainUrls ?? returnChainProvider.chainUrls
+                    returnChainProvider.hyperionHistoryUrls = hyperionHistoryUrls ?? returnChainProvider.hyperionHistoryUrls
+                    
+                    chainProvider = returnChainProvider
+                }
+                
             case .failure(let err):
                 error = err
             }
@@ -574,7 +600,7 @@ public class Proton: ObservableObject {
     Checks latency of all chainUrls & hyperionHistoryUrls to determing the best endpoint
      - Parameter completion: Closure returning Result
      */
-    private func optimizeChainProvider(completion: @escaping (() -> Void)) {
+    public func optimizeChainProvider(completion: @escaping (() -> Void)) {
         
         guard let chainProvider = self.chainProvider else {
             print("Missing ChainProvider")
@@ -585,24 +611,24 @@ public class Proton: ObservableObject {
         var chainUrls = chainProvider.chainUrls
         var historyUrls = chainProvider.hyperionHistoryUrls
         
-        var chainUrlResponses = [URLRepsonseTimeCheck]()
-        var historyUrlResponses = [URLRepsonseTimeCheck]()
+        var chainUrlResponses = [ChainURLRepsonseTime]()
+        var hyperionHistoryUrlResponses = [ChainURLRepsonseTime]()
         
         var chainUrlOperationsCompleted = 0
-        var historyUrlOperationsCompleted = 0
+        var hyperionHistoryUrlOperationsCompleted = 0
         
         for chainUrl in chainUrls {
 
             WebOperations.shared.add(CheckChainResponseTimeOperation(chainUrl: chainUrl, path: "/v1/chain/get_info"), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 switch result {
                 case .success(let urlRepsonseTimeCheck):
-                    if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? URLRepsonseTimeCheck {
+                    if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? ChainURLRepsonseTime {
                         chainUrlResponses.append(urlRepsonseTimeCheck)
                     }
                 case .failure: ()
                 }
                 chainUrlOperationsCompleted += 1
-                if chainUrlOperationsCompleted == chainUrls.count && historyUrlOperationsCompleted == historyUrls.count {
+                if chainUrlOperationsCompleted == chainUrls.count && hyperionHistoryUrlOperationsCompleted == historyUrls.count {
                     completeAndReturn()
                 }
             }
@@ -614,13 +640,13 @@ public class Proton: ObservableObject {
             WebOperations.shared.add(CheckHyperionHistoryResponseTimeOperation(historyUrl: historyUrl, path: "/v2/health"), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 switch result {
                 case .success(let urlRepsonseTimeCheck):
-                    if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? URLRepsonseTimeCheck {
-                        historyUrlResponses.append(urlRepsonseTimeCheck)
+                    if let urlRepsonseTimeCheck = urlRepsonseTimeCheck as? ChainURLRepsonseTime {
+                        hyperionHistoryUrlResponses.append(urlRepsonseTimeCheck)
                     }
                 case .failure: ()
                 }
-                historyUrlOperationsCompleted += 1
-                if chainUrlOperationsCompleted == chainUrls.count && historyUrlOperationsCompleted == historyUrls.count {
+                hyperionHistoryUrlOperationsCompleted += 1
+                if chainUrlOperationsCompleted == chainUrls.count && hyperionHistoryUrlOperationsCompleted == historyUrls.count {
                     completeAndReturn()
                 }
             }
@@ -629,32 +655,45 @@ public class Proton: ObservableObject {
         
         func completeAndReturn() {
             
-            chainUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
-            chainUrls = chainUrlResponses.map({ $0.url })
+            if autoSelectChainEndpoints {
+                
+                chainUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
+                chainUrls = chainUrlResponses.map({ $0.url })
+                
+                hyperionHistoryUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
+                historyUrls = hyperionHistoryUrlResponses.map({ $0.url })
+                
+                self.chainProvider?.chainUrls = chainUrls
+                self.chainProvider?.hyperionHistoryUrls = historyUrls
+                self.chainProvider?.chainUrlResponses = chainUrlResponses
+                self.chainProvider?.hyperionHistoryUrlResponses = hyperionHistoryUrlResponses
+                
+                print("⚛️ [AUTO ENDPOINT SELECTION]")
+                
+            } else {
+                
+                self.chainProvider?.chainUrlResponses.removeAll()
+                
+                for chainUrl in chainProvider.chainUrls {
+                    if let item = chainUrlResponses.first(where: { $0.url == chainUrl }) {
+                        self.chainProvider?.chainUrlResponses.append(item)
+                    }
+                }
+                
+                self.chainProvider?.hyperionHistoryUrlResponses.removeAll()
+                
+                for hyperionHistoryUrl in chainProvider.hyperionHistoryUrls {
+                    if let item = hyperionHistoryUrlResponses.first(where: { $0.url == hyperionHistoryUrl }) {
+                        self.chainProvider?.hyperionHistoryUrlResponses.append(item)
+                    }
+                }
+                
+                print("⚛️ [CUSTOM ENDPOINT SELECTION]")
+                
+            }
 
-            historyUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
-            historyUrls = historyUrlResponses.map({ $0.url })
-            
-// DEBUG
-//            print("[⚛️ CHECK CHAIN ENDPOINTS]")
-//
-//            chainUrlResponses.forEach { responseCheck in
-//                print("  \(responseCheck.url)]")
-//                print("  - BLOCKS BEHIND => \(responseCheck.blockDiff), HEAD => \(responseCheck.headBlock), ADJUSTED RESPONSE TIME => \(responseCheck.adjustedResponseTime)")
-//            }
-//
-//            print("[⚛️ CHECK HISTORY ENDPOINTS]")
-//
-//            historyUrlResponses.forEach { responseCheck in
-//                print("  \(responseCheck.url)]")
-//                print("  - BLOCKS BEHIND => \(responseCheck.blockDiff), HEAD => \(responseCheck.headBlock), ADJUSTED RESPONSE TIME => \(responseCheck.adjustedResponseTime)")
-//            }
-            
-            self.chainProvider?.chainUrls = chainUrls
-            self.chainProvider?.hyperionHistoryUrls = historyUrls
-            
-            print("⚛️ [CHAIN ENDPOINT SELECTED - \(chainUrlResponses.first?.url ?? "None..."), IN SYNC => \(chainUrlResponses.first?.blockDiff ?? 0 < 350), TIME => \(chainUrlResponses.first?.adjustedResponseTime ?? 0.0)]")
-            print("⚛️ [HISTORY ENDPOINT SELECTED - \(historyUrlResponses.first?.url ?? "None..."), IN SYNC => \(historyUrlResponses.first?.blockDiff ?? 0 < 30), TIME => \(historyUrlResponses.first?.adjustedResponseTime ?? 0.0)]")
+            print("⚛️ [CHAIN ENDPOINT SELECTED - \(self.chainProvider?.chainUrlResponses.first?.url ?? "None..."), IN SYNC => \(self.chainProvider?.chainUrlResponses.first?.blockDiff ?? 0 < 350), TIME => \(self.chainProvider?.chainUrlResponses.first?.rawResponseTime.milliseconds ?? 0) ms]")
+            print("⚛️ [HISTORY ENDPOINT SELECTED - \(self.chainProvider?.hyperionHistoryUrlResponses.first?.url ?? "None..."), IN SYNC => \(self.chainProvider?.hyperionHistoryUrlResponses.first?.blockDiff ?? 0 < 30), TIME => \(self.chainProvider?.hyperionHistoryUrlResponses.first?.rawResponseTime.milliseconds ?? 0) ms]")
 
             completion()
             

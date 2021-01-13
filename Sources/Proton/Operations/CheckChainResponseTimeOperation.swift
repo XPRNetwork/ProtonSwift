@@ -25,7 +25,7 @@ class CheckChainResponseTimeOperation: BaseOperation {
         
         super.main()
         
-        var retval = URLRepsonseTimeCheck(url: self.chainUrl, headBlock: 0, blockDiff: 0, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: 0.0)
+        var retval = ChainURLRepsonseTime(url: self.chainUrl, headBlock: 0, blockDiff: 0, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: 0.0)
         
         guard let url = URL(string: "\(chainUrl)\(path)") else {
             self.finish(retval: retval, error: nil)
@@ -75,10 +75,28 @@ class CheckChainResponseTimeOperation: BaseOperation {
     
 }
 
-struct URLRepsonseTimeCheck {
-    let url: String
-    var headBlock: BlockNum
-    var blockDiff: BlockNum
-    var adjustedResponseTime: TimeInterval
-    var rawResponseTime: TimeInterval
+public struct ChainURLRepsonseTime: Codable, Hashable {
+    public let url: String
+    public var headBlock: BlockNum
+    public var blockDiff: BlockNum
+    public var adjustedResponseTime: TimeInterval
+    public var rawResponseTime: TimeInterval
+    
+    public var hyperionInSync: Bool {
+        return blockDiff < 30
+    }
+    
+    public var chainInSync: Bool {
+        return blockDiff < 350
+    }
+    
+    /// :nodoc:
+    public static func == (lhs: ChainURLRepsonseTime, rhs: ChainURLRepsonseTime) -> Bool {
+        lhs.url == rhs.url
+    }
+    /// :nodoc:
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(url)
+    }
+    
 }

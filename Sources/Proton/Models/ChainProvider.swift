@@ -34,15 +34,20 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
     public let exchangeRatePath: String
     /// The default explorer url
     public let explorerUrl: String
-    /// List of chain urls
+    /// List of chain urls. IMPORTANT if you reoder this list, you should also reoder the chainUrlResponse List and visa versa
     public var chainUrls: [String]
-    /// List of hyperion history urls
+    /// List of hyperion history urls. IMPORTANT if you reoder this list, you should also reoder the hyperionHistoryUrlResponses List and visa versa
     public var hyperionHistoryUrls: [String]
+    /// List of chain url health checks
+    public var chainUrlResponses: [ChainURLRepsonseTime]
+    /// List of history url health checks
+    public var hyperionHistoryUrlResponses: [ChainURLRepsonseTime]
     /// :nodoc:
     public init(chainId: String, iconUrl: String, name: String, systemTokenSymbol: String,
                 systemTokenContract: String, isTestnet: Bool, updateAccountAvatarPath: String,
                 updateAccountNamePath: String, exchangeRatePath: String, explorerUrl: String,
-                chainUrls: [String], hyperionHistoryUrls: [String]) {
+                chainUrls: [String], hyperionHistoryUrls: [String],
+                chainUrlResponses: [ChainURLRepsonseTime] = [], hyperionHistoryUrlResponses: [ChainURLRepsonseTime] = []) {
         
         self.chainId = chainId
         self.iconUrl = iconUrl
@@ -56,6 +61,8 @@ public struct ChainProvider: Codable, Identifiable, Hashable, TokenContractsProt
         self.explorerUrl = explorerUrl
         self.chainUrls = chainUrls
         self.hyperionHistoryUrls = hyperionHistoryUrls
+        self.chainUrlResponses = chainUrlResponses
+        self.hyperionHistoryUrlResponses = hyperionHistoryUrlResponses
         
     }
     /// :nodoc:
