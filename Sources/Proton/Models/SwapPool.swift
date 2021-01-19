@@ -7,6 +7,7 @@
 
 import EOSIO
 import Foundation
+import BigNumber
 
 /**
 SwapPool is the combination of two tokens that have liquidity in the Swap
@@ -29,7 +30,7 @@ public struct SwapPool: Codable, Identifiable, Hashable {
     /// Fee's associated with this pool
     public let fee: SwapPoolFee
     
-    public static let slippage: Double = 0.1
+    public static let slippage: Double = 0.01
     
     /// :nodoc:
     public static func == (lhs: SwapPool, rhs: SwapPool) -> Bool {
@@ -103,15 +104,24 @@ public struct SwapPool: Codable, Identifiable, Hashable {
     }
 
     public func toAmount(fromAmount amount: Double, fromSymbol: Asset.Symbol) -> Double {
+        
+        let amount = BInt(Asset(amount, fromSymbol).units)
         let flipped = self.pool1.quantity.symbol != fromSymbol
-        let fee = Double(self.fee.exchangeFee) / 10000.0
-        let term1 = !flipped ? self.pool2.quantity.value : self.pool1.quantity.value
-        let term2a = self.pool1.quantity.value * self.pool2.quantity.value
-        let term2b = !flipped ? (self.pool1.quantity.value + amount) : (self.pool2.quantity.value + amount)
-        let term2 = term2a / term2b
-        let term = term1 - term2
+        let precision = Int(!flipped ? self.pool2.quantity.symbol.precision : self.pool1.quantity.symbol.precision)
+        let fee = BDouble(Double(self.fee.exchangeFee) / 10000.0)
+        let pool1 = BInt(self.pool1.quantity.units)
+        let pool2 = BInt(self.pool2.quantity.units)
+        
+        let term1 = !flipped ? pool2 : pool1
+        let term2a = pool1 * pool2
+        let term2b = !flipped ? (pool1 + amount) : (pool2 + amount)
+        let term2 = BInt(Double(term2a / term2b).rounded(withPrecision: 6))
+        let term = BDouble(term1 - term2)
         let result = term - (term * fee)
-        return result.rounded(withPrecision: Int(!flipped ? self.pool2.quantity.symbol.precision : self.pool1.quantity.symbol.precision))
+        let resultDouble = Double((result / pow(10, precision)).decimalExpansion(precisionAfterDecimalPoint: precision, rounded: false)) ?? 0.0
+        
+        return resultDouble
+
     }
 
     public func priceImpact(fromAmount amount: Double, toSymbol: Asset.Symbol) -> Double {

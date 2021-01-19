@@ -1487,6 +1487,8 @@ public class Proton: ObservableObject {
         let minAsset = Asset(min, toTokenContract.symbol)
         let memo = "\(swapPool.liquidityTokenSymbol.name),\(minAsset.units)"
         
+        print(min)
+        
         do {
             
             let publicKey = try privateKey.getPublic()
@@ -2222,9 +2224,11 @@ public class Proton: ObservableObject {
         
         var sigingRequestString = url.absoluteString
         
-        guard let prefix = sigingRequestString.popESRPrefix() else {
+        guard var prefix = sigingRequestString.popESRPrefix() else {
             return false
         }
+        
+        prefix = prefix.replacingOccurrences(of: "//", with: "")
         
         if Proton.self.config?.signingRequestSchemes.contains(prefix) == false {
             return false
@@ -2244,10 +2248,12 @@ public class Proton: ObservableObject {
             
             var sigingRequestString = url.absoluteString
             
-            guard let prefix = sigingRequestString.popESRPrefix() else {
+            guard var prefix = sigingRequestString.popESRPrefix() else {
                 completion(.failure(ProtonError.init(message: "Unable to determine ESR prefix")))
                 return
             }
+            
+            prefix = prefix.replacingOccurrences(of: "//", with: "")
             
             if Proton.self.config?.signingRequestSchemes.contains(prefix) == false {
                 completion(.failure(ProtonError.init(message: "ESR prefix not registered in proton config")))
