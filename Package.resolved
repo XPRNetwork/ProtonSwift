@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "BigNumber",
+        "repositoryURL": "https://github.com/mkrd/Swift-BigInt.git",
+        "state": {
+          "branch": "master",
+          "revision": "8e8423ba6d7674bfd3d324d229014476e48568f5",
+          "version": null
+        }
+      },
+      {
         "package": "swift-eosio",
         "repositoryURL": "https://github.com/greymass/swift-eosio.git",
         "state": {
