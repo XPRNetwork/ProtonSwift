@@ -97,7 +97,7 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
                                  withSymbol symbol: Bool = false, andPrecision precision: Bool = false,
                                  withStakedXPR: Bool = false) -> String {
         if self.tokenContractId == "eosio.token:XPR" && withStakedXPR {
-            return self.account?.totalSystemBalanceFormatted() ?? self.amount.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+            return self.account?.totalSystemBalanceFormatted(forLocale: locale, withSymbol: symbol, andPrecision: precision) ?? self.amount.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
         }
         return self.amount.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }

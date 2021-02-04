@@ -16,7 +16,7 @@ class FetchTokenTransferActionsOperation: BaseOperation {
     var chainProvider: ChainProvider
     var tokenContract: TokenContract
     var tokenBalance: TokenBalance
-    let limt = 100
+    let limt = 50
     
     init(account: Account, tokenContract: TokenContract, chainProvider: ChainProvider,
          tokenBalance: TokenBalance) {

@@ -262,6 +262,33 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
     }
     
+    public func availableSystemCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let amount = availableSystemBalance().value
+        let rate = systemTokenBalance?.getRate(forCurrencyCode: locale.currencyCode ?? "USD") ?? 0.0
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: amount * rate) ?? "$0.00"
+    }
+    
+    public func stakedSystemCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let amount = staking?.staked.value ?? 0.0
+        let rate = systemTokenBalance?.getRate(forCurrencyCode: locale.currencyCode ?? "USD") ?? 0.0
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: amount * rate) ?? "$0.00"
+    }
+    
+    public func stakedSystemRefundCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let amount = stakingRefund?.quantity.value ?? 0.0
+        let rate = systemTokenBalance?.getRate(forCurrencyCode: locale.currencyCode ?? "USD") ?? 0.0
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: amount * rate) ?? "$0.00"
+    }
+    
     public func availableSystemBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
         return availableSystemBalance().formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
     }

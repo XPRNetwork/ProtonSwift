@@ -561,7 +561,6 @@ public class Proton: ObservableObject {
                 self.chainProvider = chainProvider
                 self.tokenContracts = chainProvider.tokenContracts.unique()
                 
-                
                 self.optimizeChainProvider {
                     
                     WebOperations.shared.add(FetchTokenContractsOperation(chainProvider: chainProvider, tokenContracts: self.tokenContracts),
@@ -575,6 +574,17 @@ public class Proton: ObservableObject {
                                 self.tokenContracts = tokenContracts
                             }
                             
+                            if let account = self.account {
+                                // Create tokenBalances for xtoken contracts even if the user doesnt have a balance.
+                                for tokenContract in self.tokenContracts {
+                                    if tokenContract.contract == "xtokens" && !self.tokenBalances.contains(where: { $0.tokenContractId == tokenContract.id }) {
+                                        if let tokenBalance = TokenBalance(account: account, contract: tokenContract.contract, amount: 0.0, precision: tokenContract.symbol.precision, symbol: tokenContract.symbol.name) {
+                                            self.tokenBalances.append(tokenBalance)
+                                        }
+                                    }
+                                }
+                            }
+
                         case .failure: break
                         }
                         
@@ -862,7 +872,7 @@ public class Proton: ObservableObject {
                                                         
                                                         if tokenTransferActions.count > 0 {
                                                             tokenTransferActions.sort(by: {  $0.date > $1.date })
-                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(100))
+                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(50))
                                                         }
 
                                                     case .failure: break
