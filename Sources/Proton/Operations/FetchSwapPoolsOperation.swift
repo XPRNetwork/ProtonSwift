@@ -42,12 +42,13 @@ class FetchSwapPoolsOperation: BaseOperation {
                 let res = try client.sendSync(req).get()
                 let rows = lowerBound == nil ? res.rows : Array(res.rows.dropFirst())
                 
-                let pools = rows.map({
-                    return SwapPool(liquidityTokenSymbol: $0.lt_symbol, creator: $0.creator, memo: $0.memo,
-                                    pool1: $0.pool1, pool2: $0.pool2, hash: $0.hash, fee: SwapPoolFee(exchangeFee: $0.pool_fee.exchange_fee))
-                })
-                
-                swapPools.append(contentsOf: pools)
+                for row in rows {
+                    if row.active == true {
+                        swapPools.append(
+                            SwapPool(liquidityTokenSymbol: row.lt_symbol, creator: row.creator, memo: row.memo, pool1: row.pool1, pool2: row.pool2, hash: row.hash, fee: SwapPoolFee(exchangeFee: row.fee.exchange_fee), active: row.active, reserved: row.reserved)
+                        )
+                    }
+                }
                 
                 if res.more {
                     makeRequest(lowerBound: rows.last?.lt_symbol.stringValue)
@@ -56,6 +57,7 @@ class FetchSwapPoolsOperation: BaseOperation {
                 }
 
             } catch {
+                print(error.localizedDescription)
                 self.finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
             }
             

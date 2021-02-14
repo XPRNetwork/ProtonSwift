@@ -15,11 +15,13 @@ struct SwapPoolsABI: ABICodable {
     let pool1: ExtendedAsset
     let pool2: ExtendedAsset
     let hash: Checksum256
-    let pool_fee: SwapPoolFeeABI
+    let fee: SwapPoolFeeABI
+    let active: Bool
+    let reserved: UInt16
 }
 
 struct SwapPoolFeeABI: ABICodable {
-    let exchange_fee: UInt16
-    let add_liquidity_fee: UInt16
-    let remove_liquidity_fee: UInt16
+    let exchange_fee: UInt64
+    let add_liquidity_fee: UInt64
+    let remove_liquidity_fee: UInt64
 }

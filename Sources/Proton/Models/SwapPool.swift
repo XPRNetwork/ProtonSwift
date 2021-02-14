@@ -30,6 +30,10 @@ public struct SwapPool: Codable, Identifiable, Hashable {
     /// Fee's associated with this pool
     public let fee: SwapPoolFee
     
+    public let active: Bool
+    
+    public let reserved: UInt16
+    
     public static let slippage: Double = 0.01
     
     /// :nodoc:
@@ -41,7 +45,7 @@ public struct SwapPool: Codable, Identifiable, Hashable {
         hasher.combine(self.id)
     }
     
-    public init(liquidityTokenSymbol: Asset.Symbol, creator: Name, memo: String, pool1: ExtendedAsset, pool2: ExtendedAsset, hash: Checksum256, fee: SwapPoolFee) {
+    public init(liquidityTokenSymbol: Asset.Symbol, creator: Name, memo: String, pool1: ExtendedAsset, pool2: ExtendedAsset, hash: Checksum256, fee: SwapPoolFee, active: Bool, reserved: UInt16) {
         self.liquidityTokenSymbol = liquidityTokenSymbol
         self.creator = creator
         self.memo = memo
@@ -49,6 +53,8 @@ public struct SwapPool: Codable, Identifiable, Hashable {
         self.pool2 = pool2
         self.hash = hash
         self.fee = fee
+        self.active = active
+        self.reserved = reserved
     }
     
     public var balanceAvailableToSwap: Bool {
@@ -139,8 +145,8 @@ public struct SwapPool: Codable, Identifiable, Hashable {
 }
 
 public struct SwapPoolFee: Codable {
-    public let exchangeFee: UInt16
-    public init(exchangeFee: UInt16) {
+    public let exchangeFee: UInt64
+    public init(exchangeFee: UInt64) {
         self.exchangeFee = exchangeFee
     }
 }
