@@ -39,7 +39,11 @@ class FetchUserRefundsXPROperation: BaseOperation {
         do {
 
             let res = try client.sendSync(req).get()
-            finish(retval: res.rows.first, error: nil)
+            if let refundsXPRABI = res.rows.first {
+                finish(retval: StakingRefund(quantity: refundsXPRABI.quantity, requestTime: refundsXPRABI.request_time.date), error: nil)
+            } else {
+                throw Proton.ProtonError(message: "Unable to decode RefundsXPRABI")
+            }
 
         } catch {
             finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))

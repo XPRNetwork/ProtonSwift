@@ -1,5 +1,5 @@
 //
-//  FetchGlobalsXPROperation.swift
+//  FetchGlobal4Operation.swift
 //  Proton
 //
 //  Created by Jacob Davis on 7/24/20.
@@ -10,7 +10,7 @@ import EOSIO
 import Foundation
 import WebOperations
 
-class FetchGlobalsXPROperation: BaseOperation {
+class FetchGlobal4Operation: BaseOperation {
 
     var chainProvider: ChainProvider
 
@@ -28,19 +28,19 @@ class FetchGlobalsXPROperation: BaseOperation {
         }
 
         let client = Client(address: url)
-        let req = API.V1.Chain.GetTableRows<GlobalsXPRABI>(code: Name(stringValue: "eosio"),
-                                                           table: Name(stringValue: "globalsxpr"),
+        let req = API.V1.Chain.GetTableRows<Global4ABI>(code: Name(stringValue: "eosio"),
+                                                           table: Name(stringValue: "global4"),
                                                            scope: Name(stringValue: "eosio"))
 
         do {
 
             let res = try client.sendSync(req).get()
-            if let globalsXPRABI = res.rows.first {
-                finish(retval: GlobalsXPR(globalsXPRABI: globalsXPRABI), error: nil)
+            if let global4ABI = res.rows.first {
+                finish(retval: Global4(global4ABI: global4ABI), error: nil)
             } else {
-                throw Proton.ProtonError(message: "Unable to decode GlobalsXPRABI")
+                throw Proton.ProtonError(message: "Unable to decode Global4ABI")
             }
-
+            
         } catch {
             finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
         }

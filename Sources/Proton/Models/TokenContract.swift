@@ -58,6 +58,7 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     }
     /// 24 price change percent
     public var priceChangePercent: Double?
+    
     /// :nodoc:
     public init(chainId: String, contract: Name, issuer: Name, resourceToken: Bool,
                   systemToken: Bool, name: String, desc: String, iconUrl: String,

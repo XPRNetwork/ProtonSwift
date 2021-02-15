@@ -1,8 +1,8 @@
 //
-//  FetchGlobalsXPROperation.swift
+//  FetchGlobalsDOperation.swift
 //  Proton
 //
-//  Created by Jacob Davis on 7/24/20.
+//  Created by Jacob Davis on 2/15/21.
 //  Copyright (c) 2020 Proton Chain LLC, Delaware
 //
 
@@ -10,7 +10,7 @@ import EOSIO
 import Foundation
 import WebOperations
 
-class FetchGlobalsXPROperation: BaseOperation {
+class FetchGlobalsDOperation: BaseOperation {
 
     var chainProvider: ChainProvider
 
@@ -28,19 +28,19 @@ class FetchGlobalsXPROperation: BaseOperation {
         }
 
         let client = Client(address: url)
-        let req = API.V1.Chain.GetTableRows<GlobalsXPRABI>(code: Name(stringValue: "eosio"),
-                                                           table: Name(stringValue: "globalsxpr"),
-                                                           scope: Name(stringValue: "eosio"))
+        let req = API.V1.Chain.GetTableRows<GlobalsDABI>(code: Name(stringValue: "eosio"),
+                                                         table: Name(stringValue: "globalsd"),
+                                                         scope: Name(stringValue: "eosio"))
 
         do {
 
             let res = try client.sendSync(req).get()
-            if let globalsXPRABI = res.rows.first {
-                finish(retval: GlobalsXPR(globalsXPRABI: globalsXPRABI), error: nil)
+            if let globalsDABI = res.rows.first {
+                finish(retval: GlobalsD(globalsDABI: globalsDABI), error: nil)
             } else {
-                throw Proton.ProtonError(message: "Unable to decode GlobalsXPRABI")
+                throw Proton.ProtonError(message: "Unable to decode GlobalsDABI")
             }
-
+            
         } catch {
             finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
         }

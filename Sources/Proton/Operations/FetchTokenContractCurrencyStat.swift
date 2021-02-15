@@ -39,14 +39,14 @@ class FetchTokenContractCurrencyStat: BaseOperation {
             let res = try client.sendSync(req).get()
 
             if let currencyStat = res.rows.first {
-                self.tokenContract.maxSupply = currencyStat.maxSupply
+                self.tokenContract.maxSupply = currencyStat.max_supply
                 self.tokenContract.supply = currencyStat.supply
             }
 
             self.finish(retval: self.tokenContract, error: nil)
 
         } catch {
-            self.finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
+            self.finish(retval: self.tokenContract, error: nil)
         }
 
     }

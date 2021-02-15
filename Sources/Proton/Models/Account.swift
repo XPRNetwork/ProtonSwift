@@ -105,10 +105,12 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var stakingRefund: StakingRefund?
     /// The KYC entries
     public var kyc: [KYC]?
+    /// Long staking
+    public var longStakingStakes: [LongStakingStake]?
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
                 userDefinedName: String = "", base64Avatar: String = "", permissions: [API.V1.Chain.Permission] = [],
-                staking: Staking? = nil, stakingRefund: StakingRefund? = nil, kyc: [KYC]? = nil) {
+                staking: Staking? = nil, stakingRefund: StakingRefund? = nil, kyc: [KYC]? = nil, longStakingStakes: [LongStakingStake]? = nil) {
         
         self.chainId = chainId
         self.name = Name(name)
@@ -118,6 +120,8 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         self.permissions = permissions
         self.staking = staking
         self.stakingRefund = stakingRefund
+        self.kyc = kyc
+        self.longStakingStakes = longStakingStakes
         
     }
     /// :nodoc:
@@ -171,11 +175,36 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             }
         }
         
+        var kyc: [KYC]?
+        
+        if let kycDictionary = dictionary["kyc"] as? [[String: Any]] {
+            if let data = try? JSONSerialization.data(withJSONObject: kycDictionary, options: .prettyPrinted) {
+                do {
+                    kyc = try JSONDecoder().decode([KYC].self, from: data)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        
+        var longStakingStakes: [LongStakingStake]?
+        
+        if let longStakingStakesDictionary = dictionary["longStakingStakes"] as? [[String: Any]] {
+            if let data = try? JSONSerialization.data(withJSONObject: longStakingStakesDictionary, options: .prettyPrinted) {
+                do {
+                    longStakingStakes = try JSONDecoder().decode([LongStakingStake].self, from: data)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        
         return Account(chainId: chainId, name: name, verified: dictionary["verified"] as? Bool ?? false,
                        userDefinedName: dictionary["userDefinedName"] as? String ?? "",
                        base64Avatar: dictionary["base64Avatar"] as? String ?? "",
                        permissions: permissions ?? [],
-                       staking: staking, stakingRefund: stakingRefund)
+                       staking: staking, stakingRefund: stakingRefund, kyc: kyc,
+                       longStakingStakes: longStakingStakes)
         
     }
     /// :nodoc:
@@ -210,6 +239,19 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var userDefinedNameOrName: String {
         return userDefinedName.isEmpty == false ? userDefinedName : self.name.stringValue
     }
+    /// Return total longstaked balance
+    public var totalLongStakedBalance: Asset {
+        
+        let amount: Asset = self.longStakingStakes?.reduce(Asset(0.0, Asset.Symbol(stringLiteral: "4,XPR"))) { value, longStake in
+            var value = value
+            value += longStake.staked
+            return value
+        } ?? Asset(0.0, Asset.Symbol(stringLiteral: "4,XPR"))
+        
+        return amount
+        
+    }
+    
     /// Return true if account is qualified for rewards by staking and voting
     public var isStakingRewardQualified: Bool {
         if let staking = self.staking {
@@ -235,6 +277,15 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     
     public var canSwap: Bool {
         return Proton.shared.swapPools.first(where: { $0.balanceAvailableToSwap == true }) != nil
+    }
+    
+    public func totalLongStakedCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let amount = totalLongStakedBalance.value
+        let rate = systemTokenBalance?.getRate(forCurrencyCode: locale.currencyCode ?? "USD") ?? 0.0
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: amount * rate) ?? "$0.00"
     }
     
     public func totalCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US"), withStakedXPR: Bool = false) -> String {

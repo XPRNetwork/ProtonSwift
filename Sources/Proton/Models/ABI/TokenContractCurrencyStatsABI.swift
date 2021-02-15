@@ -10,9 +10,7 @@ import EOSIO
 import Foundation
 
 struct TokenContractCurrencyStatsABI: ABICodable {
-
     let supply: Asset
-    let maxSupply: Asset
+    let max_supply: Asset
     let issuer: Name
-
 }

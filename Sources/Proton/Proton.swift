@@ -140,6 +140,10 @@ public class Proton: ObservableObject {
         var stakingRefund: StakingRefund?
     }
     
+    private struct LongStakingFetchResult {
+        var longStakingStakes: [LongStakingStake]?
+    }
+    
     /**
      Private init
      */
@@ -256,6 +260,18 @@ public class Proton: ObservableObject {
      */
     @Published public var globalsXPR: GlobalsXPR? = nil
     /**
+     Live updated Global4.
+     */
+    @Published public var global4: Global4? = nil
+    /**
+     Live updated GlobalsD.
+     */
+    @Published public var globalsD: GlobalsD? = nil
+    /**
+     Live updated array of long staking plans.
+    */
+    @Published public var longStakingPlans: [LongStakingPlan] = []
+    /**
      Live updated autoSelectChainEndpoints flag which indicates whether or not the sdk should auto choose the best endpoints.
      */
     @Published public var autoSelectChainEndpoints: Bool = true
@@ -279,6 +295,9 @@ public class Proton: ObservableObject {
         self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
         self.swapPools = self.storage.getDefaultsItem([SwapPool].self, forKey: "swapPools") ?? []
         self.globalsXPR = self.storage.getDefaultsItem(GlobalsXPR.self, forKey: "globalsXPR") ?? nil
+        self.global4 = self.storage.getDefaultsItem(Global4.self, forKey: "global4") ?? nil
+        self.globalsD = self.storage.getDefaultsItem(GlobalsD.self, forKey: "globalsD") ?? nil
+        self.longStakingPlans = self.storage.getDefaultsItem([LongStakingPlan].self, forKey: "longStakingPlans") ?? []
         self.autoSelectChainEndpoints = self.storage.getDefaultsItem(Bool.self, forKey: "autoSelectChainEndpoints") ?? true
         
     }
@@ -298,6 +317,9 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.producers, forKey: "producers")
         self.storage.setDefaultsItem(self.swapPools, forKey: "swapPools")
         self.storage.setDefaultsItem(self.globalsXPR, forKey: "globalsXPR")
+        self.storage.setDefaultsItem(self.global4, forKey: "global4")
+        self.storage.setDefaultsItem(self.globalsD, forKey: "globalsD")
+        self.storage.setDefaultsItem(self.longStakingPlans, forKey: "longStakingPlans")
         self.storage.setDefaultsItem(self.autoSelectChainEndpoints, forKey: "autoSelectChainEndpoints")
         
     }
@@ -575,22 +597,51 @@ public class Proton: ObservableObject {
                             }
                             
                             if let account = self.account {
-                                // Create tokenBalances for xtoken contracts even if the user doesnt have a balance.
+
+                                var updatedTokenContracts = [TokenContract]()
+                                var operationCount = 0
+                                
                                 for tokenContract in self.tokenContracts {
+                                    
+                                    // Create tokenBalances for xtoken contracts even if the user doesnt have a balance.
                                     if tokenContract.contract == "xtokens" && !self.tokenBalances.contains(where: { $0.tokenContractId == tokenContract.id }) {
                                         if let tokenBalance = TokenBalance(account: account, contract: tokenContract.contract, amount: 0.0, precision: tokenContract.symbol.precision, symbol: tokenContract.symbol.name) {
                                             self.tokenBalances.append(tokenBalance)
                                         }
                                     }
+                                    
+                                    // Grab token stats
+                                    WebOperations.shared.add(FetchTokenContractCurrencyStat(tokenContract: tokenContract, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                                        
+                                        operationCount += 1
+                                        
+                                        switch result {
+                                        case .success(let tc):
+                                            if let tc = tc as? TokenContract {
+                                                updatedTokenContracts.append(tc)
+                                            }
+                                        case .failure(let error): // Operation designed to not error. Will pass back tokencontract no matter what
+                                            print(error.localizedDescription)
+                                        }
+                                        
+                                        if operationCount == self.tokenContracts.count {
+                                            self.tokenContracts = updatedTokenContracts
+                                        }
+                                        
+                                    }
+                                    
                                 }
+                                
                             }
 
                         case .failure: break
                         }
                         
+                        self.updateGlobal4 { _ in } // make sequential?
+                        self.updateGlobalsXPR { _ in } // make sequential?
+                        self.updateLongStakingPlans { _ in } // make sequential?
                         self.updateExchangeRates { _ in }
                         self.updateProducers { _ in }
-                        self.updateGlobalsXPR { _ in }
                         self.updateSwapPools { _ in }
                         
                         completion(.success(true))
@@ -713,6 +764,36 @@ public class Proton: ObservableObject {
     }
     
     /**
+     Updates the LongStakingPlans array.
+     - Parameter completion: Closure returning Result
+     */
+    public func updateLongStakingPlans(completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Missing ChainProvider")))
+            return
+        }
+        
+        WebOperations.shared.add(FetchLongStakingPlansOperation(chainProvider: chainProvider),
+                                 toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            
+            switch result {
+                
+            case .success(let longStakingPlans):
+                
+                self.longStakingPlans = longStakingPlans as? [LongStakingPlan] ?? []
+                
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+            
+            completion(.success(true))
+
+        }
+        
+    }
+    
+    /**
      Updates the GlobalsXPR object. This has information like min required bp votes, staking period, etc.
      - Parameter completion: Closure returning Result
      */
@@ -728,13 +809,42 @@ public class Proton: ObservableObject {
             
             switch result {
                 
-            case .success(let globalsXPRABI):
+            case .success(let globalsXPR):
                 
-                if let globalsXPRABI = globalsXPRABI as? GlobalsXPRABI {
-                    self.globalsXPR = GlobalsXPR(globalsXPRABI: globalsXPRABI)
-                }
+                self.globalsXPR = globalsXPR as? GlobalsXPR
                 
-            case .failure: break
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+            
+            completion(.success(true))
+            
+        }
+        
+    }
+    
+    /**
+     Updates the Global4 object.
+     - Parameter completion: Closure returning Result
+     */
+    public func updateGlobal4(completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Missing ChainProvider")))
+            return
+        }
+        
+        WebOperations.shared.add(FetchGlobal4Operation(chainProvider: chainProvider),
+                                 toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            
+            switch result {
+                
+            case .success(let global4):
+                
+                self.global4 = global4 as? Global4
+                
+            case .failure(let error):
+                print(error.localizedDescription)
             }
             
             completion(.success(true))
@@ -815,8 +925,8 @@ public class Proton: ObservableObject {
                         account = returnAccount
                         self.account = account
                         
-                        self.fetchAccountVotingAndStakingInfo(forAccount: account) { result in
-                            
+                        self.fetchAccountVotingAndShortStakingInfo(forAccount: account) { result in
+
                             switch result {
                             case .success(let stakingFetchResult):
                                 
@@ -825,6 +935,23 @@ public class Proton: ObservableObject {
                                 
                                 self.account = account
                                 
+                            case .failure(let error):
+                                print(error.localizedDescription)
+                            }
+                            
+                            self.fetchLongStakingInfo(forAccount: account) { result in
+                                
+                                switch result {
+                                case .success(let longStakingFetchResult):
+                                    
+                                    account.longStakingStakes = longStakingFetchResult.longStakingStakes ?? []
+                                    
+                                    self.account = account
+                                    
+                                case .failure(let error):
+                                    print(error.localizedDescription)
+                                }
+
                                 self.fetchBalances(forAccount: account) { result in
                                     
                                     switch result {
@@ -917,8 +1044,6 @@ public class Proton: ObservableObject {
 
                                 }
                                 
-                            case .failure(let error):
-                                completion(.failure(error))
                             }
                             
                         }
@@ -2052,13 +2177,53 @@ public class Proton: ObservableObject {
      - Parameter forAccount: Account
      - Parameter completion: Closure returning Result
      */
-    private func fetchAccountVotingAndStakingInfo(forAccount account: Account, completion: @escaping ((Result<StakingFetchResult, Error>) -> Void)) {
+    private func fetchLongStakingInfo(forAccount account: Account, completion: @escaping ((Result<LongStakingFetchResult, Error>) -> Void)) {
+        
+        let operationCount = 1
+        var operationsProcessed = 0
+        
+        var retval = LongStakingFetchResult()
+
+        if let chainProvider = account.chainProvider {
+            
+            WebOperations.shared.add(FetchLongStakingStakesOperation(chainProvider: chainProvider, account: account), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                
+                switch result {
+                case .success(let longStakingStakes):
+
+                    retval.longStakingStakes = longStakingStakes as? [LongStakingStake]
+                    
+                case .failure: break
+                }
+                
+                operationsProcessed += 1
+                
+                if operationCount == operationsProcessed {
+                    completion(.success(retval))
+                }
+                
+            }
+            
+        } else {
+            completion(.failure(Proton.ProtonError(message: "Account missing chainProvider")))
+        }
+        
+    }
+    
+    /**
+     :nodoc:
+     Fetches the accounts voting info
+     This includes stuff like amount staked, claim amount , etc
+     - Parameter forAccount: Account
+     - Parameter completion: Closure returning Result
+     */
+    private func fetchAccountVotingAndShortStakingInfo(forAccount account: Account, completion: @escaping ((Result<StakingFetchResult, Error>) -> Void)) {
 
         if let chainProvider = account.chainProvider {
             
             var retval = StakingFetchResult()
             
-            let operationCount = 2
+            var operationCount = 3
             var operationsProcessed = 0
             
             WebOperations.shared.add(FetchUserVotersOperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
@@ -2103,11 +2268,9 @@ public class Proton: ObservableObject {
                 WebOperations.shared.add(FetchUserRefundsXPROperation(account: account, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                     
                     switch result {
-                    case .success(let refundsXPRABI):
+                    case .success(let refundsXPR):
 
-                        if let refundsXPRABI = refundsXPRABI as? RefundsXPRABI {
-                            retval.stakingRefund = StakingRefund(quantity: refundsXPRABI.quantity, requestTime: refundsXPRABI.request_time.date)
-                        }
+                        retval.stakingRefund = refundsXPR as? StakingRefund
                         
                     case .failure: break
                     }
@@ -2120,6 +2283,50 @@ public class Proton: ObservableObject {
                     
                 }
                 
+                WebOperations.shared.add(FetchGlobalsDOperation(chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                    
+                    switch result {
+                    case .success(let globalsD):
+                        self.globalsD = globalsD as? GlobalsD
+                    case .failure: break
+                    }
+                    
+                    operationsProcessed += 1
+                    
+                    if operationCount == operationsProcessed {
+                        completion(.success(retval))
+                    }
+                }
+                
+                
+                // update currency stats for XPR token. Supply, etc
+                if let xprToken = self.tokenContracts.first(where: { $0.systemToken == true }) {
+                    
+                    operationCount += 1
+                    
+                    WebOperations.shared.add(FetchTokenContractCurrencyStat(tokenContract: xprToken, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                        
+                        switch result {
+                        case .success(let tokenContract):
+                            
+                            if let tokenContract = tokenContract as? TokenContract {
+                                if let index = self.tokenContracts.firstIndex(of: tokenContract) {
+                                    self.tokenContracts[index] = tokenContract
+                                }
+                            }
+                            
+                        case .failure: break
+                        }
+                        
+                        operationsProcessed += 1
+                        
+                        if operationCount == operationsProcessed {
+                            completion(.success(retval))
+                        }
+                    }
+                    
+                }
+
             }
             
         } else {
