@@ -54,6 +54,10 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
     }
+    /// Determine if token is a Liquidity token from swaps
+    public var isLiquidityToken: Bool {
+        return contract.stringValue == "proton.swaps"
+    }
     /// TokenContracts associated with this TokenBalance
     public var tokenContract: TokenContract? {
         return Proton.shared.tokenContracts.first(where: { $0.id == self.tokenContractId })

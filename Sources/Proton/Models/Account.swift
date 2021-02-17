@@ -15,11 +15,10 @@ import SwiftUI
 import UIKit
 #endif
 
-
 /**
 Staking is the object which represents the accounts staking info, if any
 */
-public struct Staking: Codable, GlobalsXPRProtocol {
+public struct Staking: Codable, GlobalsXPRProtocol, GlobalsDProtocol, Global4Protocol {
     
     /// The amount staked
     public var staked: Asset
@@ -35,6 +34,12 @@ public struct Staking: Codable, GlobalsXPRProtocol {
     public var globalsXPR: GlobalsXPR? {
         return Proton.shared.globalsXPR ?? nil
     }
+    public var globalsD: GlobalsD? {
+        return Proton.shared.globalsD ?? nil
+    }
+    public var global4: Global4? {
+        return Proton.shared.global4 ?? nil
+    }
     public var producers: [Producer] {
         return Proton.shared.producers.filter({ producerNames.contains($0.name) })
     }
@@ -47,6 +52,52 @@ public struct Staking: Codable, GlobalsXPRProtocol {
     public func claimAmountFormatted(forLocale locale: Locale = Locale(identifier: "en_US"),
                                      withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
         return self.claimAmount.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+    }
+    
+    public func claimCurrencyAmountFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        guard let tokenContract = Proton.shared.tokenContracts.first(where: { $0.systemToken == true }) else { return "$0.00" }
+        let rate = tokenContract.getRate(forCurrencyCode: locale.currencyCode ?? "USD")
+        return claimAmount.formattedAsCurrency(forLocale: locale, withRate: rate)
+    }
+    
+    public func getApr() -> Double {
+        
+        guard let globalsD = self.globalsD else { return 0.0 }
+        guard let global4 = self.global4 else { return 0.0 }
+        guard let tokenContract = Proton.shared.tokenContracts.first(where: { $0.systemToken == true }) else { return 0.0 }
+        let inflationPayFactor = Double(global4.inflationPayFactor)
+        let votepayFactor = Double(global4.votepayFactor)
+        let inflationPayFactorPlusVotepayfactor = inflationPayFactor + votepayFactor
+        
+        if inflationPayFactorPlusVotepayfactor > 0 {
+            
+            let totalStaked = Double(globalsD.totalRStaked) / pow(10, Double(tokenContract.symbol.precision))
+            let voterPercentageOfInflation = global4.continuousRate.value * (inflationPayFactor / (inflationPayFactorPlusVotepayfactor))
+            let voterTokensFromInflation = tokenContract.supply.value * voterPercentageOfInflation
+            
+            if voterTokensFromInflation > 0 {
+                return (voterTokensFromInflation / totalStaked) * 100.0
+            }
+            
+        }
+
+        return 0.0
+
+    }
+    
+    public func canClaim() -> Bool {
+        
+        if claimAmount.value > Double.zero {
+            let interval: TimeInterval = globalsXPR?.claimInterval ?? 1209600
+            let claimDate = lastclaim.advanced(by: interval)
+            
+            if Date() > claimDate {
+                return true
+            }
+        }
+
+        return false
+        
     }
 }
 
@@ -66,6 +117,12 @@ public struct StakingRefund: Codable, GlobalsXPRProtocol {
     public func quantityFormated(forLocale locale: Locale = Locale(identifier: "en_US"),
                                  withSymbol symbol: Bool = false, andPrecision precision: Bool = false) -> String {
         return self.quantity.formatted(forLocale: locale, withSymbol: symbol, andPrecision: precision)
+    }
+    
+    public func quantityCurrencyAmountFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        guard let tokenContract = Proton.shared.tokenContracts.first(where: { $0.systemToken == true }) else { return "$0.00" }
+        let rate = tokenContract.getRate(forCurrencyCode: locale.currencyCode ?? "USD")
+        return self.quantity.formattedAsCurrency(forLocale: locale, withRate: rate)
     }
 }
 

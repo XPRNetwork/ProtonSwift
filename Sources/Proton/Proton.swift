@@ -1580,11 +1580,91 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let response):
-                    
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                            self.updateAccount { _ in }
-                        }
 
+                        completion(.success(response))
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            } else {
+                completion(.failure(Proton.ProtonError(message: "Key not associated with active permissions for account")))
+            }
+            
+        } catch {
+            completion(.failure(Proton.ProtonError(message: "Key not valid for transaction")))
+        }
+
+    }
+    
+    /**
+     Stakes and Votes for block producers. This should only be used when staking value > 0
+     - Parameter forProducers: Array of producer Names
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter quantity: Amount to added or removed from stake. Postive for adding stake, Negative for removing stake. Cannot be zero
+     - Parameter completion: Closure returning Result
+     */
+    public func stakeAndvote(forProducers producerNames: [Name], withPrivateKey privateKey: PrivateKey, quantity: Double, completion: @escaping ((Result<Any?, Error>) -> Void)) {
+
+        guard let account = self.account else {
+            completion(.failure(Proton.ProtonError(message: "No active account")))
+            return
+        }
+        
+        guard let tokenBalance = account.systemTokenBalance else {
+            completion(.failure(Proton.ProtonError(message: "Account has no token balance for XPR")))
+            return
+        }
+        
+        guard let tokenContract = tokenBalance.tokenContract else {
+            completion(.failure(Proton.ProtonError(message: "Account has no token balance for XPR")))
+            return
+        }
+        
+        if quantity == Double.zero {
+            completion(.failure(Proton.ProtonError(message: "Cannot stake zero value")))
+            return
+        }
+        
+        let availableBalance = account.availableSystemBalance().value
+        
+        if availableBalance < quantity {
+            completion(.failure(Proton.ProtonError(message: "Not enough available balance to stake \(quantity)")))
+            return
+        }
+        
+        func getStakeActionData(account: Account, quantity: Double, symbol: Asset.Symbol) -> ABICodable {
+            if quantity > 0 {
+                return StakeXPRABI(from: account.name, stake_xpr_quantity: Asset(quantity, tokenContract.symbol))
+            } else {
+                return UnStakeXPRABI(from: account.name, unstake_xpr_quantity: Asset(quantity * -1.0, tokenContract.symbol))
+            }
+        }
+        
+        do {
+            
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
+                let producerNames = producerNames.sorted { $0.stringValue < $1.stringValue }
+                
+                let vote = VoteProducersABI(voter: account.name, producers: producerNames)
+                
+                guard let voteAction = try? Action(account: Name("eosio"), name: "voteproducer", authorization: [PermissionLevel(account.name, "active")], value: vote) else {
+                    completion(.failure(Proton.ProtonError(message: "Unable to create action")))
+                    return
+                }
+                
+                let data = try ABIEncoder.encode(getStakeActionData(account: account, quantity: quantity, symbol: tokenContract.symbol)) as Data
+                let stakeAction = Action(account: Name("eosio"), name: quantity > 0 ? "stakexpr" : "unstakexpr", authorization: [PermissionLevel(account.name, "active")], data: data)
+                
+                self.signAndPushTransaction(withActions: [stakeAction, voteAction], andPrivateKey: privateKey) { result in
+                    
+                    switch result {
+                    case .success(let response):
+                        
                         completion(.success(response))
                         
                     case .failure(let error):

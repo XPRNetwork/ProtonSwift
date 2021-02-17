@@ -90,6 +90,10 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
     }
+    /// Determine if token is a Liquidity token from swaps
+    public var isLiquidityToken: Bool {
+        return contract.stringValue == "proton.swaps"
+    }
     /// ChainProvider associated with the Account
     public var chainProvider: ChainProvider? {
         return Proton.shared.chainProvider?.chainId == self.chainId ? Proton.shared.chainProvider : nil

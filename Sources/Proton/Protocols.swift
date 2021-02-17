@@ -32,6 +32,14 @@ protocol GlobalsXPRProtocol {
     var globalsXPR: GlobalsXPR? { get }
 }
 
+protocol Global4Protocol {
+    var global4: Global4? { get }
+}
+
+protocol GlobalsDProtocol {
+    var globalsD: GlobalsD? { get }
+}
+
 public protocol AvatarProtocol {
     var defaultBase64Avatar: String { get }
     var base64Avatar: String { get set }
