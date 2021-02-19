@@ -272,6 +272,10 @@ public class Proton: ObservableObject {
     */
     @Published public var longStakingPlans: [LongStakingPlan] = []
     /**
+     Live updated array of kyc providers
+    */
+    @Published public var kycProviders: [KYCProvider] = []
+    /**
      Live updated autoSelectChainEndpoints flag which indicates whether or not the sdk should auto choose the best endpoints.
      */
     @Published public var autoSelectChainEndpoints: Bool = true
@@ -298,6 +302,7 @@ public class Proton: ObservableObject {
         self.global4 = self.storage.getDefaultsItem(Global4.self, forKey: "global4") ?? nil
         self.globalsD = self.storage.getDefaultsItem(GlobalsD.self, forKey: "globalsD") ?? nil
         self.longStakingPlans = self.storage.getDefaultsItem([LongStakingPlan].self, forKey: "longStakingPlans") ?? []
+        self.kycProviders = self.storage.getDefaultsItem([KYCProvider].self, forKey: "kycProviders") ?? []
         self.autoSelectChainEndpoints = self.storage.getDefaultsItem(Bool.self, forKey: "autoSelectChainEndpoints") ?? true
         
     }
@@ -320,6 +325,7 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.global4, forKey: "global4")
         self.storage.setDefaultsItem(self.globalsD, forKey: "globalsD")
         self.storage.setDefaultsItem(self.longStakingPlans, forKey: "longStakingPlans")
+        self.storage.setDefaultsItem(self.kycProviders, forKey: "kycProviders")
         self.storage.setDefaultsItem(self.autoSelectChainEndpoints, forKey: "autoSelectChainEndpoints")
         
     }
@@ -640,6 +646,7 @@ public class Proton: ObservableObject {
                         self.updateGlobal4 { _ in } // make sequential?
                         self.updateGlobalsXPR { _ in } // make sequential?
                         self.updateLongStakingPlans { _ in } // make sequential?
+                        self.updateKYCProviders { _ in }
                         self.updateExchangeRates { _ in }
                         self.updateProducers { _ in }
                         self.updateSwapPools { _ in }
@@ -842,6 +849,36 @@ public class Proton: ObservableObject {
             case .success(let global4):
                 
                 self.global4 = global4 as? Global4
+                
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+            
+            completion(.success(true))
+            
+        }
+        
+    }
+    
+    /**
+     Updates the KYC Providers object.
+     - Parameter completion: Closure returning Result
+     */
+    public func updateKYCProviders(completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Missing ChainProvider")))
+            return
+        }
+        
+        WebOperations.shared.add(FetchKYCProvidersOperation(chainProvider: chainProvider),
+                                 toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            
+            switch result {
+                
+            case .success(let kycProviders):
+                
+                self.kycProviders = kycProviders as? [KYCProvider] ?? []
                 
             case .failure(let error):
                 print(error.localizedDescription)

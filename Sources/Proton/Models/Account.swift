@@ -148,7 +148,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     public var chainId: String
     /// The Name of the account. You can get the string value via name.stringValue
     public var name: Name
-    /// Is the account KYC verified
+    /// Is the account KYC verified and Did they opt show show real name on chain
     public var verified: Bool
     /// The user defined name
     public var userDefinedName: String
@@ -503,6 +503,29 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
         return retval
         
+    }
+    
+    static let lightKyc = ["lastname", "firstname", "birthdate", "address"]
+    
+    public func isLightKYCVerified() -> Bool {
+        let kyc = self.kyc ?? []
+        // only grab entries from approved providers
+        let entries = kyc.filter( { (kyc: KYC) -> Bool in
+            return Proton.shared.kycProviders.contains(where: { (kycProvider: KYCProvider) -> Bool in
+                return kyc.provider.stringValue == kycProvider.provider.stringValue
+          })
+        })
+        // just grab the comma seperated level strings
+        let levels = entries.map({ $0.level })
+        let combined: [String] = levels
+            .flatMap({ $0.split(separator: ",") }) // split the types
+            .compactMap({
+                if let last = $0.split(separator: ":").last { // remove the sources ex: trulioo:
+                    return String(last) // return the import parts, lastname, firstname, etc
+                }
+                return nil
+            })
+        return Set(Account.lightKyc).isSubset(of: Set(combined)) // check that all are satisfied
     }
     
 }
