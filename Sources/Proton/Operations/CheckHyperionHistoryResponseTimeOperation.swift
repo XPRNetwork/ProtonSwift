@@ -25,12 +25,14 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
         
         super.main()
         
-        var retval = ChainURLRepsonseTime(url: self.historyUrl, headBlock: 0, blockDiff: 0, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: 0.0)
+        var retval = ChainURLRepsonseTime(url: self.historyUrl, headBlock: 0, blockDiff: 10000, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: Date.distantPast.timeIntervalSinceNow * -1)
         
         guard let url = URL(string: "\(historyUrl)\(path)") else {
             self.finish(retval: retval, error: nil)
             return
         }
+        
+        print(url)
         
         let start = Date()
         
@@ -40,6 +42,7 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
             
             if let _ = error {
                 self.finish(retval: retval, error: nil)
+                return
             }
             guard let data = data, let response = response as? HTTPURLResponse, response.statusCode == 200 else {
                 self.finish(retval: retval, error: nil)
@@ -70,13 +73,15 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
                     blockDiff = chainHeadBlock - esHeadBlock
                 }
                 
-                retval.blockDiff = blockDiff ?? 0
+                retval.blockDiff = blockDiff ?? 10000
                 retval.headBlock = esHeadBlock ?? 0
                 retval.adjustedResponseTime = end
                 retval.rawResponseTime = end
 
             } catch {
                 print(error)
+                self.finish(retval: retval, error: nil)
+                return
             }
             
             if let blockDiff = blockDiff, blockDiff > 30 {

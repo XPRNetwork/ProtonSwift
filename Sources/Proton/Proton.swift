@@ -677,8 +677,8 @@ public class Proton: ObservableObject {
             return
         }
         
-        var chainUrls = chainProvider.chainUrls
-        var historyUrls = chainProvider.hyperionHistoryUrls
+        var chainUrls = chainProvider.chainUrls.unique()
+        var historyUrls = chainProvider.hyperionHistoryUrls.unique()
         
         var chainUrlResponses = [ChainURLRepsonseTime]()
         var hyperionHistoryUrlResponses = [ChainURLRepsonseTime]()
@@ -726,9 +726,11 @@ public class Proton: ObservableObject {
             
             if autoSelectChainEndpoints {
                 
+                chainUrlResponses = chainUrlResponses.unique()
                 chainUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
                 chainUrls = chainUrlResponses.map({ $0.url })
                 
+                hyperionHistoryUrlResponses = hyperionHistoryUrlResponses.unique()
                 hyperionHistoryUrlResponses.sort(by: { $0.adjustedResponseTime < $1.adjustedResponseTime })
                 historyUrls = hyperionHistoryUrlResponses.map({ $0.url })
                 

@@ -25,7 +25,7 @@ class CheckChainResponseTimeOperation: BaseOperation {
         
         super.main()
         
-        var retval = ChainURLRepsonseTime(url: self.chainUrl, headBlock: 0, blockDiff: 0, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: 0.0)
+        var retval = ChainURLRepsonseTime(url: self.chainUrl, headBlock: 0, blockDiff: 10000, adjustedResponseTime: Date.distantPast.timeIntervalSinceNow * -1, rawResponseTime: Date.distantPast.timeIntervalSinceNow * -1)
         
         guard let url = URL(string: "\(chainUrl)\(path)") else {
             self.finish(retval: retval, error: nil)
@@ -40,6 +40,7 @@ class CheckChainResponseTimeOperation: BaseOperation {
 
             if let _ = error {
                 self.finish(retval: retval, error: nil)
+                return
             }
             guard let data = data, let response = response as? HTTPURLResponse, response.statusCode == 200 else {
                 self.finish(retval: retval, error: nil)
@@ -53,13 +54,15 @@ class CheckChainResponseTimeOperation: BaseOperation {
                 let res = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any]
                 if let hb = res["head_block_num"] as? BlockNum, let lib = res["last_irreversible_block_num"] as? BlockNum {
                     blockDiff = hb - lib
-                    retval.blockDiff = blockDiff ?? 0
+                    retval.blockDiff = blockDiff ?? 10000
                     retval.headBlock = hb
                     retval.adjustedResponseTime = end
                     retval.rawResponseTime = end
                 }
             } catch {
                 print(error)
+                self.finish(retval: retval, error: nil)
+                return
             }
 
             if let blockDiff = blockDiff, blockDiff > 350 {
