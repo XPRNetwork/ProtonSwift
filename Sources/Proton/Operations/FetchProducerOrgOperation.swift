@@ -33,8 +33,7 @@ class FetchProducerOrgOperation: BaseOperation {
             return
         }
 
-        WebOperations.shared.request(url: url, timeoutInterval: 5, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy.convertFromSnakeCase, errorModel: NilErrorModel.self) { (result: Result<BPJson, WebError>) in
-
+        WebOperations.shared.request(url: url, timeoutInterval: 2, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy.convertFromSnakeCase, errorModel: NilErrorModel.self) { (result: Result<BPJson, WebError>) in
             switch result {
             case .success(let bpJson):
                 self.producer.org = bpJson.org

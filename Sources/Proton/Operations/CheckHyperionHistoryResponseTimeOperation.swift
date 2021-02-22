@@ -84,7 +84,7 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
                 return
             }
             
-            if let blockDiff = blockDiff, blockDiff > 30 {
+            if let blockDiff = blockDiff, blockDiff > ChainURLRepsonseTime.hyperionInSyncThreshold {
                 retval.adjustedResponseTime = Date.distantPast.timeIntervalSinceNow * -1
             }
             

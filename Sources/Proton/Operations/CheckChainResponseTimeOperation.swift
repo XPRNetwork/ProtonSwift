@@ -65,7 +65,7 @@ class CheckChainResponseTimeOperation: BaseOperation {
                 return
             }
 
-            if let blockDiff = blockDiff, blockDiff > 350 {
+            if let blockDiff = blockDiff, blockDiff > ChainURLRepsonseTime.chainInSyncThreshold {
                 retval.adjustedResponseTime = Date.distantPast.timeIntervalSinceNow * -1
             }
 
@@ -79,6 +79,10 @@ class CheckChainResponseTimeOperation: BaseOperation {
 }
 
 public struct ChainURLRepsonseTime: Codable, Hashable {
+    
+    public static let hyperionInSyncThreshold: UInt32 = 30
+    public static let chainInSyncThreshold: UInt32 = 350
+    
     public let url: String
     public var headBlock: BlockNum
     public var blockDiff: BlockNum
@@ -86,11 +90,11 @@ public struct ChainURLRepsonseTime: Codable, Hashable {
     public var rawResponseTime: TimeInterval
     
     public var hyperionInSync: Bool {
-        return blockDiff < 30
+        return blockDiff < ChainURLRepsonseTime.hyperionInSyncThreshold
     }
     
     public var chainInSync: Bool {
-        return blockDiff < 350
+        return blockDiff < ChainURLRepsonseTime.chainInSyncThreshold
     }
     
     /// :nodoc:
