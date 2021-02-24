@@ -377,7 +377,8 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
                 let staked = self.staking?.staked.value ?? 0.0
                 let refund = self.stakingRefund?.quantity.value ?? 0.0
                 let amount = tokenBalance.amount.value
-                let total = (amount+staked+refund) * rate
+                let longStaked = self.totalLongStakedPayoutBalance.value
+                let total = (amount+staked+refund+longStaked) * rate
                 value += total
             } else {
                 value += (tokenBalance.amount.value * rate)
