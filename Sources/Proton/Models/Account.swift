@@ -309,6 +309,19 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         
     }
     
+    /// Return total longstaked payout
+    public var totalLongStakedPayoutBalance: Asset {
+        
+        let amount: Asset = self.longStakingStakes?.reduce(Asset(0.0, Asset.Symbol(stringLiteral: "4,XPR"))) { value, longStake in
+            var value = value
+            value += longStake.payout()
+            return value
+        } ?? Asset(0.0, Asset.Symbol(stringLiteral: "4,XPR"))
+        
+        return amount
+        
+    }
+    
     /// Return true if account is qualified for rewards by staking and voting
     public var isStakingRewardQualified: Bool {
         if let staking = self.staking {
@@ -334,6 +347,15 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
     
     public var canSwap: Bool {
         return Proton.shared.swapPools.first(where: { $0.balanceAvailableToSwap == true }) != nil
+    }
+    
+    public func totalLongStakedPayoutCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
+        let amount = totalLongStakedPayoutBalance.value
+        let rate = systemTokenBalance?.getRate(forCurrencyCode: locale.currencyCode ?? "USD") ?? 0.0
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        return formatter.string(for: amount * rate) ?? "$0.00"
     }
     
     public func totalLongStakedCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
@@ -409,11 +431,14 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         return self.systemTokenBalance?.amount ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
     }
     
-    public func totalSystemBalance() -> Asset {
+    public func totalSystemBalance(withLongStakePayouts: Bool = true) -> Asset {
         let available = self.systemTokenBalance?.amount ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
         let staked = self.staking?.staked ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
         let refund = self.stakingRefund?.quantity ?? Asset(0.0, try! Asset.Symbol(stringValue: "4,XPR"))
-        return available+staked+refund
+        if withLongStakePayouts {
+            return available+staked+refund+self.totalLongStakedPayoutBalance
+        }
+        return available+staked+refund+self.totalLongStakedBalance
     }
 
     public func privateKey(forPermissionName: String, completion: @escaping ((Result<PrivateKey?, Error>) -> Void)) {

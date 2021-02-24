@@ -113,7 +113,7 @@ public extension Asset {
         return symbol ? "\(retval) \(self.symbol.name)" : retval
     }
     
-    func formatted(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, minPrecision: Int = 0) -> String {
+    func formattedMinPrecision(forLocale locale: Locale = Locale(identifier: "en_US"), withSymbol symbol: Bool = false, minPrecision: Int = 0) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = locale

@@ -272,6 +272,10 @@ public class Proton: ObservableObject {
     */
     @Published public var longStakingPlans: [LongStakingPlan] = []
     /**
+     Live updated array of orcale data
+    */
+    @Published public var oracleData: [OracleData] = []
+    /**
      Live updated array of kyc providers
     */
     @Published public var kycProviders: [KYCProvider] = []
@@ -302,6 +306,7 @@ public class Proton: ObservableObject {
         self.global4 = self.storage.getDefaultsItem(Global4.self, forKey: "global4") ?? nil
         self.globalsD = self.storage.getDefaultsItem(GlobalsD.self, forKey: "globalsD") ?? nil
         self.longStakingPlans = self.storage.getDefaultsItem([LongStakingPlan].self, forKey: "longStakingPlans") ?? []
+        self.oracleData = self.storage.getDefaultsItem([OracleData].self, forKey: "oracleData") ?? []
         self.kycProviders = self.storage.getDefaultsItem([KYCProvider].self, forKey: "kycProviders") ?? []
         self.autoSelectChainEndpoints = self.storage.getDefaultsItem(Bool.self, forKey: "autoSelectChainEndpoints") ?? true
         
@@ -325,6 +330,7 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.global4, forKey: "global4")
         self.storage.setDefaultsItem(self.globalsD, forKey: "globalsD")
         self.storage.setDefaultsItem(self.longStakingPlans, forKey: "longStakingPlans")
+        self.storage.setDefaultsItem(self.oracleData, forKey: "oracleData")
         self.storage.setDefaultsItem(self.kycProviders, forKey: "kycProviders")
         self.storage.setDefaultsItem(self.autoSelectChainEndpoints, forKey: "autoSelectChainEndpoints")
         
@@ -646,6 +652,7 @@ public class Proton: ObservableObject {
                         self.updateGlobal4 { _ in } // make sequential?
                         self.updateGlobalsXPR { _ in } // make sequential?
                         self.updateLongStakingPlans { _ in } // make sequential?
+                        self.updateOracleData { _ in }
                         self.updateKYCProviders { _ in }
                         self.updateExchangeRates { _ in }
                         self.updateProducers { _ in }
@@ -796,6 +803,36 @@ public class Proton: ObservableObject {
                 print(error.localizedDescription)
             }
             
+            completion(.success(true))
+
+        }
+        
+    }
+    
+    /**
+     Updates the updateOracleData array.
+     - Parameter completion: Closure returning Result
+     */
+    public func updateOracleData(completion: @escaping ((Result<Bool, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Missing ChainProvider")))
+            return
+        }
+        
+        WebOperations.shared.add(FetchOracleDataOperation(chainProvider: chainProvider),
+                                 toCustomQueueNamed: Proton.operationQueueMulti) { result in
+            
+            switch result {
+
+            case .success(let oracleData):
+
+                self.oracleData = oracleData as? [OracleData] ?? []
+
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+
             completion(.success(true))
 
         }
@@ -1509,6 +1546,60 @@ public class Proton: ObservableObject {
                 }
                 
                 let action = Action(account: Name("eosio"), name: restake ? "voterclaimst" : "voterclaim", authorization: [PermissionLevel(account.name, "active")], data: data)
+                
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
+                    
+                    switch result {
+                    case .success(let response):
+
+                        completion(.success(response))
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            } else {
+                completion(.failure(Proton.ProtonError(message: "Key not associated with active permissions for account")))
+            }
+            
+        } catch {
+            completion(.failure(Proton.ProtonError(message: "Key not valid for transaction")))
+        }
+        
+    }
+    
+    /**
+     Claims long stake by stake index
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter stakeIndex: UInt64
+     - Parameter completion: Closure returning Result
+     */
+    public func claimLongStake(withPrivateKey privateKey: PrivateKey, stakeIndex: UInt64, completion: @escaping ((Result<Any?, Error>) -> Void)) {
+        
+        guard let account = self.account else {
+            completion(.failure(Proton.ProtonError(message: "No active account")))
+            return
+        }
+        
+        guard let stake = self.account?.longStakingStakes?.first(where: { $0.index == stakeIndex }) else {
+            completion(.failure(Proton.ProtonError(message: "Unable to find stake by index")))
+            return
+        }
+        
+        if !stake.canClaim() {
+            completion(.failure(Proton.ProtonError(message: "Stake not ready to claim")))
+            return
+        }
+
+        do {
+            
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
+                let abiData: Data = try ABIEncoder().encode(LongStakeClaimABI(account: account.name, stake_index: stakeIndex))
+                let action = Action(account: Name("longstaking"), name: "claimstake", authorization: [PermissionLevel(account.name, "active")], data: abiData)
                 
                 self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
                     
