@@ -536,7 +536,7 @@ public class Proton: ObservableObject {
         self.contacts.removeAll()
         self.tokenBalances.removeAll()
         self.tokenTransferActions.removeAll()
-        
+
         DispatchQueue.global().async {
             _ = self.protonESRSessionWebSocketWrappers.map({ $0.socket.disconnect() })
         }
@@ -549,6 +549,7 @@ public class Proton: ObservableObject {
         self.storage.deleteDefaultsItem(forKey: "tokenTransferActions")
         self.storage.deleteDefaultsItem(forKey: "protonESRSessions")
         self.storage.deleteDefaultsItem(forKey: "contacts")
+        self.storage.deleteDefaultsItem(forKey: "protonESRSessions")
         
     }
     
@@ -1409,6 +1410,69 @@ public class Proton: ObservableObject {
                             self.updateAccount { _ in }
                         }
 
+                        completion(.success(response))
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            } else {
+                completion(.failure(Proton.ProtonError(message: "Key not associated with active permissions for account")))
+            }
+            
+        } catch {
+            completion(.failure(Proton.ProtonError(message: "Key not valid for transaction")))
+        }
+
+    }
+    
+    /**
+     Creates a transfer, signs and pushes that transfer to the chain
+     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter quantity: The amount to be transfered
+     - Parameter planIndex: The plan index for the long stake
+     - Parameter completion: Closure returning Result
+     */
+    public func longStake(withPrivateKey privateKey: PrivateKey, quantity: Double, planIndex: UInt64, completion: @escaping ((Result<Any?, Error>) -> Void)) {
+        
+        guard let account = self.account else {
+            completion(.failure(Proton.ProtonError(message: "No active account")))
+            return
+        }
+        
+        guard let systemTokenContract = self.tokenContracts.first(where: { $0.systemToken == true }) else {
+            return
+        }
+        
+        guard let tokenBalance = self.tokenBalances.first(where: { $0.tokenContractId == systemTokenContract.id }) else {
+            completion(.failure(Proton.ProtonError(message: "Account has no token balance of XPR")))
+            return
+        }
+        
+        if quantity > tokenBalance.amount.value {
+            completion(.failure(Proton.ProtonError(message: "Account balance insufficient")))
+            return
+        }
+        
+        do {
+            
+            let publicKey = try privateKey.getPublic()
+            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
+
+                let transfer = TransferActionABI(from: account.name, to: Name("longstaking"), quantity: Asset(quantity, systemTokenContract.symbol), memo: "\(planIndex)")
+                
+                guard let action = try? Action(account: systemTokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
+                    completion(.failure(Proton.ProtonError(message: "Unable to create action")))
+                    return
+                }
+                
+                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
+                    
+                    switch result {
+                    case .success(let response):
+                        
                         completion(.success(response))
                         
                     case .failure(let error):

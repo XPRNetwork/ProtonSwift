@@ -9,14 +9,17 @@
 import EOSIO
 import Foundation
 
-public struct LongStakingPlan: Codable {
+public struct LongStakingPlan: Codable, Identifiable {
     
-    let index: UInt64
-    let oracleIndex: UInt64
-    let planDays: UInt64
-    let multiplier: UInt64
-    let isStakeActive: Bool
-    let isClaimActive: Bool
+    public static let minimumStake: Double = 100.0
+    
+    public var id: UInt64 { return index }
+    public let index: UInt64
+    public let oracleIndex: UInt64
+    public let planDays: UInt64
+    public let multiplier: UInt64
+    public let isStakeActive: Bool
+    public let isClaimActive: Bool
     
     init(longStakingPlanABI: LongStakingPlanABI) {
         self.index = longStakingPlanABI.index
