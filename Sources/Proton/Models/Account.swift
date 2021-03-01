@@ -124,6 +124,12 @@ public struct StakingRefund: Codable, GlobalsXPRProtocol {
         let rate = tokenContract.getRate(forCurrencyCode: locale.currencyCode ?? "USD")
         return self.quantity.formattedAsCurrency(forLocale: locale, withRate: rate)
     }
+    
+    public func claimRefundAvailable() -> Bool {
+        let interval: TimeInterval = globalsXPR?.unstakePeriod ?? 1209600
+        let stakingRefundDate = requestTime.advanced(by: interval)
+        return stakingRefundDate.timeIntervalSinceNow < -120
+    }
 }
 
 /**
