@@ -60,7 +60,6 @@ class CheckChainResponseTimeOperation: BaseOperation {
                     retval.rawResponseTime = end
                 }
             } catch {
-                print(error)
                 self.finish(retval: retval, error: nil)
                 return
             }

@@ -36,9 +36,6 @@ class PostBackgroundCancelProtonSigningRequestOperation: BaseOperation {
             return
         }
         
-        print(url)
-        print(parameters)
-        
         WebOperations.shared.request(method: WebOperations.RequestMethod.post, url: url, parameters: parameters, errorModel: NilErrorModel.self) { result in
             
             switch result {

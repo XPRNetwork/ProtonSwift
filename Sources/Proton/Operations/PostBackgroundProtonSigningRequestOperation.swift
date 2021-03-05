@@ -53,6 +53,7 @@ class PostBackgroundProtonSigningRequestOperation: BaseOperation {
             }
             
             if let req = parameters["req"] as? String {
+                print(try SigningRequest(req))
                 parameters["req"] = req.replacingOccurrences(of: "esr:", with: protonESR.initialPrefix)
             }
             
@@ -60,9 +61,6 @@ class PostBackgroundProtonSigningRequestOperation: BaseOperation {
                 self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form proper URL from callback"))
                 return
             }
-            
-            print(url)
-            print(parameters)
             
             WebOperations.shared.request(method: WebOperations.RequestMethod.post, url: url, parameters: parameters, errorModel: NilErrorModel.self) { result in
                 

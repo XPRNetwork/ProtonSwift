@@ -284,6 +284,11 @@ public class Proton: ObservableObject {
      */
     @Published public var autoSelectChainEndpoints: Bool = true
     
+    /**
+     This lets you know if the data requriements have been fetched yet
+     */
+    @Published public var dataRequirementsReady: Bool = true
+    
     private var protonESRSessionWebSocketWrappers: Set<ProtonESRSessionWebSocketWrapper> = []
     
     // MARK: - Data Functions
@@ -360,8 +365,6 @@ public class Proton: ObservableObject {
 
                     do {
                         let sealedMessage = try ABIDecoder().decode(SealedMessage.self, from: data)
-                        
-                        print(data.hexEncodedString())
                         
                         self?.decryptProtonSigningRequest(withSealedMessage: sealedMessage, andSession: protonESRSession, completion: { result in
                             switch result {
@@ -559,6 +562,8 @@ public class Proton: ObservableObject {
      */
     public func updateDataRequirements(completion: @escaping ((Result<Bool, Error>) -> Void)) {
         
+        dataRequirementsReady = false
+        
         WebOperations.shared.add(FetchChainProviderOperation(), toCustomQueueNamed: Proton.operationQueueSeq) { result in
             
             var chainProvider = self.chainProvider
@@ -659,6 +664,7 @@ public class Proton: ObservableObject {
                         self.updateProducers { _ in }
                         self.updateSwapPools { _ in }
                         
+                        self.dataRequirementsReady = true
                         completion(.success(true))
                         
                     }
@@ -986,13 +992,17 @@ public class Proton: ObservableObject {
             return
         }
         
+        var tokenBalances = self.tokenBalances
+        var tokenTransferActions = self.tokenTransferActions
+        var contacts = self.contacts
+        
         self.fetchAccount(account) { result in
             
             switch result {
             case .success(let returnAccount):
                 
                 account = returnAccount
-                self.account = account
+                //self.account = account
                 
                 self.fetchAccountUserInfo(forAccount: account) { result in
                     
@@ -1000,7 +1010,7 @@ public class Proton: ObservableObject {
                     case .success(let returnAccount):
                         
                         account = returnAccount
-                        self.account = account
+                        //self.account = account
                         
                         self.fetchAccountVotingAndShortStakingInfo(forAccount: account) { result in
 
@@ -1010,7 +1020,7 @@ public class Proton: ObservableObject {
                                 account.staking = stakingFetchResult.staking
                                 account.stakingRefund = stakingFetchResult.stakingRefund
                                 
-                                self.account = account
+                                //self.account = account
                                 
                             case .failure(let error):
                                 print(error.localizedDescription)
@@ -1023,7 +1033,7 @@ public class Proton: ObservableObject {
                                     
                                     account.longStakingStakes = longStakingFetchResult.longStakingStakes ?? []
                                     
-                                    self.account = account
+                                    //self.account = account
                                     
                                 case .failure(let error):
                                     print(error.localizedDescription)
@@ -1032,22 +1042,22 @@ public class Proton: ObservableObject {
                                 self.fetchBalances(forAccount: account) { result in
                                     
                                     switch result {
-                                    case .success(let tokenBalances):
+                                    case .success(let tb):
                                         
-                                        for tokenBalance in tokenBalances {
-                                            if let idx = self.tokenBalances.firstIndex(of: tokenBalance) {
-                                                self.tokenBalances[idx] = tokenBalance
+                                        for tokenBalance in tb {
+                                            if let idx = tokenBalances.firstIndex(of: tokenBalance) {
+                                                tokenBalances[idx] = tokenBalance
                                             } else {
-                                                self.tokenBalances.append(tokenBalance)
+                                                tokenBalances.append(tokenBalance)
                                             }
                                         }
                                         
-                                        let tokenBalancesCount = self.tokenBalances.count
+                                        let tokenBalancesCount = tokenBalances.count
                                         var tokenBalancesProcessed = 0
                                         
                                         if tokenBalancesCount > 0 {
                                             
-                                            for tokenBalance in self.tokenBalances {
+                                            for tokenBalance in tokenBalances {
                                                 
                                                 self.fetchTransferActions(forTokenBalance: tokenBalance) { result in
                                                     
@@ -1056,27 +1066,27 @@ public class Proton: ObservableObject {
                                                     switch result {
                                                     case .success(let transferActions):
                                                         
-                                                        var tokenTransferActions = self.tokenTransferActions[tokenBalance.tokenContractId] ?? []
+                                                        var innerTokenTransferActions = tokenTransferActions[tokenBalance.tokenContractId] ?? []
 
                                                         for transferAction in transferActions {
                                                         
                                                             // remove any actions that where adding using 0 as globalSequence. This
                                                             // happens when manually adding action after transfer, etc.
-                                                            if let zeroIdx = tokenTransferActions.firstIndex(where: { $0.trxId == transferAction.trxId && $0.globalSequence == 0 }) {
-                                                                tokenTransferActions.remove(at: zeroIdx)
+                                                            if let zeroIdx = innerTokenTransferActions.firstIndex(where: { $0.trxId == transferAction.trxId && $0.globalSequence == 0 }) {
+                                                                innerTokenTransferActions.remove(at: zeroIdx)
                                                             }
                                                             
-                                                            if let idx = tokenTransferActions.firstIndex(of: transferAction) {
-                                                                tokenTransferActions[idx] = transferAction
+                                                            if let idx = innerTokenTransferActions.firstIndex(of: transferAction) {
+                                                                innerTokenTransferActions[idx] = transferAction
                                                             } else {
-                                                                tokenTransferActions.append(transferAction)
+                                                                innerTokenTransferActions.append(transferAction)
                                                             }
                                                             
                                                         }
                                                         
-                                                        if tokenTransferActions.count > 0 {
-                                                            tokenTransferActions.sort(by: {  $0.date > $1.date })
-                                                            self.tokenTransferActions[tokenBalance.tokenContractId] = Array(tokenTransferActions.prefix(50))
+                                                        if innerTokenTransferActions.count > 0 {
+                                                            innerTokenTransferActions.sort(by: {  $0.date > $1.date })
+                                                            tokenTransferActions[tokenBalance.tokenContractId] = Array(innerTokenTransferActions.prefix(50))
                                                         }
 
                                                     case .failure: break
@@ -1087,18 +1097,23 @@ public class Proton: ObservableObject {
                                                         self.fetchContacts(forAccount: account) { result in
                                                             
                                                             switch result {
-                                                            case .success(let contacts):
+                                                            case .success(let c):
                                                                 
-                                                                for contact in contacts {
-                                                                    if let idx = self.contacts.firstIndex(of: contact) {
-                                                                        self.contacts[idx] = contact
+                                                                for contact in c {
+                                                                    if let idx = contacts.firstIndex(of: contact) {
+                                                                        contacts[idx] = contact
                                                                     } else {
-                                                                        self.contacts.append(contact)
+                                                                        contacts.append(contact)
                                                                     }
                                                                 }
                                                                 
                                                             case .failure: break
                                                             }
+                                                            
+                                                            self.account = account
+                                                            self.tokenBalances = tokenBalances
+                                                            self.tokenTransferActions = tokenTransferActions
+                                                            self.contacts = contacts
 
                                                             completion(.success(account))
                                                             self.saveAll()
@@ -1888,8 +1903,6 @@ public class Proton: ObservableObject {
         let minAsset = Asset(min, toTokenContract.symbol)
         let memo = "\(swapPool.liquidityTokenSymbol.name),\(minAsset.units)"
         
-        print(min)
-        
         do {
             
             let publicKey = try privateKey.getPublic()
@@ -1966,12 +1979,12 @@ public class Proton: ObservableObject {
     }
     
     /**
-    Signs and pushes transaction
+    Signs transaction without broadcasting
      - Parameter withActions: [Actions]
      - Parameter andPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
      - Parameter completion: Closure returning Result
      */
-    public func signAndPushTransaction(withActions actions: [Action], andPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<API.V1.Chain.PushTransaction.Response, Error>) -> Void)) {
+    public func signTransaction(withActions actions: [Action], andPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<SignedTransaction, Error>) -> Void)) {
         
         guard let chainProvider = self.chainProvider else {
             completion(.failure(Proton.ProtonError(message: "Unable to find chain provider")))
@@ -1984,22 +1997,7 @@ public class Proton: ObservableObject {
             case .success(let signedTransaction):
                 
                 if let signedTransaction = signedTransaction as? SignedTransaction {
-                    
-                    WebOperations.shared.add(PushTransactionOperation(chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
-
-                        switch result {
-                        case .success(let response):
-                            if let response = response as? API.V1.Chain.PushTransaction.Response {
-                                completion(.success(response))
-                            } else {
-                                completion(.failure(Proton.ProtonError(message: "Unable to push transaction")))
-                            }
-                        case .failure(let error):
-                            completion(.failure(error))
-                        }
-                        
-                    }
-                    
+                    completion(.success(signedTransaction))
                 } else {
                     completion(.failure(Proton.ProtonError(message: "Unable to sign transaction")))
                 }
@@ -2008,6 +2006,46 @@ public class Proton: ObservableObject {
                 completion(.failure(error))
             }
             
+        }
+        
+    }
+    
+    /**
+    Signs and pushes transaction
+     - Parameter withActions: [Actions]
+     - Parameter andPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
+     - Parameter completion: Closure returning Result
+     */
+    public func signAndPushTransaction(withActions actions: [Action], andPrivateKey privateKey: PrivateKey, completion: @escaping ((Result<API.V1.Chain.PushTransaction.Response, Error>) -> Void)) {
+        
+        guard let chainProvider = self.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Unable to find chain provider")))
+            return
+        }
+        
+        signTransaction(withActions: actions, andPrivateKey: privateKey) { result in
+            
+            switch result {
+            case .success(let signedTransaction):
+                
+                WebOperations.shared.add(PushTransactionOperation(chainProvider: chainProvider, signedTransaction: signedTransaction), toCustomQueueNamed: Proton.operationQueueSeq) { result in
+
+                    switch result {
+                    case .success(let response):
+                        if let response = response as? API.V1.Chain.PushTransaction.Response {
+                            completion(.success(response))
+                        } else {
+                            completion(.failure(Proton.ProtonError(message: "Unable to push transaction")))
+                        }
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                    
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
         
     }
@@ -2671,8 +2709,9 @@ public class Proton: ObservableObject {
                                             self.producers.append(updatedProducer)
                                         }
                                     }
-                                case .failure(let error):
-                                    print(error.localizedDescription)
+                                case .failure: ()
+                                    // DEBUG
+                                    //print(error.localizedDescription)
                                 }
                                 
                                 operationsProcessed += 1
@@ -2774,8 +2813,6 @@ public class Proton: ObservableObject {
                 
                 if let link = signingRequest.getInfo("link", as: AnchorLinkCreateInfo.self) {
                     requestKey = link.request_key
-                    let blah = link.session_name
-                    print(blah.stringValue)
                 }
 
             }

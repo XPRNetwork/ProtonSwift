@@ -32,8 +32,6 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
             return
         }
         
-        print(url)
-        
         let start = Date()
         
         let urlRequest = URLRequest(url: url, timeoutInterval: 5.0)
@@ -79,7 +77,6 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
                 retval.rawResponseTime = end
 
             } catch {
-                print(error)
                 self.finish(retval: retval, error: nil)
                 return
             }
