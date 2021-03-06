@@ -464,7 +464,7 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
             if let privateKey = Proton.shared.storage.getKeychainItem(String.self, forKey: keyWeight.key.stringValue) {
                 completion(.success(try? PrivateKey(stringValue: privateKey)))
             } else {
-                completion(.failure(Proton.ProtonError(message: "Unable to find private key in keychain for \(self.name.stringValue)")))
+                completion(.failure(Proton.ProtonError(message: "An error occured while attempting to decrypt private key. Please try again.")))
             }
         }
     }
