@@ -1919,11 +1919,7 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let response):
-                    
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                            self.updateAccount { _ in }
-                        }
-
+                        
                         completion(.success(response))
                         
                     case .failure(let error):
