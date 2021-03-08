@@ -31,7 +31,12 @@ class Persistence {
             return nil
         }
         
-        return try? JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+        do {
+            return try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+        } catch {
+            return nil
+        }
+
     }
     
     func getDefaultsItem<T: Codable>(_ object: T.Type, forKey key: String) -> T? {

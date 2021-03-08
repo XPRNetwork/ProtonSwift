@@ -1094,6 +1094,7 @@ public class Proton: ObservableObject {
                                                     
                                                     if tokenBalancesProcessed == tokenBalancesCount {
                                                         
+                                                        //CHECK
                                                         self.fetchContacts(forAccount: account) { result in
                                                             
                                                             switch result {
@@ -2587,7 +2588,7 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let globalsD):
-                        self.globalsD = globalsD as? GlobalsD
+                        self.globalsD = globalsD as? GlobalsD  //CHECK
                     case .failure: break
                     }
                     
@@ -2599,7 +2600,7 @@ public class Proton: ObservableObject {
                 }
                 
                 
-                // update currency stats for XPR token. Supply, etc
+                // update currency stats for XPR token. Supply, etc //CHECK
                 if let xprToken = self.tokenContracts.first(where: { $0.systemToken == true }) {
                     
                     operationCount += 1

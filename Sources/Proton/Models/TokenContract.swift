@@ -161,4 +161,3 @@ public struct TokenContract: Codable, Identifiable, Hashable, ChainProviderProto
     
     #endif
 }
-

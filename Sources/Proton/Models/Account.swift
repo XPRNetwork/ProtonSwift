@@ -205,61 +205,66 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         var staking: Staking?
         
         if let stakingDictionary = dictionary["staking"] as? [String: Any] {
-            if let data = try? JSONSerialization.data(withJSONObject: stakingDictionary, options: .prettyPrinted) {
-                do {
-                    staking = try JSONDecoder().decode(Staking.self, from: data)
-                } catch {
-                    print(error.localizedDescription)
-                }
+            
+            do {
+                let data = try JSONSerialization.data(withJSONObject: stakingDictionary, options: .prettyPrinted)
+                staking = try JSONDecoder().decode(Staking.self, from: data)
+            } catch {
+                print(error.localizedDescription)
             }
+
         }
         
         var stakingRefund: StakingRefund?
         
         if let stakingRefundDictionary = dictionary["stakingRefund"] as? [String: Any] {
-            if let data = try? JSONSerialization.data(withJSONObject: stakingRefundDictionary, options: .prettyPrinted) {
-                do {
-                    stakingRefund = try JSONDecoder().decode(StakingRefund.self, from: data)
-                } catch {
-                    print(error.localizedDescription)
-                }
+            
+            do {
+                let data = try JSONSerialization.data(withJSONObject: stakingRefundDictionary, options: .prettyPrinted)
+                stakingRefund = try JSONDecoder().decode(StakingRefund.self, from: data)
+            } catch  {
+                print(error.localizedDescription)
             }
+
         }
         
         var permissions: [API.V1.Chain.Permission]?
         
         if let permissionsDictionary = dictionary["permissions"] as? [[String: Any]] {
-            if let data = try? JSONSerialization.data(withJSONObject: permissionsDictionary, options: .prettyPrinted) {
-                do {
-                    permissions = try JSONDecoder().decode([API.V1.Chain.Permission].self, from: data)
-                } catch {
-                    print(error.localizedDescription)
-                }
+            
+            do {
+                let data = try JSONSerialization.data(withJSONObject: permissionsDictionary, options: .prettyPrinted)
+                permissions = try JSONDecoder().decode([API.V1.Chain.Permission].self, from: data)
+            } catch {
+                print(error.localizedDescription)
             }
+
         }
         
         var kyc: [KYC]?
         
         if let kycDictionary = dictionary["kyc"] as? [[String: Any]] {
-            if let data = try? JSONSerialization.data(withJSONObject: kycDictionary, options: .prettyPrinted) {
-                do {
-                    kyc = try JSONDecoder().decode([KYC].self, from: data)
-                } catch {
-                    print(error.localizedDescription)
-                }
+            
+            do {
+                let data = try JSONSerialization.data(withJSONObject: kycDictionary, options: .prettyPrinted)
+                kyc = try JSONDecoder().decode([KYC].self, from: data)
+            } catch {
+                print(error.localizedDescription)
             }
+
         }
         
         var longStakingStakes: [LongStakingStake]?
         
         if let longStakingStakesDictionary = dictionary["longStakingStakes"] as? [[String: Any]] {
-            if let data = try? JSONSerialization.data(withJSONObject: longStakingStakesDictionary, options: .prettyPrinted) {
-                do {
-                    longStakingStakes = try JSONDecoder().decode([LongStakingStake].self, from: data)
-                } catch {
-                    print(error.localizedDescription)
-                }
+            
+            do {
+                let data = try JSONSerialization.data(withJSONObject: longStakingStakesDictionary, options: .prettyPrinted)
+                longStakingStakes = try JSONDecoder().decode([LongStakingStake].self, from: data)
+            } catch {
+                print(error.localizedDescription)
             }
+
         }
         
         return Account(chainId: chainId, name: name, verified: dictionary["verified"] as? Bool ?? false,
