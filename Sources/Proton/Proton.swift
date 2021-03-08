@@ -589,6 +589,9 @@ public class Proton: ObservableObject {
                     returnChainProvider.chainUrls = chainUrls ?? returnChainProvider.chainUrls
                     returnChainProvider.hyperionHistoryUrls = hyperionHistoryUrls ?? returnChainProvider.hyperionHistoryUrls
                     
+                    returnChainProvider.chainUrlResponses = chainProvider?.chainUrlResponses.filter({ returnChainProvider.chainUrls.contains($0.url) }) ?? []
+                    returnChainProvider.hyperionHistoryUrlResponses = chainProvider?.hyperionHistoryUrlResponses.filter({ returnChainProvider.hyperionHistoryUrls.contains($0.url) }) ?? []
+                    
                     chainProvider = returnChainProvider
                 }
                 
