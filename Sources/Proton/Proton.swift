@@ -965,7 +965,6 @@ public class Proton: ObservableObject {
 
                         if let idx = self.tokenContracts.firstIndex(where: { $0.id == tokenContractId }) {
                             self.tokenContracts[idx].rates = exchangeRate.rates
-                            self.tokenContracts[idx].priceChangePercent = exchangeRate.priceChangePercent
                             if let iid = self.tokenBalances.firstIndex(where: { $0.tokenContractId == tokenContractId }) {
                                 self.tokenBalances[iid].updatedAt = self.tokenContracts[idx].updatedAt
                             }

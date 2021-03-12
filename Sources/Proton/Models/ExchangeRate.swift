@@ -8,9 +8,19 @@
 
 import Foundation
 
-struct ExchangeRate: Codable {
-    let contract: String
-    let symbol: String
-    let rates: [String: Double]
-    let priceChangePercent: Double
+public struct ExchangeRate: Codable {
+    
+    public let contract: String
+    public let symbol: String
+    public let rates: [Rate]
+    
+    public struct Rate: Codable {
+        public let counterCurrency: String
+        public let price: Double
+        public let priceChangePercent: Double
+        public let marketCap: Double
+        public let volume: Double
+        public let timestamp: Date
+    }
+    
 }
