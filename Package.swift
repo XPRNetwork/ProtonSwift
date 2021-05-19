@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ProtonProtocol/WebOperations.git", .branch("master")),
-        .package(url: "https://github.com/greymass/swift-eosio.git", .branch("master")),
+        .package(url: "https://github.com/ProtonProtocol/swift-eosio.git", .branch("precision-fix")),
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.0"),
         .package(url: "https://github.com/daltoniam/Starscream.git", from: "3.1.1"),
         .package(url: "https://github.com/mkrd/Swift-BigInt.git", .branch("master"))

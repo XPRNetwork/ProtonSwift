@@ -39,10 +39,10 @@
       },
       {
         "package": "swift-eosio",
-        "repositoryURL": "https://github.com/greymass/swift-eosio.git",
+        "repositoryURL": "https://github.com/ProtonProtocol/swift-eosio.git",
         "state": {
-          "branch": "master",
-          "revision": "1af3bc65015a1142985f8100918ed280e7042ecd",
+          "branch": "precision-fix",
+          "revision": "18528983c93671827d90cc9119b3a5835de2c09b",
           "version": null
         }
       },
