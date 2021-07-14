@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/kishikawakatsumi/KeychainAccess.git",
         "state": {
           "branch": null,
-          "revision": "84e546727d66f1adc5439debad16270d0fdd04e7",
-          "version": "4.2.2"
+          "revision": "654d52d30f3dd4592e944c3e0bccb53178c992f6",
+          "version": "4.2.1"
         }
       },
       {
@@ -33,7 +33,7 @@
         "repositoryURL": "https://github.com/mkrd/Swift-BigInt.git",
         "state": {
           "branch": "master",
-          "revision": "367471a1618cb954931fc121e75359beab9d3eb2",
+          "revision": "8e8423ba6d7674bfd3d324d229014476e48568f5",
           "version": null
         }
       },
@@ -69,7 +69,7 @@
         "repositoryURL": "https://github.com/ProtonProtocol/WebOperations.git",
         "state": {
           "branch": "master",
-          "revision": "c9cd1b9a71b3cf9bc3f3de5d65e10f7834cc756a",
+          "revision": "214661ef5f5a34c2539f14a91118ed2c5359d4ef",
           "version": null
         }
       }

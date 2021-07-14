@@ -76,8 +76,8 @@ public class Proton: ObservableObject {
         Name("linkauth"),
         Name("unlinkauth"),
         Name("setabi"),
-        Name("setcode"),
-        Name("newaccount")
+        Name("setcode")
+    //    Name("newaccount")
     ]
     
     /**
