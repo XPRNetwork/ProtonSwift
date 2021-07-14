@@ -44,11 +44,14 @@ class FetchProducersOperation: BaseOperation {
 
                 let decoder = JSONDecoder()
                 var producers: [ProducerABI]?
-
-                if let data = try? JSONSerialization.data(withJSONObject: rows, options: .prettyPrinted) {
-                    producers = try? decoder.decode([ProducerABI].self, from: data)
-                }
                 
+                do {
+                    let data = try JSONSerialization.data(withJSONObject: rows, options: .prettyPrinted)
+                    producers = try decoder.decode([ProducerABI].self, from: data)
+                } catch {
+                    print(error.localizedDescription)
+                }
+ 
                 self.finish(retval: producers, error: nil)
                 
             case .failure(let error):

@@ -76,8 +76,8 @@ public class Proton: ObservableObject {
         Name("linkauth"),
         Name("unlinkauth"),
         Name("setabi"),
-        Name("setcode"),
-        Name("newaccount")
+        Name("setcode")
+    //    Name("newaccount")
     ]
     
     /**
@@ -589,6 +589,9 @@ public class Proton: ObservableObject {
                     returnChainProvider.chainUrls = chainUrls ?? returnChainProvider.chainUrls
                     returnChainProvider.hyperionHistoryUrls = hyperionHistoryUrls ?? returnChainProvider.hyperionHistoryUrls
                     
+                    returnChainProvider.chainUrlResponses = chainProvider?.chainUrlResponses.filter({ returnChainProvider.chainUrls.contains($0.url) }) ?? []
+                    returnChainProvider.hyperionHistoryUrlResponses = chainProvider?.hyperionHistoryUrlResponses.filter({ returnChainProvider.hyperionHistoryUrls.contains($0.url) }) ?? []
+                    
                     chainProvider = returnChainProvider
                 }
                 
@@ -962,7 +965,6 @@ public class Proton: ObservableObject {
 
                         if let idx = self.tokenContracts.firstIndex(where: { $0.id == tokenContractId }) {
                             self.tokenContracts[idx].rates = exchangeRate.rates
-                            self.tokenContracts[idx].priceChangePercent = exchangeRate.priceChangePercent
                             if let iid = self.tokenBalances.firstIndex(where: { $0.tokenContractId == tokenContractId }) {
                                 self.tokenBalances[iid].updatedAt = self.tokenContracts[idx].updatedAt
                             }
@@ -1094,6 +1096,7 @@ public class Proton: ObservableObject {
                                                     
                                                     if tokenBalancesProcessed == tokenBalancesCount {
                                                         
+                                                        //CHECK
                                                         self.fetchContacts(forAccount: account) { result in
                                                             
                                                             switch result {
@@ -1919,11 +1922,7 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let response):
-                    
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                            self.updateAccount { _ in }
-                        }
-
+                        
                         completion(.success(response))
                         
                     case .failure(let error):
@@ -2591,7 +2590,7 @@ public class Proton: ObservableObject {
                     
                     switch result {
                     case .success(let globalsD):
-                        self.globalsD = globalsD as? GlobalsD
+                        self.globalsD = globalsD as? GlobalsD  //CHECK
                     case .failure: break
                     }
                     
@@ -2603,7 +2602,7 @@ public class Proton: ObservableObject {
                 }
                 
                 
-                // update currency stats for XPR token. Supply, etc
+                // update currency stats for XPR token. Supply, etc //CHECK
                 if let xprToken = self.tokenContracts.first(where: { $0.systemToken == true }) {
                     
                     operationCount += 1

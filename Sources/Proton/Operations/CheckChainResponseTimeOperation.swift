@@ -51,13 +51,14 @@ class CheckChainResponseTimeOperation: BaseOperation {
             var blockDiff: BlockNum?
 
             do {
-                let res = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any]
-                if let hb = res["head_block_num"] as? BlockNum, let lib = res["last_irreversible_block_num"] as? BlockNum {
-                    blockDiff = hb - lib
-                    retval.blockDiff = blockDiff ?? 10000
-                    retval.headBlock = hb
-                    retval.adjustedResponseTime = end
-                    retval.rawResponseTime = end
+                if let res = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
+                    if let hb = res["head_block_num"] as? BlockNum, let lib = res["last_irreversible_block_num"] as? BlockNum {
+                        blockDiff = hb - lib
+                        retval.blockDiff = blockDiff ?? 10000
+                        retval.headBlock = hb
+                        retval.adjustedResponseTime = end
+                        retval.rawResponseTime = end
+                    }
                 }
             } catch {
                 self.finish(retval: retval, error: nil)

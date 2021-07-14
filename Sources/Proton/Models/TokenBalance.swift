@@ -28,11 +28,11 @@ public struct TokenBalance: Codable, Identifiable, Hashable, TokenContractProtoc
     /// When the tokebalance was updated. This will also be updated after tokenContract exchange rate was updated
     public var updatedAt: Date
     /// :nodoc:
-    public init?(account: Account, contract: Name, amount: Double, precision: UInt8, symbol: String, updatedAt: Date = Date()) {
+    public init?(account: Account, contract: Name, amount: Double, precision: UInt8?, symbol: String, updatedAt: Date = Date()) {
         
         do {
             
-            let assetSymbol = try Asset.Symbol(precision, symbol)
+            let assetSymbol = try Asset.Symbol(precision ?? 0, symbol)
             self.accountId = account.id
             self.chainId = account.chainId
             self.contract = contract

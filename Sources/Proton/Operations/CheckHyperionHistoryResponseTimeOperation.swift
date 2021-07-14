@@ -54,19 +54,20 @@ class CheckHyperionHistoryResponseTimeOperation: BaseOperation {
             
             do {
                 
-                let res = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any]
-                if let health = res["health"] as? [[String: Any]] {
-                    for service in health {
-                        if let s = service["service"] as? String, let serviceData = service["service_data"] as? [String: Any] {
-                            if s == "NodeosRPC" {
-                                chainHeadBlock = serviceData["head_block_num"] as? BlockNum
-                            } else if s == "Elasticsearch" {
-                                esHeadBlock = serviceData["last_indexed_block"] as? BlockNum
+                if let res = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
+                    if let health = res["health"] as? [[String: Any]] {
+                        for service in health {
+                            if let s = service["service"] as? String, let serviceData = service["service_data"] as? [String: Any] {
+                                if s == "NodeosRPC" {
+                                    chainHeadBlock = serviceData["head_block_num"] as? BlockNum
+                                } else if s == "Elasticsearch" {
+                                    esHeadBlock = serviceData["last_indexed_block"] as? BlockNum
+                                }
                             }
                         }
                     }
                 }
-                
+
                 if let chainHeadBlock = chainHeadBlock, let esHeadBlock = esHeadBlock {
                     blockDiff = chainHeadBlock - esHeadBlock
                 }
