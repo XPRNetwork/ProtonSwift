@@ -58,18 +58,15 @@ public struct LongStakingStake: Codable {
             return retval
         }
         
-        let referencePrice = BDouble(price.value)
+        let referencePrice = Double(price.value)
         
-        guard let planMultiplier = BDouble(exactly: plan.multiplier) else {
-            return retval
-        }
+        let planMultiplier = Double(plan.multiplier)
         
-        let op = BDouble(oraclePrice.value)
-        let expectedPrice = op * (planMultiplier / 100)
+        let op = Double(oraclePrice.value)
+        let expectedPrice = op * (planMultiplier / 100.0)
         if referencePrice < expectedPrice {
-            let payout = (expectedPrice / referencePrice * BDouble(staked.value))
-            let v = Double(payout.decimalDescription) ?? 0.0
-            retval.value = v
+            let payout = ((expectedPrice / referencePrice) * Double(staked.value))
+            retval.value = payout
         } else {
             retval = staked
         }
