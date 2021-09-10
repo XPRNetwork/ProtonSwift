@@ -57,7 +57,8 @@ class FetchKeyAccountsOperation: BaseOperation {
                 self.finish(retval: nil, error: Proton.ProtonError(message: "No accounts found for key: \(self.publicKey)"))
             }
 
-            finish(retval: accountNames, error: nil)
+            // Sep 9, 2021 - this appears to be a double call to finish
+            //finish(retval: accountNames, error: nil)
 
         } catch {
             finish(retval: nil, error: Proton.ProtonError(message: error.localizedDescription))
