@@ -45,6 +45,8 @@ class FetchTokenContractsOperation: BaseOperation {
 
                 for row in rows {
                     
+                    if !row.tcontract.stringValue.contains(["eosio.token", "xtokens"]) continue
+                    
                     let systemToken = row.tcontract.stringValue == "eosio.token" && row.symbol.name == "XPR"
                     
                     if let tokenContractIndex = self.tokenContracts.firstIndex(where: { $0.id == "\(row.tcontract.stringValue):\(row.symbol.name)" }) {
