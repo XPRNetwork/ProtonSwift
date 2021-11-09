@@ -39,9 +39,6 @@ class FetchTokenBalancesOperation: BaseOperation {
             var tokenBalances = Set<TokenBalance>()
             
             for token in res.tokens {
-                if !chainProvider.tokenContracts.contains(where: {$0.contract == token.contract && $0.symbol.stringValue == token.symbol}) {
-                    continue
-                }
                 if let tokenBalance = TokenBalance(account: self.account, contract: token.contract,
                                                    amount: token.amount, precision: token.precision, symbol: token.symbol) {
                     tokenBalances.update(with: tokenBalance)
