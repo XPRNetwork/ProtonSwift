@@ -41,8 +41,8 @@
         "package": "swift-eosio",
         "repositoryURL": "https://github.com/ProtonProtocol/swift-eosio.git",
         "state": {
-          "branch": "master",
-          "revision": "12e177127579701cd06aa1b919d1546176f85bcc",
+          "branch": "precision-fix",
+          "revision": "18528983c93671827d90cc9119b3a5835de2c09b",
           "version": null
         }
       },
