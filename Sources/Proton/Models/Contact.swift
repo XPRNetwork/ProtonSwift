@@ -34,6 +34,8 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
     public var base64Avatar: String
     /// The last known date of transfer
     public var lastTransferDate: Date
+    /// The date the object was stored
+    public var storageDate: Date
     /// :nodoc:
     public init(chainId: String, name: String, verified: Bool = false,
                 userDefinedName: String = "", base64Avatar: String = "",
@@ -45,6 +47,7 @@ public struct Contact: Codable, Identifiable, Hashable, ChainProviderProtocol, A
         self.userDefinedName = userDefinedName
         self.base64Avatar = base64Avatar
         self.lastTransferDate = lastTransferDate
+        self.storageDate = Date()
         
     }
     /// :nodoc:

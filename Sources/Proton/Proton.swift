@@ -1061,74 +1061,80 @@ public class Proton: ObservableObject {
                                             
                                             for tokenBalance in tokenBalances {
                                                 
-                                                self.fetchTransferActions(forTokenBalance: tokenBalance) { result in
-                                                    
-                                                    tokenBalancesProcessed += 1
-                                                    
-                                                    switch result {
-                                                    case .success(let transferActions):
-                                                        
-                                                        var innerTokenTransferActions = tokenTransferActions[tokenBalance.tokenContractId] ?? []
-
-                                                        for transferAction in transferActions {
-                                                        
-                                                            // remove any actions that where adding using 0 as globalSequence. This
-                                                            // happens when manually adding action after transfer, etc.
-                                                            if let zeroIdx = innerTokenTransferActions.firstIndex(where: { $0.trxId == transferAction.trxId && $0.globalSequence == 0 }) {
-                                                                innerTokenTransferActions.remove(at: zeroIdx)
-                                                            }
-                                                            
-                                                            if let idx = innerTokenTransferActions.firstIndex(of: transferAction) {
-                                                                innerTokenTransferActions[idx] = transferAction
-                                                            } else {
-                                                                innerTokenTransferActions.append(transferAction)
-                                                            }
-                                                            
-                                                        }
-                                                        
-                                                        if innerTokenTransferActions.count > 0 {
-                                                            innerTokenTransferActions.sort(by: {  $0.date > $1.date })
-                                                            tokenTransferActions[tokenBalance.tokenContractId] = Array(innerTokenTransferActions.prefix(50))
-                                                        }
-
-                                                    case .failure: break
-                                                    }
-                                                    
-                                                    if tokenBalancesProcessed == tokenBalancesCount {
-                                                        
-                                                        //CHECK
-                                                        self.fetchContacts(forAccount: account) { result in
-                                                            
-                                                            switch result {
-                                                            case .success(let c):
-                                                                
-                                                                for contact in c {
-                                                                    if let idx = contacts.firstIndex(of: contact) {
-                                                                        contacts[idx] = contact
-                                                                    } else {
-                                                                        contacts.append(contact)
-                                                                    }
-                                                                }
-                                                                
-                                                            case .failure: break
-                                                            }
-                                                            
-                                                            self.account = account
-                                                            self.tokenBalances = tokenBalances
-                                                            self.tokenTransferActions = tokenTransferActions
-                                                            self.contacts = contacts
-
-                                                            completion(.success(account))
-                                                            self.saveAll()
-                                                            
-                                                        }
-
-                                                    }
-
-                                                }
-                                                
+//                                                self.fetchTransferActions(forTokenBalance: tokenBalance) { result in
+//
+//                                                    tokenBalancesProcessed += 1
+//
+//                                                    switch result {
+//                                                    case .success(let transferActions):
+//
+//                                                        var innerTokenTransferActions = tokenTransferActions[tokenBalance.tokenContractId] ?? []
+//
+//                                                        for transferAction in transferActions {
+//
+//                                                            // remove any actions that where adding using 0 as globalSequence. This
+//                                                            // happens when manually adding action after transfer, etc.
+//                                                            if let zeroIdx = innerTokenTransferActions.firstIndex(where: { $0.trxId == transferAction.trxId && $0.globalSequence == 0 }) {
+//                                                                innerTokenTransferActions.remove(at: zeroIdx)
+//                                                            }
+//
+//                                                            if let idx = innerTokenTransferActions.firstIndex(of: transferAction) {
+//                                                                innerTokenTransferActions[idx] = transferAction
+//                                                            } else {
+//                                                                innerTokenTransferActions.append(transferAction)
+//                                                            }
+//
+//                                                        }
+//
+//                                                        if innerTokenTransferActions.count > 0 {
+//                                                            innerTokenTransferActions.sort(by: {  $0.date > $1.date })
+//                                                            tokenTransferActions[tokenBalance.tokenContractId] = Array(innerTokenTransferActions.prefix(50))
+//                                                        }
+//
+//                                                    case .failure: break
+//                                                    }
+//
+//                                                    if tokenBalancesProcessed == tokenBalancesCount {
+//
+//                                                        //CHECK
+//                                                        self.fetchContacts(forAccount: account) { result in
+//
+//                                                            switch result {
+//                                                            case .success(let c):
+//
+//                                                                for contact in c {
+//                                                                    if let idx = contacts.firstIndex(of: contact) {
+//                                                                        contacts[idx] = contact
+//                                                                    } else {
+//                                                                        contacts.append(contact)
+//                                                                    }
+//                                                                }
+//
+//                                                            case .failure: break
+//                                                            }
+//
+//                                                            self.account = account
+//                                                            self.tokenBalances = tokenBalances
+//                                                            self.tokenTransferActions = tokenTransferActions
+//                                                            self.contacts = contacts
+//
+//                                                            completion(.success(account))
+//                                                            self.saveAll()
+//
+//                                                        }
+//
+//                                                    }
+//
+//                                                }
                                             }
                                             
+                                            self.account = account
+                                            self.tokenBalances = tokenBalances
+                                            //self.tokenTransferActions = tokenTransferActions
+                                            //self.contacts = contacts
+
+                                            completion(.success(account))
+                                            self.saveAll()
                                         } else {
                                             completion(.failure(Proton.ProtonError(message: "No TokenBalances found for account: \(account.name)")))
                                         }
@@ -2072,6 +2078,21 @@ public class Proton: ObservableObject {
 
     }
     
+    private func saveContacts(c: [Contact]) {
+        var contacts = self.contacts
+        
+        for contact in c {
+            if let idx = contacts.firstIndex(of: contact) {
+                contacts[idx] = contact
+            } else {
+                contacts.append(contact)
+            }
+        }
+        
+        self.contacts = contacts
+        self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
+    }
+    
     /**
      :nodoc:
     Creates signature for updating avatar and userdefined name
@@ -2205,7 +2226,7 @@ public class Proton: ObservableObject {
      - Parameter forTokenBalance: TokenBalance
      - Parameter completion: Closure returning Result
      */
-    private func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ((Result<Set<TokenTransferAction>, Error>) -> Void)) {
+    public func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ((Result<Set<TokenTransferAction>, Error>) -> Void)) {
         
         var retval = Set<TokenTransferAction>()
         
@@ -2410,6 +2431,75 @@ public class Proton: ObservableObject {
         
     }
     
+    public func fetchContacts(forAccount account: Account, forTokenTransfers tokenTransferActions: [TokenTransferAction] , completion: @escaping ((Result<Set<Contact>, Error>) -> Void)) {
+        var retval = Set<Contact>()
+
+        guard let chainProvider = account.chainProvider else {
+            completion(.failure(Proton.ProtonError(message: "Account missing chainProvider")))
+            return
+        }
+                
+        let tempContacts: [Contact] = tokenTransferActions.map { transferAction in
+            return Contact(chainId: transferAction.chainId, name: transferAction.other.stringValue)
+        }
+        .reduce([]) {
+            $0.contains($1) ? $0 : $0 + [$1]
+        }.map { contact in
+            var contact = contact
+            if let lastTransferAction = tokenTransferActions.filter({ $0.other == contact.name }).max(by: {
+                $0.date < $1.date
+            }) {
+                contact.lastTransferDate = lastTransferAction.date
+            }
+            return contact
+        }
+        
+        if tempContacts.count == 0 {
+            completion(.success(retval))
+            return
+        }
+        
+        var contactsProcessed = 0
+        
+        for contact in tempContacts {
+            if let storedContactIndex = self.contacts.firstIndex(where: { $0.id == contact.id }) {
+                let storedContact = self.contacts[storedContactIndex]
+                let diff = Calendar.current.dateComponents([.hour], from: storedContact.storageDate, to: Date()).hour ?? 0
+                
+                if(diff < 24) {
+                    retval.update(with: self.contacts[storedContactIndex])
+                    contactsProcessed += 1
+                    
+                    if contactsProcessed == tempContacts.count {
+                        completion(.success(retval))
+                    }
+                    
+                    continue
+                }
+            }
+            
+            WebOperations.shared.add(FetchContactInfoOperation(contact: contact, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                
+                switch result {
+                case .success(let contact):
+                    if let contact = contact as? Contact {
+                        retval.update(with: contact)
+                    }
+                case .failure: break
+                }
+                
+                contactsProcessed += 1
+                
+                if contactsProcessed == tempContacts.count {
+                    self.saveContacts(c: Array(retval))
+                    completion(.success(retval))
+                }
+                
+            }
+            
+        }
+    }
+    
     /**
      :nodoc:
      Fetches all known accounts in which the active account has interated with via transfers, etc.
@@ -2450,6 +2540,21 @@ public class Proton: ObservableObject {
         var contactsProcessed = 0
         
         for contact in tempContacts {
+            if let storedContactIndex = self.contacts.firstIndex(where: { $0.id == contact.id }) {
+                let storedContact = self.contacts[storedContactIndex]
+                let diff = Calendar.current.dateComponents([.hour], from: storedContact.storageDate, to: Date()).hour ?? 0
+                
+                if(diff < 24) {
+                    retval.update(with: self.contacts[storedContactIndex])
+                    contactsProcessed += 1
+                    
+                    if contactsProcessed == tempContacts.count {
+                        completion(.success(retval))
+                    }
+                    
+                    continue
+                }
+            }
             
             WebOperations.shared.add(FetchContactInfoOperation(contact: contact, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
                 
