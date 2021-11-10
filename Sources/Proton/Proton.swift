@@ -2222,9 +2222,9 @@ public class Proton: ObservableObject {
      - Parameter forTokenBalance: TokenBalance
      - Parameter completion: Closure returning Result
      */
-    public func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ((Result<Set<TokenTransferAction>, Error>) -> Void)) {
+    public func fetchTransferActions(forTokenBalance tokenBalance: TokenBalance, completion: @escaping ((Result<Array<TokenTransferAction>, Error>) -> Void)) {
         
-        var retval = Set<TokenTransferAction>()
+        var retval = Array<TokenTransferAction>()
         
         guard let account = tokenBalance.account else {
             completion(.failure(Proton.ProtonError(message: "TokenBalance missing Account")))
@@ -2256,20 +2256,13 @@ public class Proton: ObservableObject {
                         if let zeroIdx = innerTokenTransferActions.firstIndex(where: { $0.trxId == transferAction.trxId && $0.globalSequence == 0 }) {
                             innerTokenTransferActions.remove(at: zeroIdx)
                         }
-
-                        if let idx = innerTokenTransferActions.firstIndex(of: transferAction) {
-                            innerTokenTransferActions[idx] = transferAction
-                        } else {
-                            innerTokenTransferActions.append(transferAction)
-                        }
-
                     }
 
                     if innerTokenTransferActions.count > 0 {
                         innerTokenTransferActions.sort(by: {  $0.date > $1.date })
                     }
                     
-                    retval = Set(innerTokenTransferActions)
+                    retval = innerTokenTransferActions
                 }
                 
                 completion(.success(retval))
