@@ -618,8 +618,6 @@ public class Proton: ObservableObject {
                             }
                             
                             if let account = self.account {
-
-                                var updatedTokenContracts = [TokenContract]()
                                 var operationCount = 0
                                 
                                 for tokenContract in self.tokenContracts {
@@ -632,25 +630,23 @@ public class Proton: ObservableObject {
                                     }
                                     
                                     // Grab token stats
-                                    WebOperations.shared.add(FetchTokenContractCurrencyStat(tokenContract: tokenContract, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                                    if tokenContract.systemToken {
+                                        let tokenContractIndex = self.tokenContracts.firstIndex(of: tokenContract)
                                         
-                                        operationCount += 1
-                                        
-                                        switch result {
-                                        case .success(let tc):
-                                            if let tc = tc as? TokenContract {
-                                                updatedTokenContracts.append(tc)
+                                        WebOperations.shared.add(FetchTokenContractCurrencyStat(tokenContract: tokenContract, chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
+                                            
+                                            operationCount += 1
+                                            
+                                            switch result {
+                                            case .success(let tc):
+                                                if let tc = tc as? TokenContract {
+                                                    self.tokenContracts[tokenContractIndex!] = tc
+                                                }
+                                            case .failure(let error): // Operation designed to not error. Will pass back tokencontract no matter what
+                                                print(error.localizedDescription)
                                             }
-                                        case .failure(let error): // Operation designed to not error. Will pass back tokencontract no matter what
-                                            print(error.localizedDescription)
                                         }
-                                        
-                                        if operationCount == self.tokenContracts.count {
-                                            self.tokenContracts = updatedTokenContracts
-                                        }
-                                        
                                     }
-                                    
                                 }
                                 
                             }
