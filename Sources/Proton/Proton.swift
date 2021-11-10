@@ -2248,7 +2248,28 @@ public class Proton: ObservableObject {
             case .success(let transferActions):
                 
                 if let transferActions = transferActions as? Set<TokenTransferAction> {
-                    retval = transferActions
+                    var innerTokenTransferActions = Array(transferActions)
+                    
+                    for transferAction in transferActions {
+                        // Remove any actions that where adding using 0 as globalSequence. This
+                        // happens when manually adding action after transfer, etc.
+                        if let zeroIdx = innerTokenTransferActions.firstIndex(where: { $0.trxId == transferAction.trxId && $0.globalSequence == 0 }) {
+                            innerTokenTransferActions.remove(at: zeroIdx)
+                        }
+
+                        if let idx = innerTokenTransferActions.firstIndex(of: transferAction) {
+                            innerTokenTransferActions[idx] = transferAction
+                        } else {
+                            innerTokenTransferActions.append(transferAction)
+                        }
+
+                    }
+
+                    if innerTokenTransferActions.count > 0 {
+                        innerTokenTransferActions.sort(by: {  $0.date > $1.date })
+                    }
+                    
+                    retval = Set(innerTokenTransferActions)
                 }
                 
                 completion(.success(retval))
